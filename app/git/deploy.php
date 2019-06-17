@@ -10,6 +10,7 @@ class deploy
 {
     const TEMP_PATH = __DIR__ . '/temp';
 
+
     public $tz = 'init,checkout,delete,reset_hard,get_local_branch,get_remote_branch';
 
     private $conf_acc  = [];
@@ -18,6 +19,7 @@ class deploy
     private $conf_copy = [];
 
     private $copy_files = [];
+
 
     /**
      * action constructor.
@@ -64,6 +66,7 @@ class deploy
         exec(sprintf($this->conf_cmd['config_name'], $this->conf_acc['name']), $output);
         exec(sprintf($this->conf_cmd['config_email'], $this->conf_acc['email']), $output);
     }
+
 
     /**
      * Initialize

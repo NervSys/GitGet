@@ -89,7 +89,6 @@ class ctrl extends model
             return errno::get(2004, 1);
         }
 
-
         errno::set(2005);
 
         unset($user_data['user_key'], $user_data['user_pwd']);
