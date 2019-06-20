@@ -38,7 +38,7 @@ class cmd extends factory
      */
     public function pull(string $branch): array
     {
-        exec($this->build_cmd($this->git_cmd['pull'], $branch), $output);
+        exec($this->build_cmd($this->git_cmd['pull'], $branch, $branch), $output);
 
         return $output;
     }
@@ -51,6 +51,16 @@ class cmd extends factory
     public function reset(string $commit): array
     {
         exec($this->build_cmd($this->git_cmd['reset'], $commit), $output);
+
+        return $output;
+    }
+
+    /**
+     * @return array
+     */
+    public function fetch(): array
+    {
+        exec($this->build_cmd($this->git_cmd['fetch']), $output);
 
         return $output;
     }
