@@ -24,7 +24,9 @@ class cmd extends factory
         if (!is_dir($local_path)) {
             mkdir($local_path, 0777, true);
             chmod($local_path, 0777);
+        }
 
+        if (!is_dir($local_path . DIRECTORY_SEPARATOR . '.git')) {
             exec($this->build_cmd($this->git_cmd['clone'], $git_url, $local_path), $output);
         }
 
