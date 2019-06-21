@@ -78,6 +78,16 @@ class cmd extends factory
     }
 
     /**
+     * @return array
+     */
+    public function status(): array
+    {
+        exec($this->build_cmd($this->git_cmd['status']), $output);
+
+        return $output;
+    }
+
+    /**
      * @param string $branch
      *
      * @return array
