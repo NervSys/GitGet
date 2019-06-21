@@ -36,7 +36,6 @@ class ctrl
      */
     public function __construct(array $conf = [])
     {
-
         errno::load('app', 'git_cmd');
 
         $keys = array_flip(self::PROJ_CONF_KEY);
@@ -109,6 +108,25 @@ class ctrl
         return [
             'branch' => $curr_branch . ' => ' . $now_branch,
             'commit' => $curr_commit . ' => ' . $now_commit,
+            'logs'   => $logs
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function get_status(): array
+    {
+        $curr = $this->git_instance->local_branch();
+        $logs = $this->git_instance->status();
+
+        list($curr_branch, $curr_commit) = $curr;
+
+        errno::set(1000);
+
+        return [
+            'branch' => $curr_branch,
+            'commit' => $curr_commit,
             'logs'   => $logs
         ];
     }
