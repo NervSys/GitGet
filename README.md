@@ -24,6 +24,8 @@ http://域名/api.php/git/deploy-get_local_branch      获取当前所在分支
 http://域名/api.php/git/deploy-checkout?branch=分支名      获取当前所在分支
 
 ##注意事项
+1.  lsof -i:80  查看端口占用用户和组，例如 nginx   20573  www   13u  IPv4  21974      0t0  TCP *:http (LISTEN)，为 www
+
 1. 使用groupadd www  && useradd www 添加www用户
 
 2. 打开执行者登录权限和无密码权限，vi /etc/sudoers，添加一行www ALL=(ALL) NOPASSWD: ALL，注释掉default requiretty
