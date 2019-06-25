@@ -17,7 +17,7 @@ class ctrl
 
     const TEMP_PATH = __DIR__ . DIRECTORY_SEPARATOR . 'temp';
 
-    public $tz = 'deploy';
+    public $tz = 'deploy,get_status';
 
     private $local_path  = '';
     private $user_name   = '';
@@ -36,6 +36,7 @@ class ctrl
      */
     public function __construct(array $conf = [])
     {
+
         errno::load('app', 'git_cmd');
 
         $keys = array_flip(self::PROJ_CONF_KEY);
@@ -117,7 +118,7 @@ class ctrl
      */
     public function get_status(): array
     {
-        $curr = $this->git_instance->local_branch();
+        $curr = $this->current_branch();
         $logs = $this->git_instance->status();
 
         list($curr_branch, $curr_commit) = $curr;
