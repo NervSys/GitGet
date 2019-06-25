@@ -9,9 +9,10 @@
 
 namespace app\git;
 
+use core\handler\factory;
 use ext\errno;
 
-class ctrl
+class ctrl extends factory
 {
     const PROJ_CONF_KEY = ['git_url', 'local_path', 'user_name', 'user_email'];
 

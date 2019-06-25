@@ -11,10 +11,11 @@ namespace app\project;
 
 use ext\errno;
 use app\library\model;
+use app\git\ctrl as git_ctrl;
 
 class ctrl extends model
 {
-    public $tz = 'add,edit';
+    public $tz = 'add,edit,checkout';
 
     private $user_id = 0;
 
@@ -34,76 +35,103 @@ class ctrl extends model
     }
 
     /**
-     * @param string $name
-     * @param string $desc
-     * @param array  $conf
-     *
+     * @api 新增项目
+     * @param string $proj_name
+     * @param string $proj_desc
+     * @param string $proj_git_url
+     * @param string $proj_local_path
+     * @param string $proj_user_name
+     * @param string $proj_user_email
+     * @param array $proj_backup_files
      * @return array
      */
-    public function add(string $name, string $desc, array $conf): array
+    public function add(
+        string $proj_name,
+        string $proj_desc,
+        string $proj_git_url,
+        string $proj_local_path,
+        string $proj_user_name,
+        string $proj_user_email,
+        array $proj_backup_files = []
+    ): array
     {
-        if ('' === $name) {
-            return errno::get(3001, 1);
+        $this->begin();
+        try {
+            $time = time();
+            $this->insert('project')
+                ->value([
+                    'proj_name' => $proj_name,
+                    'proj_desc' => $proj_desc,
+                    'proj_git_url' => $proj_git_url,
+                    'proj_local_path' => $proj_local_path,
+                    'proj_user_name' => $proj_user_name,
+                    'proj_user_email' => $proj_user_email,
+                    'proj_backup_files' => json_encode($proj_backup_files),
+                    'add_time' => $time
+                ])
+                ->execute();
+            $proj_id = $this->last_insert();
+            $this->insert('project_team')
+                ->value([
+                    'proj_id' => $proj_id,
+                    'user_id' => $this->user_id,
+                    'add_time' => $time
+                ])
+                ->execute();
+            $this->commit();
+        } catch (\PDOException $e) {
+            $this->rollback();
+            $err = $e->getMessage();
+            errno::set(3003, 1);
+            return ['err' => $err];
         }
-
-        $time = time();
-
-        $ret = $this->insert('project')
-            ->value([
-                'proj_name' => &$name,
-                'proj_desc' => &$desc,
-                'proj_conf' => json_encode($conf),
-                'add_time'  => &$time
-            ])
-            ->execute();
-
-        $this->insert('project_log')
-            ->value([
-                'proj_id'  => $this->last_insert(),
-                'proj_log' => 'Project added!',
-                'user_id'  => $this->user_id,
-                'add_time' => &$time
-            ])
-            ->execute();
-
-        return $ret ? errno::get(3002) : errno::get(3003, 1);
+        return errno::get(3002);
     }
 
     /**
-     * @param int    $id
-     * @param string $name
-     * @param string $desc
-     * @param array  $conf
-     *
+     * @api 编辑项目
+     * @param int $proj_id
+     * @param array $update
      * @return array
      */
-    public function edit(int $id, string $name, string $desc, array $conf): array
+    public function edit(int $proj_id, array $update = []): array
     {
-        if ('' === $name) {
-            return errno::get(3001, 1);
+        $this->begin();
+        try {
+            if (!empty($update['proj_backup_files'])){
+                $update['proj_backup_files'] = json_encode($update['proj_backup_files']);
+            }
+            $this->update('project')
+                ->value($update)
+                ->where(['proj_id', $proj_id])
+                ->execute();
+            $this->commit();
+        } catch (\PDOException $e) {
+            $this->rollback();
+            return errno::get(3003,1);
         }
+        return errno::get(3002);
+    }
 
-        $time = time();
-
-        $ret = $this->update('project')
-            ->value([
-                'proj_name' => &$name,
-                'proj_desc' => &$desc,
-                'proj_conf' => json_encode($conf),
-                'add_time'  => &$time
-            ])
-            ->where(['proj_id', $id])
-            ->execute();
-
-        $this->insert('project_log')
-            ->value([
-                'proj_id'  => &$id,
-                'proj_log' => 'Project updated!',
-                'user_id'  => $this->user_id,
-                'add_time' => &$time
-            ])
-            ->execute();
-
-        return $ret ? errno::get(3002) : errno::get(3003, 1);
+    public function checkout(int $proj_id)
+    {
+        $project = $this->select('project')
+            ->field('*')
+            ->where(['proj_id',$proj_id])
+            ->fetch();
+        if (empty($project)){
+            return errno::get(3004);
+        }
+        $project = $project[0];
+        $conf = [
+            'git_url' => $project['proj_git_url'],
+            'local_path' => $project['proj_local_path'],
+            'user_name' => $project['proj_user_name'],
+            'user_email' => $project['proj_user_email'],
+        ];
+        $git_ctrl = git_ctrl::new($conf);
+        $res = $git_ctrl->get_status();
+        errno::set(3002);
+        return $res;
     }
 }

@@ -39,12 +39,12 @@ class show extends model
     public function list(): array
     {
         errno::set(3002);
-
-        return $this->select('project_team AS a')
-            ->join('project AS b', ['a.user_id', 'b.user_id'])
-            ->field('a.proj_id', 'a.proj_name', 'a.proj_desc', 'a.add_time')
-            ->where(['b.user_id', $this->user_id])
-            ->order(['a.add_time' => 'desc'])
+        $res =  $this->select('project_team AS a')
+            ->join('project AS b', ['a.proj_id', 'b.proj_id'])
+            ->field('a.proj_id', 'b.proj_name', 'b.proj_desc', 'b.add_time')
+            ->where(['a.user_id', $this->user_id])
+            ->order(['b.add_time' => 'desc'])
             ->fetch();
+        return $res;
     }
 }
