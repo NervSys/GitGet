@@ -43,4 +43,6 @@ class model extends pdo_mysql
 
         return $data['user_id'] ?? 0;
     }
+
+   
 }
