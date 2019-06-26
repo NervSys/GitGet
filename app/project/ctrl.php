@@ -15,7 +15,7 @@ use app\git\ctrl as git_ctrl;
 
 class ctrl extends model
 {
-    public $tz = 'add,edit,checkout';
+    public $tz = 'add,edit,git_clone';
 
     private $user_id = 0;
 
@@ -78,6 +78,14 @@ class ctrl extends model
                     'add_time' => $time
                 ])
                 ->execute();
+            $conf = [
+                'git_url' => $proj_git_url,
+                'local_path' => $proj_local_path,
+                'user_name' => $proj_user_name,
+                'user_email' => $proj_user_email,
+            ];
+            git_ctrl::new($conf);
+            $this->add_log($proj_id,$this->user_id,'添加项目');
             $this->commit();
         } catch (\PDOException $e) {
             $this->rollback();
@@ -105,6 +113,7 @@ class ctrl extends model
                 ->value($update)
                 ->where(['proj_id', $proj_id])
                 ->execute();
+            $this->add_log($proj_id,$this->user_id,'编辑项目');
             $this->commit();
         } catch (\PDOException $e) {
             $this->rollback();
@@ -118,7 +127,7 @@ class ctrl extends model
      * @param int $proj_id
      * @return array
      */
-    public function checkout(int $proj_id)
+    public function git_clone(int $proj_id)
     {
         $project = $this->select('project')
             ->field('*')
@@ -138,5 +147,17 @@ class ctrl extends model
         $res = $git_ctrl->current_branch();
         errno::set(3002);
         return $res;
+    }
+
+    private function add_log(int $proj_id,int $user_id , string $proj_log)
+    {
+        return $this->insert('project_log')
+            ->value([
+                'proj_id' => $proj_id,
+                'proj_log' => $proj_log,
+                'user_id' => $user_id,
+                'add_time' => time()
+            ])
+            ->execute();
     }
 }

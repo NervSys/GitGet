@@ -154,6 +154,12 @@ class ctrl extends factory
         return $result;
     }
 
+    public function branch():array
+    {
+        $output = $this->git_instance->remote_branch();
+        return $output;
+    }
+
     /**
      *
      */
