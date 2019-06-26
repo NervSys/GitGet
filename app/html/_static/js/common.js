@@ -1,5 +1,11 @@
 function ajax_com(post_data, callback) {
-    var token=localStorage.getItem('token');
+    var token=sessionStorage.getItem('token');
+    if(!token){
+        layer.msg("登录超时，请重新登录");
+        setTimeout(function () {
+            parent.location.href = './login.php';
+        }, 600);
+    }
     post_data['token']=token;
     $.ajax({
         url: '/api.php',

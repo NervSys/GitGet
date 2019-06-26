@@ -104,28 +104,61 @@ class ctrl extends model
      * @param string $token
      */
     public function login_info(string $token){
-        $user_id=$this->get_user_id();
         errno::set(2006);
         return [];
     }
 
     public function user_menu(){
-        //固定菜单
-        $menu=[
-            [
-                'menu_id'=>1,
-                'parent_id'=>0,
-                'menu_name'=>'用户管理',
-                'menu_icon'=>'user',
-                'child'=>[
-                    ['menu_id'=>2,
-                    'parent_id'=>1,
-                    'menu_name'=>'用户列表',
-                    'menu_icon'=>'',
-                    'menu_url'=>'user_list.php'],
+        $user_id=$this->get_user_id();
+        if($user_id==1){
+            //固定菜单
+            $menu=[
+                [
+                    'menu_id'=>1,
+                    'parent_id'=>0,
+                    'menu_name'=>'用户管理',
+                    'menu_icon'=>'user',
+                    'child'=>[
+                        ['menu_id'=>2,
+                            'parent_id'=>1,
+                            'menu_name'=>'用户列表',
+                            'menu_icon'=>'',
+                            'menu_url'=>'user_list.php'],
+                    ],
                 ],
-            ]
-        ];
+                [
+                    'menu_id'=>3,
+                    'parent_id'=>0,
+                    'menu_name'=>'项目管理',
+                    'menu_icon'=>'cubes',
+                    'child'=>[
+                        ['menu_id'=>4,
+                            'parent_id'=>3,
+                            'menu_name'=>'项目列表',
+                            'menu_icon'=>'',
+                            'menu_url'=>'project_list.php'],
+                    ],
+                ]
+            ];
+        }else{
+            //固定菜单
+            $menu=[
+                [
+                    'menu_id'=>3,
+                    'parent_id'=>0,
+                    'menu_name'=>'项目管理',
+                    'menu_icon'=>'cubes',
+                    'child'=>[
+                        ['menu_id'=>4,
+                            'parent_id'=>3,
+                            'menu_name'=>'项目列表',
+                            'menu_icon'=>'',
+                            'menu_url'=>'project_list.php'],
+                    ],
+                ]
+            ];
+        }
+
         errno::set(2006);
         return $menu;
     }

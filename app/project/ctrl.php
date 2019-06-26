@@ -35,7 +35,7 @@ class ctrl extends model
     }
 
     /**
-     * @api 新增项目
+     * @api 新增或编辑项目
      * @param string $proj_name
      * @param string $proj_desc
      * @param string $proj_git_url
@@ -57,27 +57,28 @@ class ctrl extends model
     {
         $this->begin();
         try {
-            $time = time();
-            $this->insert('project')
-                ->value([
-                    'proj_name' => $proj_name,
-                    'proj_desc' => $proj_desc,
-                    'proj_git_url' => $proj_git_url,
-                    'proj_local_path' => $proj_local_path,
-                    'proj_user_name' => $proj_user_name,
-                    'proj_user_email' => $proj_user_email,
-                    'proj_backup_files' => json_encode($proj_backup_files),
-                    'add_time' => $time
-                ])
-                ->execute();
-            $proj_id = $this->last_insert();
-            $this->insert('project_team')
-                ->value([
-                    'proj_id' => $proj_id,
-                    'user_id' => $this->user_id,
-                    'add_time' => $time
-                ])
-                ->execute();
+                $time = time();
+                $this->insert('project')
+                    ->value([
+                        'proj_name' => $proj_name,
+                        'proj_desc' => $proj_desc,
+                        'proj_git_url' => $proj_git_url,
+                        'proj_local_path' => $proj_local_path,
+                        'proj_user_name' => $proj_user_name,
+                        'proj_user_email' => $proj_user_email,
+                        'proj_backup_files' => json_encode($proj_backup_files),
+                        'add_time' => $time
+                    ])
+                    ->execute();
+                $proj_id = $this->last_insert();
+                $this->insert('project_team')
+                    ->value([
+                        'proj_id' => $proj_id,
+                        'user_id' => $this->user_id,
+                        'add_time' => $time
+                    ])
+                    ->execute();
+                $log='添加项目';
             $conf = [
                 'git_url' => $proj_git_url,
                 'local_path' => $proj_local_path,
@@ -85,39 +86,13 @@ class ctrl extends model
                 'user_email' => $proj_user_email,
             ];
             git_ctrl::new($conf);
-            $this->add_log($proj_id,$this->user_id,'添加项目');
+            $this->add_log($proj_id,$this->user_id,$log);
             $this->commit();
         } catch (\PDOException $e) {
             $this->rollback();
             $err = $e->getMessage();
             errno::set(3003, 1);
             return ['err' => $err];
-        }
-        return errno::get(3002);
-    }
-
-    /**
-     * @api 编辑项目
-     * @param int $proj_id
-     * @param array $update
-     * @return array
-     */
-    public function edit(int $proj_id, array $update = []): array
-    {
-        $this->begin();
-        try {
-            if (!empty($update['proj_backup_files'])){
-                $update['proj_backup_files'] = json_encode($update['proj_backup_files']);
-            }
-            $this->update('project')
-                ->value($update)
-                ->where(['proj_id', $proj_id])
-                ->execute();
-            $this->add_log($proj_id,$this->user_id,'编辑项目');
-            $this->commit();
-        } catch (\PDOException $e) {
-            $this->rollback();
-            return errno::get(3003,1);
         }
         return errno::get(3002);
     }

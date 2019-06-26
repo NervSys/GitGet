@@ -54,10 +54,11 @@ class show extends model
             ->limit($lim_start,$page_size)
             ->fetch();
         foreach ($list as &$item) {
-            $operate = '<a style="text-decoration:none" class="ml-5" onClick="proj_edit(\'编辑\', \'./proj_edit.php?proj_id=' . $item['proj_id'] . '\', 1300)" href="javascript:;" title="编辑">编辑</a>';
+            $item['add_time']       = date('Y-m-d H:i:s', $item['add_time']);
+            $operate = '<a style="text-decoration:none" class="ml-5" onClick="proj_edit(\'编辑\', \'./project_edit.php?proj_id=' . $item['proj_id'] . '\', 1300)" href="javascript:;" title="编辑">编辑</a>';
             $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" class="ml-5" onClick="proj_checkout(\'编辑\', \'./proj_checkout.php?proj_id=' . $item['proj_id'] . '\', 1300)" href="javascript:;" title="切换">切换</a>';
-            $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" class="ml-5" onClick="proj_del(\'删除\', \'./proj_del.php?proj_id=' . $item['proj_id'] . '\', 1300)" href="javascript:;" title="删除">删除</a>';
-            $item['operate'] = $operate;
+            $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" style="color:red" class="ml-5" onClick="proj_del(\'删除\', \'./proj_del.php?proj_id=' . $item['proj_id'] . '\', 1300)" href="javascript:;" title="删除">删除</a>';
+            $item['option'] = $operate;
         }
         return [
             'cnt_data' => $cnt_data,
@@ -83,6 +84,7 @@ class show extends model
         if (empty($project)){
             return [];
         }
+        $project[0]['proj_backup_files']=json_decode($project[0]['proj_backup_files'],true);
         return $project[0];
     }
 
