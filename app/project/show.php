@@ -49,7 +49,7 @@ class show extends model
         $list =  $this->select('project_team AS a')
             ->join('project AS b', ['a.proj_id', 'b.proj_id'])
             ->field('a.proj_id', 'b.proj_name', 'b.proj_desc','b.proj_git_url','b.proj_local_path','b.proj_user_name','b.proj_user_email','b.proj_backup_files', 'b.add_time')
-            ->where(['a.user_id', $this->user_id])
+            ->where([['a.user_id', $this->user_id],['status',1]])
             ->order(['b.add_time' => 'desc'])
             ->limit($lim_start,$page_size)
             ->fetch();
@@ -123,6 +123,7 @@ class show extends model
 
     /**
      * @api 团队用户列表
+     * @param $proj_id
      * @return array
      */
     public function team_list($proj_id):array

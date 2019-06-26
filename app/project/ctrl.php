@@ -166,6 +166,12 @@ class ctrl extends model
         return errno::get(3002);
     }
 
+    /**
+     * @api 编辑团队用户
+     * @param int $proj_id
+     * @param array $user_ids
+     * @return array
+     */
     public function team_edit(int $proj_id,array $user_ids):array
     {
         if (empty($user_ids)){
