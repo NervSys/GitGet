@@ -15,7 +15,7 @@ use app\git\ctrl;
 
 class show extends model
 {
-    public $tz = 'list,info,branch';
+    public $tz = 'list,info,branch,team_list';
 
     private $user_id = 0;
 
@@ -120,6 +120,19 @@ class show extends model
             'branch_names'=>$branch_names,
             'active_branch' => $active_branch
         ];
+    }
+
+    /**
+     * @api 团队用户列表
+     * @return array
+     */
+    public function team_list():array
+    {
+        errno::set(3002);
+        $user_list  = $this->select('user')
+            ->field('user_id','user_acc')
+            ->fetch();
+        return $user_list;
     }
 
     public function conf(int $proj_id) :array

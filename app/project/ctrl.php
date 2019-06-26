@@ -15,7 +15,7 @@ use app\git\ctrl as git_ctrl;
 
 class ctrl extends model
 {
-    public $tz = 'add,edit,checkout,pull,del';
+    public $tz = 'add,edit,checkout,del,team_edit';
 
     private $user_id = 0;
 
@@ -57,6 +57,7 @@ class ctrl extends model
     {
         $proj_local_paths = $this->select('project')
             ->field('proj_local_path')
+            ->where(['status',1])
             ->fetch(true);
         if (in_array($proj_local_path,$proj_local_paths)){
             return errno::get(3005,1);
@@ -143,20 +144,10 @@ class ctrl extends model
     }
 
     /**
-     * @api 更新分支
+     * @api 删除分支
      * @param int $proj_id
-     * @param string $branch
      * @return array
      */
-    public function pull(int $proj_id,string $branch):array
-    {
-        errno::set(3002);
-        $conf = show::new()->conf($proj_id);
-        $res = git_ctrl::new($conf)->pull($branch);
-        $this->add_log($proj_id,$this->user_id,'更新'.$branch.'分支');
-        return $res;
-    }
-
     public function del(int $proj_id):array
     {
         $conf = show::new()->conf($proj_id);
@@ -172,6 +163,29 @@ class ctrl extends model
             ->value(['status'=>0])
             ->where(['proj_id',$proj_id])
             ->execute();
+        return errno::get(3002);
+    }
+
+    public function team_edit(int $proj_id,array $user_ids):array
+    {
+        if (empty($user_ids)){
+            return errno::get(3006,1);
+        }
+        $this->delete('project_team')
+            ->where([
+                ['proj_id',$proj_id],
+                ['user_id','IN',$user_ids]
+            ])
+            ->execute();
+        foreach ($user_ids as $user_id) {
+            $this->insert('project_team')
+                ->value([
+                    'proj_id'=>$proj_id,
+                    'user_id'=>$user_id,
+                    'add_time'=>time()
+                ])
+                ->execute();
+        }
         return errno::get(3002);
     }
 
