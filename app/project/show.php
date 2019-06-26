@@ -126,12 +126,22 @@ class show extends model
      * @api 团队用户列表
      * @return array
      */
-    public function team_list():array
+    public function team_list($proj_id):array
     {
         errno::set(3002);
         $user_list  = $this->select('user')
             ->field('user_id','user_acc')
             ->fetch();
+        $selected_user_ids = $this->select('project_team')
+            ->field('user_id')
+            ->where(['proj_id',$proj_id])
+            ->fetch(true);
+        foreach ($user_list as &$user) {
+            $user['selected'] = false;
+            if (in_array($user['user_id'],$selected_user_ids)){
+                $user['selected'] = true;
+            }
+        }
         return $user_list;
     }
 
