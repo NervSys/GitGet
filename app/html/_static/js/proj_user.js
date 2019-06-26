@@ -30,6 +30,11 @@ $(function () {
 
 
     $("#form-member-add").submit(function () {
+        if ($("select[name='users']:checked").length==0) {
+            layer.msg("请勾选项目管理人员", {icon: 2});
+            return false;
+        }
+        status = 'true';
         if (status == 'true') {
             status = 'false';
             ajax_com($("form").serialize(), function (data) {

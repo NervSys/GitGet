@@ -58,7 +58,8 @@ class show extends model
             $proj_name=$item['proj_name'];
             $operate = '<a style="text-decoration:none" class="ml-5" onClick="proj_edit(\'编辑\', \'./project_edit.php?proj_id=' . $item['proj_id'] . '\', 1300)" href="javascript:;" title="编辑">编辑</a>';
             $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" class="ml-5" onClick="proj_edit(\'编辑\', \'./proj_checkout.php?proj_id=' . $item['proj_id'] . '&proj_name=' . $proj_name.'\', 1300)" href="javascript:;" title="切换">切换</a>';
-            $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" style="color:red" class="ml-5" onClick="proj_del(\'删除\', \'./proj_del.php?proj_id=' . $item['proj_id'] . '\', 1300)" href="javascript:;" title="删除">删除</a>';
+            $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" class="ml-5" onClick="proj_edit(\'项目人员\', \'./proj_user.php?proj_id=' . $item['proj_id'] . '&proj_name=' . $proj_name.'\', 1300)" href="javascript:;" title="项目人员">项目人员</a>';
+            $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:;" class="suoding mar-R" style="color:red;" onclick="project_del(this, ' . $item['proj_id'] . ')" href="javascript:;" title="删除">删除</a>';
             $item['option'] = $operate;
         }
         return [

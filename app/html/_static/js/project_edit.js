@@ -65,7 +65,6 @@ $(function () {
             layer.msg("请输入开发者邮箱", {icon: 2});
             return false;
         }
-        status = 'true';
         if (status == 'true') {
             status = 'false';
             ajax_com($("form").serialize(), function (data) {
