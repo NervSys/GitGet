@@ -126,12 +126,16 @@ class show extends model
             ->field('*')
             ->where(['proj_id',$proj_id])
             ->fetch();
+        if (empty($project)){
+            return [];
+        }
         $project = $project[0];
         $conf = [
             'git_url' => $project['proj_git_url'],
             'local_path' => $project['proj_local_path'],
             'user_name' => $project['proj_user_name'],
             'user_email' => $project['proj_user_email'],
+            'proj_backup_files' => $project['proj_backup_files'],
         ];
         return $conf;
     }

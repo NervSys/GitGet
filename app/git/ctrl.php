@@ -56,8 +56,8 @@ class ctrl extends factory
         $this->user_name  = &$conf['user_name'];
         $this->user_email = &$conf['user_email'];
 
-        if (isset($conf['copy_files'])) {
-            $this->copy_files = &$conf['copy_files'];
+        if (isset($conf['proj_backup_files'])) {
+            $this->copy_files = &$conf['proj_backup_files'];
         }
 
         unset($conf);
