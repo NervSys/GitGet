@@ -152,6 +152,16 @@ class cmd extends factory
     }
 
     /**
+     * @return array
+     */
+    public function all_branch_name():array
+    {
+        exec($this->build_cmd($this->git_cmd['all_branch_name']), $output);
+
+        return $output;
+    }
+
+    /**
      * @param string $name
      * @param string $email
      *

@@ -91,16 +91,36 @@ class show extends model
     public function branch(int $proj_id):array
     {
         errno::set(3002);
-        $conf = $this->get_conf($proj_id);
+        $conf = $this->conf($proj_id);
         $output = ctrl::new($conf)->branch();
-        $branch_list = [];
+        $branch_names = [];
+        $active_branch = '';
         foreach ($output as $value) {
-            $branch_list[] = $value;
+            $branch_name = substr($value,2);
+            $branch_name_arr = explode('/',$branch_name);
+            if ($branch_name_arr[0] == 'remotes'){
+                if (!empty($branch_name_arr[2])){
+                    if ( strpos($branch_name_arr[2],'HEAD') === 0 ){
+                        continue;
+                    }
+                    $branch_name = $branch_name_arr[2];
+                }
+            }
+            if (substr($value,0,1) == '*'){
+                $active_branch = $branch_name;
+            }
+            if ( in_array($branch_name,$branch_names)){
+                continue;
+            }
+            $branch_names[] = $branch_name;
         }
-        return $branch_list;
+        return [
+            'branch_names'=>$branch_names,
+            'active_branch' => $active_branch
+        ];
     }
 
-    public function get_conf(int $proj_id) :array
+    public function conf(int $proj_id) :array
     {
         $project = $this->select('project')
             ->field('*')

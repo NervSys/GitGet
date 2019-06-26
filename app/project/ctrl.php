@@ -15,7 +15,7 @@ use app\git\ctrl as git_ctrl;
 
 class ctrl extends model
 {
-    public $tz = 'add,edit,git_clone';
+    public $tz = 'add,edit,checkout,pull';
 
     private $user_id = 0;
 
@@ -98,29 +98,57 @@ class ctrl extends model
     }
 
     /**
-     * @api 部署
+     * @api 编辑项目
      * @param int $proj_id
+     * @param array $update
      * @return array
      */
-    public function git_clone(int $proj_id)
+    public function edit(int $proj_id, array $update = []): array
     {
-        $project = $this->select('project')
-            ->field('*')
-            ->where(['proj_id',$proj_id])
-            ->fetch();
-        if (empty($project)){
-            return errno::get(3004);
+        $this->begin();
+        try {
+            if (!empty($update['proj_backup_files'])){
+                $update['proj_backup_files'] = json_encode($update['proj_backup_files']);
+            }
+            $this->update('project')
+                ->value($update)
+                ->where(['proj_id', $proj_id])
+                ->execute();
+            $this->add_log($proj_id,$this->user_id,'编辑项目');
+            $this->commit();
+        } catch (\PDOException $e) {
+            $this->rollback();
+            return errno::get(3003,1);
         }
-        $project = $project[0];
-        $conf = [
-            'git_url' => $project['proj_git_url'],
-            'local_path' => $project['proj_local_path'],
-            'user_name' => $project['proj_user_name'],
-            'user_email' => $project['proj_user_email'],
-        ];
-        $git_ctrl = git_ctrl::new($conf);
-        $res = $git_ctrl->current_branch();
+        return errno::get(3002);
+    }
+
+    /**
+     * @api 切换分支
+     * @param int $proj_id
+     * @param string $branch
+     * @return array
+     */
+    public function checkout(int $proj_id,string $branch):array
+    {
+        $conf = show::new()->conf($proj_id);
+        $res = git_ctrl::new($conf)->deploy($branch);
+        $this->add_log($proj_id,$this->user_id,'切换到'.$branch);
+        return $res;
+    }
+
+    /**
+     * @api 更新分支
+     * @param int $proj_id
+     * @param string $branch
+     * @return array
+     */
+    public function pull(int $proj_id,string $branch):array
+    {
         errno::set(3002);
+        $conf = show::new()->conf($proj_id);
+        $res = git_ctrl::new($conf)->pull($branch);
+        $this->add_log($proj_id,$this->user_id,'更新'.$branch.'分支');
         return $res;
     }
 
