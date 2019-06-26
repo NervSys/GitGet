@@ -57,7 +57,7 @@ class ctrl extends factory
         $this->user_email = &$conf['user_email'];
 
         if (isset($conf['proj_backup_files'])) {
-            $this->copy_files = &$conf['proj_backup_files'];
+            $this->copy_files = json_decode($conf['proj_backup_files'],true);
         }
 
         unset($conf);
@@ -169,6 +169,9 @@ class ctrl extends factory
      */
     private function stash_file(): void
     {
+        if (empty($this->copy_files)){
+            return;
+        }
         foreach ($this->copy_files as $item) {
             $file_path = $this->local_path . DIRECTORY_SEPARATOR . trim($item, " /\\\t\n\r\0\x0B");
 
