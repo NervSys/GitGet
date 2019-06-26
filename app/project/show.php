@@ -41,7 +41,7 @@ class show extends model
         errno::set(3002);
         $res =  $this->select('project_team AS a')
             ->join('project AS b', ['a.proj_id', 'b.proj_id'])
-            ->field('a.proj_id', 'b.proj_name', 'b.proj_desc', 'b.add_time')
+            ->field('a.proj_id', 'b.proj_name', 'b.proj_desc','b.proj_git_url','b.proj_local_path','b.proj_user_name','b.proj_user_email','b.proj_backup_files', 'b.add_time')
             ->where(['a.user_id', $this->user_id])
             ->order(['b.add_time' => 'desc'])
             ->fetch();
