@@ -55,6 +55,7 @@ class ctrl extends model
         array $proj_backup_files = []
     ): array
     {
+        set_time_limit(0);
         $this->begin();
         try {
                 $time = time();
