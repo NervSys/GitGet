@@ -156,10 +156,14 @@ class ctrl extends factory
 
     public function branch():array
     {
-        $output = $this->git_instance->remote_branch();
+        $output = $this->git_instance->all_branch_name();
         return $output;
     }
 
+    public function pull($branch):array
+    {
+        return $this->git_instance->pull($branch);
+    }
     /**
      *
      */
