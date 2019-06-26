@@ -113,6 +113,11 @@ class ctrl extends model
         return errno::get(3002);
     }
 
+    /**
+     * @api 部署
+     * @param int $proj_id
+     * @return array
+     */
     public function checkout(int $proj_id)
     {
         $project = $this->select('project')
@@ -130,7 +135,7 @@ class ctrl extends model
             'user_email' => $project['proj_user_email'],
         ];
         $git_ctrl = git_ctrl::new($conf);
-        $res = $git_ctrl->get_status();
+        $res = $git_ctrl->current_branch();
         errno::set(3002);
         return $res;
     }

@@ -136,7 +136,7 @@ class ctrl extends factory
     /**
      * @return array
      */
-    private function current_branch(): array
+    public function current_branch(): array
     {
         $result = [];
         $output = $this->git_instance->local_branch();
