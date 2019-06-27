@@ -61,10 +61,10 @@ function proj_edit(title, url, w, h) {
 }
 
 
-/*用户-删除*/
-function user_del(obj, id) {
+/*项目-删除*/
+function project_del(obj, id) {
     layer.confirm('确认要删除吗？', function (index) {
-        ajax_com({'cmd':'project/ctrl-delete_project','proj_id':id},function (data) {
+        ajax_com({'cmd':'project/ctrl-del','proj_id':id},function (data) {
             if (data.errno === 0) {
                 $(obj).parents("tr").remove();
                 layer.msg('已删除!',{icon:1,time:1000});
