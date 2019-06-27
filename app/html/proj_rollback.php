@@ -15,7 +15,7 @@
                 <div class="ibox-content">
                     <form method="post" class="form-horizontal" id="form-member-add">
                         <input type="hidden" name="proj_id" value="0">
-                        <input type="hidden" name="cmd" value="project/ctrl-checkout">
+                        <input type="hidden" name="cmd" value="project/ctrl-reset">
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">项目名称：</label>
@@ -34,8 +34,8 @@
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">切换到：</label>
-                            <div class="col-sm-10" id="branchlist">
+                            <label class="col-sm-2 control-label">回滚到历史版本：</label>
+                            <div class="col-sm-10" id="loglist">
                                 <select></select>
                             </div>
                         </div>
