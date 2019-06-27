@@ -63,5 +63,5 @@
 <script src="./_static/js/plugins/dataTables/jquery.dataTables.js"></script>
 <script src="./_static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
 <script src="./_static/js/content.min.js?v=<?php echo date('Ymd')?>"></script>
-<script src="./_static/js/project_list.js?v=<?php echo date('Ymd')?>"></script>
+<script src="./_static/js/project_list.js?v=<?php echo date('YmdH')?>"></script>
 </html>

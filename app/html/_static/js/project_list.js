@@ -75,3 +75,13 @@ function project_del(obj, id) {
     });
 }
 
+function proj_update(id) {
+    ajax_com({'cmd':'project/ctrl-pull','proj_id':id},function (data) {
+        if (data.errno === 0) {
+            layer.msg('已更新',{icon:1,time:1000});
+        } else {
+            layer.msg(data.message,{icon:2});
+        }
+    })
+}
+
