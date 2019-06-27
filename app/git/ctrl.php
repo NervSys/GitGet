@@ -151,8 +151,13 @@ class ctrl extends factory
         return $logs;
     }
 
-    public function reset(string $branch,string $commit):array
+    public function reset(string $commit):array
     {
+        $curr = $this->current_branch();
+        if (empty($curr)) {
+            return errno::get(1001, 1);
+        }
+        list($curr_branch, $curr_commit) = $curr;
         $this->stash_file();
         $before_commit_id = $this->git_instance->current_commit();
         $log = $this->git_instance->reset($commit);
@@ -161,8 +166,8 @@ class ctrl extends factory
             $this->git_log_stack['after_commit_id'] = $commit;
             $this->git_log_stack['current_commit_data'] = trim($this->git_instance->git_show());
             $this->git_log_stack['log_json'] = json_encode($log);
-            $this->git_log_stack['log_desc'] = $branch."节点重置";
-            proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_RESET,$branch);
+            $this->git_log_stack['log_desc'] = $curr_branch."节点重置";
+            proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_RESET,$curr_branch);
         }
         $this->apply_file();
         errno::set(1000);
