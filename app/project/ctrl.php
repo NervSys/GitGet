@@ -128,6 +128,7 @@ class ctrl extends model
         return errno::get(3002);
     }
 
+
     /**
      * @api 切换分支
      * @param int $proj_id
@@ -138,7 +139,6 @@ class ctrl extends model
     {
         $conf = show::new()->conf($proj_id);
         $res = git_ctrl::new($conf)->deploy($branch);
-        $this->add_log($proj_id,$this->user_id,'切换到'.$branch);
         return $res;
     }
 
@@ -223,13 +223,15 @@ class ctrl extends model
         }
     }
 
-    private function add_log(int $proj_id,int $user_id , string $proj_log)
+    public function add_log(int $proj_id, int $user_id, array $proj_log, int $log_type, string $branch)
     {
         return $this->insert('project_log')
             ->value([
                 'proj_id' => $proj_id,
-                'proj_log' => $proj_log,
                 'user_id' => $user_id,
+                'proj_log' => json_encode($proj_log),
+                'log_type' => $log_type,
+                'branch' => $branch,
                 'add_time' => time()
             ])
             ->execute();
