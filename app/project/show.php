@@ -27,7 +27,6 @@ class show extends model
         parent::__construct();
 
         errno::load('app', 'proj_ctrl');
-
         if (0 === $this->user_id = $this->get_user_id()) {
             errno::set(3000);
             parent::stop();
@@ -48,7 +47,7 @@ class show extends model
         $lim_start = ($page-1) * $page_size;
         $list =  $this->select('project_team AS a')
             ->join('project AS b', ['a.proj_id', 'b.proj_id'])
-            ->field('a.proj_id', 'b.proj_name', 'b.proj_desc','b.proj_git_url','b.proj_local_path','b.proj_user_name','b.proj_user_email','b.proj_backup_files', 'b.add_time')
+            ->field('a.proj_id', 'b.proj_name', 'b.proj_desc','b.proj_git_url','b.proj_local_path','b.proj_user_name','b.proj_user_email','b.proj_backup_files', 'b.add_time','b.env_type')
             ->where([['a.user_id', $this->user_id],['status',1]])
             ->order(['b.add_time' => 'desc'])
             ->limit($lim_start,$page_size)
@@ -57,7 +56,9 @@ class show extends model
             $item['add_time']       = date('Y-m-d H:i:s', $item['add_time']);
             $proj_name=$item['proj_name'];
             $operate = '<a style="text-decoration:none" class="ml-5" onClick="proj_edit(\'编辑\', \'./project_edit.php?proj_id=' . $item['proj_id'] . '\', 1300)" href="javascript:;" title="编辑">编辑</a>';
-            $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" class="ml-5" onClick="proj_edit(\'编辑\', \'./proj_checkout.php?proj_id=' . $item['proj_id'] . '&proj_name=' . $proj_name.'\', 1300)" href="javascript:;" title="切换">切换</a>';
+            if($item['env_type']==0){
+                $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" class="ml-5" onClick="proj_edit(\'编辑\', \'./proj_checkout.php?proj_id=' . $item['proj_id'] . '&proj_name=' . $proj_name.'\', 1300)" href="javascript:;" title="切换">切换</a>';
+            }
             $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" class="ml-5" onClick="proj_edit(\'项目人员\', \'./proj_user.php?proj_id=' . $item['proj_id'] . '&proj_name=' . $proj_name.'\', 1300)" href="javascript:;" title="项目人员">项目人员</a>';
             $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:;" class="suoding mar-R" style="color:red;" onclick="project_del(this, ' . $item['proj_id'] . ')" href="javascript:;" title="删除">删除</a>';
             $item['option'] = $operate;

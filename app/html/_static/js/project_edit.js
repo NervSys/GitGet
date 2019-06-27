@@ -9,9 +9,13 @@ $(function () {
                 $("input[name='proj_name']").val(data.proj_name);
                 $("textarea[name='proj_desc']").text(data.proj_desc);
                 $("input[name='proj_git_url']").val(data.proj_git_url);
+                $("input[name='proj_git_url']").attr('readonly','readonly');
                 $("input[name='proj_local_path']").val(data.proj_local_path);
+                $("input[name='proj_local_path']").attr('readonly','readonly');
                 $("input[name='proj_user_name']").val(data.proj_user_name);
                 $("input[name='proj_user_email']").val(data.proj_user_email);
+                $("input[name='env_type'][value='" + data.env_type + "']").attr('checked', 'true');
+                $(".i-checks").iCheck({checkboxClass: "icheckbox_square-green", radioClass: "iradio_square-green",})
                 var h='';
                 $(data.proj_backup_files).each(function (i,v) {
                     h+='<div class="col-sm-12" style="margin-bottom:10px;">\n' +
@@ -37,6 +41,7 @@ $(function () {
             '                                                                  class="btn btn-danger">删除</a>\n' +
             '                                </div>';
         $('#backup').append(h);
+        $(".i-checks").iCheck({checkboxClass: "icheckbox_square-green", radioClass: "iradio_square-green",})
     }
 
 

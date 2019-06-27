@@ -15,7 +15,7 @@
                 <div class="ibox-content">
                     <form method="post" class="form-horizontal" id="form-member-add">
                         <input type="hidden" name="proj_id" value="0">
-                        <input type="hidden" name="cmd" value="project/ctrl-checkout">
+                        <input type="hidden" name="cmd" value="project/ctrl-team_edit">
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">项目名称：</label>
@@ -27,8 +27,8 @@
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">项目人员：</label>
-                            <div class="col-sm-10">
-                                <input type="checkbox" name="users[]" />123
+                            <div class="col-sm-10" id="teamlist">
+                                
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>

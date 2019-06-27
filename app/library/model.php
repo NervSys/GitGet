@@ -29,8 +29,6 @@ class model extends pdo_mysql
      */
     public function get_user_id(): int
     {
-        $data['user_id'] = 1;
-        return 1;
         if (!isset(parent::$data['token'])) {
             return 0;
         }
@@ -38,7 +36,6 @@ class model extends pdo_mysql
         $unit_crypt = crypt::new(conf::get('openssl'));
 
         $json_data = $unit_crypt->verify(parent::$data['token']);
-
         if ('' === $json_data || !is_array($data = json_decode($json_data, true))) {
             return 0;
         }
