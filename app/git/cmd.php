@@ -121,6 +121,12 @@ class cmd extends factory
         return $output[0]??'';
     }
 
+    public function git_show():string
+    {
+        exec($this->build_cmd($this->git_cmd['git_show']), $output);
+        return $output[4]??'';
+    }
+
     /**
      * @return array
      */

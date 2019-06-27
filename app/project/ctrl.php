@@ -184,10 +184,10 @@ class ctrl extends model
      * @param string $commit
      * @return array
      */
-    public function reset(int $proj_id,string $branch,string $commit):array
+    public function reset(int $proj_id,string $commit):array
     {
         $conf = show::new()->conf($proj_id);
-        return git_ctrl::new($conf)->reset($branch,$commit);
+        return git_ctrl::new($conf)->reset($commit);
     }
 
     /**
