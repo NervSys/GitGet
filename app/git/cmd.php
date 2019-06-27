@@ -112,6 +112,16 @@ class cmd extends factory
     }
 
     /**
+     * @return string
+     */
+    public function current_commit() :string
+    {
+        exec($this->build_cmd($this->git_cmd['current_commit']), $output);
+
+        return $output[0]??'';
+    }
+
+    /**
      * @return array
      */
     public function stash_save(): array

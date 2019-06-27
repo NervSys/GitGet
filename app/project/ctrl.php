@@ -90,9 +90,10 @@ class ctrl extends model
                 'local_path' => $proj_local_path,
                 'user_name' => $proj_user_name,
                 'user_email' => $proj_user_email,
+                'proj_id' => $proj_id,
+                'user_id' => $this->user_id
             ];
             git_ctrl::new($conf);
-            $this->add_log($proj_id,$this->user_id,'添加项目');
             $this->commit();
         } catch (\PDOException $e) {
             $this->rollback();
@@ -120,7 +121,6 @@ class ctrl extends model
                 ->value($update)
                 ->where(['proj_id', $proj_id])
                 ->execute();
-            $this->add_log($proj_id,$this->user_id,'编辑项目');
             $this->commit();
         } catch (\PDOException $e) {
             $this->rollback();
@@ -139,7 +139,6 @@ class ctrl extends model
     {
         $conf = show::new()->conf($proj_id);
         $res = git_ctrl::new($conf)->deploy($branch);
-        $this->add_log($proj_id,$this->user_id,'切换到'.$branch);
         return $res;
     }
 
@@ -224,13 +223,15 @@ class ctrl extends model
         }
     }
 
-    private function add_log(int $proj_id,int $user_id , string $proj_log)
+    public function add_log(int $proj_id, int $user_id, array $proj_log, int $log_type, string $branch)
     {
         return $this->insert('project_log')
             ->value([
                 'proj_id' => $proj_id,
-                'proj_log' => $proj_log,
                 'user_id' => $user_id,
+                'proj_log' => json_encode($proj_log),
+                'log_type' => $log_type,
+                'branch' => $branch,
                 'add_time' => time()
             ])
             ->execute();

@@ -146,6 +146,15 @@ class show extends model
         return $user_list;
     }
 
+    public function pull_logs($proj_id,$branch):array
+    {
+        $this->select('project_log a')
+            ->join('user b',['a.user_id','b.user_id'],'LEFT')
+            ->where([['a.proj_id',$proj_id],['a.branch',$branch],['log_type',ctrl::GIT_CMD_TYPE_PULL]])
+            ->field('a.proj_id','a.user_id','a.proj_log','a.log_type','b.user_acc','a.add_time')
+            ->fetch();
+    }
+
     public function conf(int $proj_id) :array
     {
         $project = $this->select('project')
@@ -162,6 +171,8 @@ class show extends model
             'user_name' => $project['proj_user_name'],
             'user_email' => $project['proj_user_email'],
             'proj_backup_files' => $project['proj_backup_files'],
+            'proj_id' => $proj_id,
+            'user_id' => $this->user_id
         ];
         return $conf;
     }
