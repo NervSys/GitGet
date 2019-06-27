@@ -1,4 +1,5 @@
 $(function () {
+    sessionStorage.clear();
     $("form").submit(function () {
         if ($("input[name='acc']").val() == '') {
             layer.msg('请输入账户！', {icon: 2});

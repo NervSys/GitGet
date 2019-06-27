@@ -6,7 +6,17 @@ function ajax_com(post_data, callback) {
             parent.location.href = './login.php';
         }, 600);
     }
-    post_data['token']=token;
+    if(typeof post_data=='object'){
+        post_data['token']=token;
+    }else{
+        var post_arr=post_data.split('&');
+        var post_data={};
+        for(var i=0;i<post_arr.length;i++){
+            var data=post_arr[i].split('=');
+            post_data[data[0]]=data[1].replace('%2F','/');
+        }
+        post_data['token']=token;
+    }
     $.ajax({
         url: '/api.php',
         type: 'post',

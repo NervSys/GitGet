@@ -15,7 +15,7 @@ use app\git\ctrl as git_ctrl;
 
 class ctrl extends model
 {
-    public $tz = 'add,edit,checkout,del,team_edit';
+    public $tz = 'add,checkout,del,team_edit';
 
     private $user_id = 0;
 
@@ -43,6 +43,7 @@ class ctrl extends model
      * @param string $proj_user_name
      * @param string $proj_user_email
      * @param array $proj_backup_files
+     * @param int $proj_id
      * @return array
      */
     public function add(
@@ -52,79 +53,77 @@ class ctrl extends model
         string $proj_local_path,
         string $proj_user_name,
         string $proj_user_email,
-        array $proj_backup_files = []
+        int $env_type,
+        array $proj_backup_files = [],
+        int $proj_id=0
     ): array
     {
-        $proj_local_paths = $this->select('project')
-            ->field('proj_local_path')
-            ->where(['status',1])
-            ->fetch(true);
-        if (in_array($proj_local_path,$proj_local_paths)){
-            return errno::get(3005,1);
+        if($proj_id==0){
+            //新增时判断
+            $proj_local_paths = $this->select('project')
+                ->field('proj_local_path')
+                ->where(['status',1])
+                ->fetch(true);
+            if (in_array($proj_local_path,$proj_local_paths)){
+                return errno::get(3005,1);
+            }
         }
         $this->begin();
         try {
-            $time = time();
-            $this->insert('project')
-                ->value([
-                    'proj_name' => $proj_name,
-                    'proj_desc' => $proj_desc,
-                    'proj_git_url' => $proj_git_url,
-                    'proj_local_path' => $proj_local_path,
-                    'proj_user_name' => $proj_user_name,
-                    'proj_user_email' => $proj_user_email,
-                    'proj_backup_files' => json_encode($proj_backup_files),
-                    'add_time' => $time
-                ])
-                ->execute();
-            $proj_id = $this->last_insert();
-            $this->insert('project_team')
-                ->value([
-                    'proj_id' => $proj_id,
-                    'user_id' => $this->user_id,
-                    'add_time' => $time
-                ])
-                ->execute();
-            $conf = [
-                'git_url' => $proj_git_url,
-                'local_path' => $proj_local_path,
-                'user_name' => $proj_user_name,
-                'user_email' => $proj_user_email,
-            ];
-            git_ctrl::new($conf);
-            $this->add_log($proj_id,$this->user_id,'添加项目');
+            if($proj_id==0){
+                //新增
+                $time = time();
+                $this->insert('project')
+                    ->value([
+                        'proj_name' => $proj_name,
+                        'proj_desc' => $proj_desc,
+                        'proj_git_url' => $proj_git_url,
+                        'proj_local_path' => $proj_local_path,
+                        'proj_user_name' => $proj_user_name,
+                        'proj_user_email' => $proj_user_email,
+                        'proj_backup_files' => json_encode($proj_backup_files),
+                        'env_type'=>$env_type,
+                        'add_time' => $time
+                    ])
+                    ->execute();
+                $proj_id = $this->last_insert();
+                $this->insert('project_team')
+                    ->value([
+                        'proj_id' => $proj_id,
+                        'user_id' => $this->user_id,
+                        'add_time' => $time
+                    ])
+                    ->execute();
+                $conf = [
+                    'git_url' => $proj_git_url,
+                    'local_path' => $proj_local_path,
+                    'user_name' => $proj_user_name,
+                    'user_email' => $proj_user_email,
+                ];
+                git_ctrl::new($conf);
+                $this->add_log($proj_id,$this->user_id,'添加项目');
+            }else{
+                $time = time();
+                $this->update('project')
+                    ->value([
+                        'proj_name' => $proj_name,
+                        'proj_desc' => $proj_desc,
+                        'proj_user_name' => $proj_user_name,
+                        'proj_user_email' => $proj_user_email,
+                        'env_type'=>$env_type,
+                        'proj_backup_files' => json_encode($proj_backup_files),
+                    ])
+                    ->where(['proj_id',$proj_id])
+                    ->execute();
+                $this->add_log($proj_id,$this->user_id,'修改项目');
+            }
+
             $this->commit();
         } catch (\PDOException $e) {
             $this->rollback();
             $err = $e->getMessage();
             errno::set(3003, 1);
             return ['err' => $err];
-        }
-        return errno::get(3002);
-    }
-
-    /**
-     * @api 编辑项目
-     * @param int $proj_id
-     * @param array $update
-     * @return array
-     */
-    public function edit(int $proj_id, array $update = []): array
-    {
-        $this->begin();
-        try {
-            if (!empty($update['proj_backup_files'])){
-                $update['proj_backup_files'] = json_encode($update['proj_backup_files']);
-            }
-            $this->update('project')
-                ->value($update)
-                ->where(['proj_id', $proj_id])
-                ->execute();
-            $this->add_log($proj_id,$this->user_id,'编辑项目');
-            $this->commit();
-        } catch (\PDOException $e) {
-            $this->rollback();
-            return errno::get(3003,1);
         }
         return errno::get(3002);
     }
