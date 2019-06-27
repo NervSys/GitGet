@@ -164,6 +164,7 @@ class show extends model
 
         if (!empty($list)){
             foreach ($list as &$re) {
+                $re['add_time'] = date('Y-m-d H:i:s',$re['add_time']);
                 $proj_log = json_decode($re['proj_log'],true);
                 unset($re['proj_log']);
                 $re['log_desc'] = $proj_log['log_desc'];
