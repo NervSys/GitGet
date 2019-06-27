@@ -215,7 +215,7 @@ class ctrl extends factory
     public function active_branch_name():string
     {
         $curr = $this->current_branch();
-        return $curr[1]??'';
+        return $curr[0]??'';
     }
 
     //切换分支
