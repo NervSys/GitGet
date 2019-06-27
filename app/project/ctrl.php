@@ -171,10 +171,10 @@ class ctrl extends model
      * @param string $branch
      * @return array
      */
-    public function pull(int $proj_id,string $branch):array
+    public function pull(int $proj_id):array
     {
         $conf = show::new()->conf($proj_id);
-        return git_ctrl::new($conf)->pull($branch);
+        return git_ctrl::new($conf)->pull();
     }
 
     /**

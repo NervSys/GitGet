@@ -136,10 +136,15 @@ class ctrl extends factory
      * @param string $branch
      * @return array
      */
-    public function pull(string $branch):array
+    public function pull():array
     {
+        $curr = $this->current_branch();
+        if (empty($curr)) {
+            return errno::get(1001, 1);
+        }
+        list($curr_branch, $curr_commit) = $curr;
         $this->stash_file();
-        $logs = $this->git_pull($branch,$branch.'更新');
+        $logs = $this->git_pull($curr_branch,$curr_branch.'更新');
         $this->apply_file();
         errno::set(1000);
         return $logs;
