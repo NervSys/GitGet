@@ -24,6 +24,7 @@ class ctrl extends factory
     public $git_log_stack = [
         'before_commit_id'=>'',
         'after_commit_id'=>'',
+        'current_commit_data'=>'',
         'log_json' => '',
         'log_desc'=>''
     ];
@@ -158,6 +159,7 @@ class ctrl extends factory
         if ($before_commit_id != $commit){
             $this->git_log_stack['before_commit_id'] = $before_commit_id;
             $this->git_log_stack['after_commit_id'] = $commit;
+            $this->git_log_stack['current_commit_data'] = trim($this->git_instance->git_show());
             $this->git_log_stack['log_json'] = json_encode($log);
             $this->git_log_stack['log_desc'] = $branch."节点重置";
             proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_RESET,$branch);
@@ -221,6 +223,7 @@ class ctrl extends factory
         if ($before_commit_id != $after_commit_id){
             $this->git_log_stack['before_commit_id'] = $before_commit_id;
             $this->git_log_stack['after_commit_id'] = $after_commit_id;
+            $this->git_log_stack['current_commit_data'] = trim($this->git_instance->git_show());
             $this->git_log_stack['log_json'] = json_encode($log);
             $this->git_log_stack['log_desc'] = $desc;
             proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_CHECKOUT,$curr_branch);
@@ -237,6 +240,7 @@ class ctrl extends factory
         if ($before_commit_id != $after_commit_id){
             $this->git_log_stack['before_commit_id'] = $before_commit_id;
             $this->git_log_stack['after_commit_id'] = $after_commit_id;
+            $this->git_log_stack['current_commit_data'] = trim($this->git_instance->git_show());
             $this->git_log_stack['log_json'] = json_encode($log);
             $this->git_log_stack['log_desc'] = $desc;
             proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_PULL,$branch);
