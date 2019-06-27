@@ -147,9 +147,11 @@ class show extends model
         return $user_list;
     }
 
-    public function pull_logs(int $proj_id,string $branch,int $page = 1,int $page_size = 10):array
+    public function pull_logs(int $proj_id,int $page = 1,int $page_size = 10):array
     {
         errno::set(3002);
+        $conf = $this->conf($proj_id);
+        $branch = ctrl::new($conf)->active_branch_name();
         $count = $this->select('project_log a')
             ->join('user b',['a.user_id','b.user_id'],'LEFT')
             ->where([['a.proj_id',$proj_id],['a.branch',$branch],['log_type','IN',[ctrl::GIT_CMD_TYPE_PULL,ctrl::GIT_CMD_TYPE_RESET]]])

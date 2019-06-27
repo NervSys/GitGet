@@ -139,11 +139,7 @@ class ctrl extends factory
      */
     public function pull():array
     {
-        $curr = $this->current_branch();
-        if (empty($curr)) {
-            return errno::get(1001, 1);
-        }
-        list($curr_branch, $curr_commit) = $curr;
+        $curr_branch = $this->active_branch_name();
         $this->stash_file();
         $logs = $this->git_pull($curr_branch,$curr_branch.'更新');
         $this->apply_file();
@@ -153,11 +149,7 @@ class ctrl extends factory
 
     public function reset(string $commit):array
     {
-        $curr = $this->current_branch();
-        if (empty($curr)) {
-            return errno::get(1001, 1);
-        }
-        list($curr_branch, $curr_commit) = $curr;
+        $curr_branch = $this->active_branch_name();
         $this->stash_file();
         $before_commit_id = $this->git_instance->current_commit();
         $log = $this->git_instance->reset($commit);
@@ -217,6 +209,13 @@ class ctrl extends factory
     {
         $output = $this->git_instance->all_branch_name();
         return $output;
+    }
+
+    //获取当前分支名称
+    public function active_branch_name():string
+    {
+        $curr = $this->current_branch();
+        return $curr[1]??'';
     }
 
     //切换分支
