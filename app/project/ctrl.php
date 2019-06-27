@@ -15,7 +15,7 @@ use app\git\ctrl as git_ctrl;
 
 class ctrl extends model
 {
-    public $tz = 'add,edit,checkout,del,team_edit';
+    public $tz = 'add,edit,checkout,del,team_edit,reset,pull';
 
     private $user_id = 0;
 
@@ -163,6 +163,31 @@ class ctrl extends model
             ->where(['proj_id',$proj_id])
             ->execute();
         return errno::get(3002);
+    }
+
+    /**
+     * @api 更新分支
+     * @param int $proj_id
+     * @param string $branch
+     * @return array
+     */
+    public function pull(int $proj_id,string $branch):array
+    {
+        $conf = show::new()->conf($proj_id);
+        return git_ctrl::new($conf)->pull($branch);
+    }
+
+    /**
+     * @api 重置某项目的某分支到某节点
+     * @param int $proj_id
+     * @param string $branch
+     * @param string $commit
+     * @return array
+     */
+    public function reset(int $proj_id,string $branch,string $commit):array
+    {
+        $conf = show::new()->conf($proj_id);
+        return git_ctrl::new($conf)->reset($branch,$commit);
     }
 
     /**

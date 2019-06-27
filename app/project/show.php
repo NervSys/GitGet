@@ -15,7 +15,7 @@ use app\git\ctrl;
 
 class show extends model
 {
-    public $tz = 'list,info,branch,team_list';
+    public $tz = 'list,info,branch,team_list,pull_logs';
 
     private $user_id = 0;
 
@@ -146,13 +146,35 @@ class show extends model
         return $user_list;
     }
 
-    public function pull_logs($proj_id,$branch):array
+    public function pull_logs(int $proj_id,string $branch,int $page = 1,int $page_size = 10):array
     {
-        $this->select('project_log a')
+        errno::set(3002);
+        $count = $this->select('project_log a')
             ->join('user b',['a.user_id','b.user_id'],'LEFT')
-            ->where([['a.proj_id',$proj_id],['a.branch',$branch],['log_type',ctrl::GIT_CMD_TYPE_PULL]])
-            ->field('a.proj_id','a.user_id','a.proj_log','a.log_type','b.user_acc','a.add_time')
-            ->fetch();
+            ->where([['a.proj_id',$proj_id],['a.branch',$branch],['log_type','IN',[ctrl::GIT_CMD_TYPE_PULL,ctrl::GIT_CMD_TYPE_RESET]]])
+            ->field('count(*) as cnt')->fetch(true);
+        $list = $this->select('project_log a')
+            ->join('user b',['a.user_id','b.user_id'],'LEFT')
+            ->where([['a.proj_id',$proj_id],['a.branch',$branch],['log_type','IN',[ctrl::GIT_CMD_TYPE_PULL,ctrl::GIT_CMD_TYPE_RESET]]])
+            ->field('a.proj_id','a.user_id','a.proj_log','a.log_type','b.user_acc','a.add_time')->order(['add_time'=>'DESC'])->fetch();
+
+        if (!empty($list)){
+            foreach ($list as &$re) {
+                $proj_log = json_decode($re['proj_log'],true);
+                unset($re['proj_log']);
+                $re['log_desc'] = $proj_log['log_desc'];
+                $re['log_json'] = json_decode($proj_log['log_json'],true);
+                $re['before_commit_id'] = $proj_log['before_commit_id'];
+                $re['after_commit_id'] = $proj_log['after_commit_id'];
+            }
+        }
+        $res = [
+            'cnt_data' => $count,
+            'cnt_page' => ceil((int)$count/$page_size),
+            'curr_page' => $page,
+            'list' => $list
+        ];
+        return $res;
     }
 
     public function conf(int $proj_id) :array

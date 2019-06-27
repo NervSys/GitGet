@@ -139,7 +139,7 @@ class ctrl extends factory
     public function pull(string $branch):array
     {
         $this->stash_file();
-        $logs = $this->git_pull($branch);
+        $logs = $this->git_pull($branch,$branch.'更新');
         $this->apply_file();
         errno::set(1000);
         return $logs;
@@ -147,7 +147,19 @@ class ctrl extends factory
 
     public function reset(string $branch,string $commit):array
     {
-
+        $this->stash_file();
+        $before_commit_id = $this->git_instance->current_commit();
+        $log = $this->git_instance->reset($commit);
+        if ($before_commit_id != $commit){
+            $this->git_log_stack['before_commit_id'] = $before_commit_id;
+            $this->git_log_stack['after_commit_id'] = $commit;
+            $this->git_log_stack['log_json'] = json_encode($log);
+            $this->git_log_stack['log_desc'] = $branch."节点重置";
+            proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_RESET,$branch);
+        }
+        $this->apply_file();
+        errno::set(1000);
+        return $log;
     }
 
     /**
