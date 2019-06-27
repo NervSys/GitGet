@@ -156,6 +156,7 @@ class show extends model
             ->join('user b',['a.user_id','b.user_id'],'LEFT')
             ->where([['a.proj_id',$proj_id],['a.branch',$branch],['log_type','IN',[ctrl::GIT_CMD_TYPE_PULL,ctrl::GIT_CMD_TYPE_RESET]]])
             ->field('count(*) as cnt')->fetch(true);
+        $count = $count[0] ?? 0;
         $list = $this->select('project_log a')
             ->join('user b',['a.user_id','b.user_id'],'LEFT')
             ->where([['a.proj_id',$proj_id],['a.branch',$branch],['log_type','IN',[ctrl::GIT_CMD_TYPE_PULL,ctrl::GIT_CMD_TYPE_RESET]]])
@@ -174,7 +175,7 @@ class show extends model
         }
         $res = [
             'cnt_data' => $count,
-            'cnt_page' => ceil((int)$count/$page_size),
+            'cnt_page' => ceil($count/$page_size),
             'curr_page' => $page,
             'branch' => $branch,
             'list' => $list
