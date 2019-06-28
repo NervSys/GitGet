@@ -164,7 +164,12 @@ class ctrl extends factory
         return $result;
     }
 
-
+    //当前分支名称
+    public function active_branch_name():string
+    {
+        $curr = $this->current_branch();
+        return $curr[0]??'';
+    }
 
     //获取当前提交
     public function active_branch_commit():string
@@ -185,6 +190,7 @@ class ctrl extends factory
             $this->git_log_stack['after_commit_id'] = $after_commit_id;
             $this->git_log_stack['current_commit_data'] = trim($now_commit);
             proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_CHECKOUT,$this->active_branch);
+            $this->active_branch = $now_branch;
             return true;
         }
         return false;
