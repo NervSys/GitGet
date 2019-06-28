@@ -99,27 +99,16 @@ class show extends model
     {
         errno::set(3002);
         $conf = $this->conf($proj_id);
-        $output = ctrl::new($conf)->branch();
+        $ctrl = ctrl::new($conf);
+        $output = $ctrl->branch();
         $branch_names = [];
-        $active_branch = '';
+        $active_branch = $ctrl->active_branch_name();
         foreach ($output as $value) {
             $branch_name = substr($value,2);
             $branch_name_arr = explode('/',$branch_name);
-            if ($branch_name_arr[0] == 'remotes'){
-                if (!empty($branch_name_arr[2])){
-                    if ( strpos($branch_name_arr[2],'HEAD') === 0 ){
-                        continue;
-                    }
-                    $branch_name = $branch_name_arr[2];
-                }
+            if (!empty($branch_name_arr[1])){
+                $branch_names[] = $branch_name_arr[1];
             }
-            if (substr($value,0,1) == '*'){
-                $active_branch = $branch_name;
-            }
-            if ( in_array($branch_name,$branch_names)){
-                continue;
-            }
-            $branch_names[] = $branch_name;
         }
         return [
             'branch_names'=>$branch_names,

@@ -149,17 +149,18 @@ class ctrl extends factory
 
     public function reset(string $commit):array
     {
-        $curr_branch = $this->active_branch_name();
         $this->stash_file();
         $before_commit_id = $this->git_instance->current_commit();
         $log = $this->git_instance->reset($commit);
         if ($before_commit_id != $commit){
             $this->git_log_stack['before_commit_id'] = $before_commit_id;
             $this->git_log_stack['after_commit_id'] = $commit;
-            $this->git_log_stack['current_commit_data'] = trim($this->git_instance->git_show());
+            $curr_branch = $this->current_branch();
+            list($curr_branch_name,$curr_branch_data) = $curr_branch;
+            $this->git_log_stack['current_commit_data'] = trim($curr_branch_data);
             $this->git_log_stack['log_json'] = json_encode($log);
-            $this->git_log_stack['log_desc'] = $curr_branch."节点重置";
-            proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_RESET,$curr_branch);
+            $this->git_log_stack['log_desc'] = $curr_branch_name."节点重置";
+            proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_RESET,$curr_branch_name);
         }
         $this->apply_file();
         errno::set(1000);
@@ -218,6 +219,13 @@ class ctrl extends factory
         return $curr[0]??'';
     }
 
+    //获取当前提交
+    public function active_branch_commit():string
+    {
+        $curr = $this->current_branch();
+        return $curr[1]??'';
+    }
+
     //切换分支
     private function git_checkout(string $curr_branch, string $branch,string $desc):array
     {
@@ -227,7 +235,7 @@ class ctrl extends factory
         if ($before_commit_id != $after_commit_id){
             $this->git_log_stack['before_commit_id'] = $before_commit_id;
             $this->git_log_stack['after_commit_id'] = $after_commit_id;
-            $this->git_log_stack['current_commit_data'] = trim($this->git_instance->git_show());
+            $this->git_log_stack['current_commit_data'] = trim($this->active_branch_commit());
             $this->git_log_stack['log_json'] = json_encode($log);
             $this->git_log_stack['log_desc'] = $desc;
             proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_CHECKOUT,$curr_branch);
@@ -244,7 +252,7 @@ class ctrl extends factory
         if ($before_commit_id != $after_commit_id){
             $this->git_log_stack['before_commit_id'] = $before_commit_id;
             $this->git_log_stack['after_commit_id'] = $after_commit_id;
-            $this->git_log_stack['current_commit_data'] = trim($this->git_instance->git_show());
+            $this->git_log_stack['current_commit_data'] = trim($this->active_branch_commit());
             $this->git_log_stack['log_json'] = json_encode($log);
             $this->git_log_stack['log_desc'] = $desc;
             proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_PULL,$branch);
