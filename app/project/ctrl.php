@@ -99,6 +99,9 @@ class ctrl extends model
                     'local_path' => $proj_local_path,
                     'user_name' => $proj_user_name,
                     'user_email' => $proj_user_email,
+                    'proj_id' => $proj_id,
+                    'user_id' => $this->user_id,
+                    'active_branch' => 'master'
                 ];
                 git_ctrl::new($conf);
             }else{
