@@ -164,7 +164,12 @@ class ctrl extends factory
         return $result;
     }
 
-
+    //当前分支名称
+    public function active_branch_name():string
+    {
+        $curr = $this->current_branch();
+        return $curr[0]??'';
+    }
 
     //获取当前提交
     public function active_branch_commit():string

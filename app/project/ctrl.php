@@ -71,6 +71,16 @@ class ctrl extends model
         $this->begin();
         try {
             if($proj_id==0){
+                $conf = [
+                    'git_url' => $proj_git_url,
+                    'local_path' => $proj_local_path,
+                    'user_name' => $proj_user_name,
+                    'user_email' => $proj_user_email,
+                    'proj_id' => $proj_id,
+                    'user_id' => $this->user_id,
+                    'active_branch' => 'master'
+                ];
+                $active_branch = git_ctrl::new($conf)->active_branch_name();
                 //新增
                 $time = time();
                 $this->insert('project')
@@ -83,6 +93,7 @@ class ctrl extends model
                         'proj_user_email' => $proj_user_email,
                         'proj_backup_files' => json_encode($proj_backup_files),
                         'env_type'=>$env_type,
+                        'active_branch' => $active_branch,
                         'add_time' => $time
                     ])
                     ->execute();
@@ -94,16 +105,6 @@ class ctrl extends model
                         'add_time' => $time
                     ])
                     ->execute();
-                $conf = [
-                    'git_url' => $proj_git_url,
-                    'local_path' => $proj_local_path,
-                    'user_name' => $proj_user_name,
-                    'user_email' => $proj_user_email,
-                    'proj_id' => $proj_id,
-                    'user_id' => $this->user_id,
-                    'active_branch' => 'master'
-                ];
-                git_ctrl::new($conf);
             }else{
                 $time = time();
                 $this->update('project')
