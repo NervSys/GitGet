@@ -6,6 +6,7 @@ $(function () {
         return false;
     })
 })
+var token=sessionStorage.getItem('token');
 function show_list() {
     return $("#editable").dataTable({
         "serverSide": true,  //启用服务器端分页
@@ -23,6 +24,7 @@ function show_list() {
             //封装请求参数
             var page = (data.start / data.length) + 1;//当前页码
             $("input[name='page']").val(page);
+            $("input[name='token']").val(token);
             ajax_com($("form").serialize(), function (data) {
                 if (data.errno === 0) {
                     var data=data.data;

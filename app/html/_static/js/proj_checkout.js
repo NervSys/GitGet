@@ -1,4 +1,5 @@
 var status = 'true';
+var token=sessionStorage.getItem('token');
 $(function () {
     var proj_id = getQueryString('proj_id');
     var proj_name = getQueryString('proj_name');
@@ -32,6 +33,7 @@ $(function () {
     $("#form-member-add").submit(function () {
         if (status == 'true') {
             status = 'false';
+            $("input[name='token']").val(token);
             ajax_com($("form").serialize(), function (data) {
                 if (data.errno === 0) {
                     layer.msg(data.message, {icon: 1});

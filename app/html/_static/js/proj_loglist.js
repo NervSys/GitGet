@@ -1,5 +1,6 @@
 var table;
 var status = 'true';
+var token=sessionStorage.getItem('token');
 $(function () {
     table = show_list();
 
@@ -10,6 +11,7 @@ $(function () {
         }
         if (status == 'true') {
             status = 'false';
+            $("input[name='token']").val(token);
             ajax_com($("#form-member-add").serialize(), function (data) {
                 if (data.errno === 0) {
                     layer.msg(data.message, {icon: 1});
@@ -42,6 +44,7 @@ function show_list() {
             //封装请求参数
             var page = (data.start / data.length) + 1;//当前页码
             $("input[name='page']").val(page);
+            $("input[name='token']").val(token);
             var proj_id = getQueryString('proj_id');
             $('.proj_id').val(proj_id);
             ajax_com($("#search_form").serialize(), function (data) {

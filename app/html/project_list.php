@@ -22,6 +22,7 @@
                 <form action="" onsubmit="return false" id="search_form" style="text-align: center">
                     <input type="hidden" name="page" value="1">
                     <input type="hidden" name="cmd" value="project/show-list">
+                    <input type="hidden" name="token" value="">
                     <div class="ibox-content">
                         项目名称：<input type="text" class="form-control m-b" name="proj_name" style="width:10%;">
                         <button type="submit" class="btn btn-primary" data-toggle="tooltip" data-placement="left"

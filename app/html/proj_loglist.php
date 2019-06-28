@@ -21,6 +21,7 @@
                 </div>
                 <form action="" onsubmit="return false" id="search_form" style="text-align: center">
                     <input type="hidden" name="page" value="1">
+                    <input type="hidden" name="token" value="">
                     <input type="hidden" name="proj_id" class="proj_id">
                     <input type="hidden" name="cmd" value="project/show-pull_logs">
                 </form>
@@ -42,7 +43,7 @@
                     </table>
 
                 </div>
-
+                    <input type="hidden" name="token" value="">
                     <input type="hidden" name="proj_id" class="proj_id">
                     <input type="hidden" name="cmd" value="project/ctrl-reset">
                     <div class="hr-line-dashed"></div>
