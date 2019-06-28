@@ -139,6 +139,12 @@ class ctrl extends model
     {
         $conf = show::new()->conf($proj_id);
         $res = git_ctrl::new($conf)->deploy($branch);
+        if ($res['errno'] == 0){
+            $this->update('project')
+                ->value(['active_branch'=>$branch])
+                ->where(['proj_id',$proj_id])
+                ->execute();
+        }
         return $res;
     }
 

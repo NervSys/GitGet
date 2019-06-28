@@ -178,6 +178,15 @@ class cmd extends factory
     }
 
     /**
+     * @return array
+     */
+    public function update_remote():array
+    {
+        exec($this->build_cmd($this->git_cmd['update_remote']), $output);
+        return $output;
+    }
+
+    /**
      * @param string $name
      * @param string $email
      *

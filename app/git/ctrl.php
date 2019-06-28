@@ -42,6 +42,7 @@ class ctrl extends factory
     private $git_instance = null;
     private $proj_id;
     private $user_id;
+    private $active_branch;
 
     /**
      * ctrl constructor.
@@ -73,6 +74,7 @@ class ctrl extends factory
 
         $this->proj_id = $conf['proj_id'];
         $this->user_id = $conf['user_id'];
+        $this->active_branch = $conf['active_branch'];
 
         if (isset($conf['proj_backup_files'])) {
             $this->copy_files = json_decode($conf['proj_backup_files'],true);
@@ -88,60 +90,29 @@ class ctrl extends factory
      */
     public function deploy(string $branch): array
     {
-        //get current branch
-        $curr = $this->current_branch();
-
-        //Cannot find current branch
-        if (empty($curr)) {
-            return errno::get(1001, 1);
-        }
-
-        //current branch info
-        list($curr_branch, $curr_commit) = $curr;
-
-        //stash copy files
         $this->stash_file();
 
-        //checkout branch
-        $logs = [];
-        if ($curr[0] !== $branch) {
-            $logs = $this->git_checkout($curr_branch,$branch,$curr_branch."切换到".$branch);
-        }
-
-        $logs = array_merge($logs, $this->git_pull($branch,$curr_branch."切换到".$branch."并更新"));
+        $this->git_checkout($this->active_branch,$branch,$this->active_branch."切换到".$branch);
+        $this->git_pull($branch,$this->active_branch."切换到".$branch."并更新");
 
         $this->apply_file();
-
-        //get current branch
         $now = $this->current_branch();
-
-        //Cannot find current branch
-        if (empty($now)) {
+        $now_branch = $now[0]??'';
+        if ($now_branch == $this->active_branch) {
             return errno::get(1001, 1);
         }
 
-        //current branch info
-        list($now_branch, $now_commit) = $now;
-
-        errno::set(1000);
-
-        return [
-            'branch' => $curr_branch . ' => ' . $now_branch,
-            'commit' => $curr_commit . ' => ' . $now_commit,
-            'logs'   => $logs
-        ];
+        return errno::get(1000);
     }
 
     /**
      * @api 更新分支
-     * @param string $branch
      * @return array
      */
     public function pull():array
     {
-        $curr_branch = $this->active_branch_name();
         $this->stash_file();
-        $logs = $this->git_pull($curr_branch,$curr_branch.'更新');
+        $logs = $this->git_pull($this->active_branch,$this->active_branch.'更新');
         $this->apply_file();
         errno::set(1000);
         return $logs;
@@ -208,6 +179,7 @@ class ctrl extends factory
     //所有分支名称
     public function branch():array
     {
+        $this->git_instance->update_remote();
         $output = $this->git_instance->all_branch_name();
         return $output;
     }
@@ -215,8 +187,7 @@ class ctrl extends factory
     //获取当前分支名称
     public function active_branch_name():string
     {
-        $curr = $this->current_branch();
-        return $curr[0]??'';
+        return $this->active_branch;
     }
 
     //获取当前提交

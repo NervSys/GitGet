@@ -50,6 +50,7 @@ function show_list() {
             {data: 'proj_user_name'},
             {data: 'proj_user_email'},
             {data: 'proj_backup_files'},
+            {data: 'active_branch'},
             {data: 'add_time'},
             {data: 'option'},
         ]

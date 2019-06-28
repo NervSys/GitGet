@@ -47,7 +47,7 @@ class show extends model
         $lim_start = ($page-1) * $page_size;
         $list =  $this->select('project_team AS a')
             ->join('project AS b', ['a.proj_id', 'b.proj_id'])
-            ->field('a.proj_id', 'b.proj_name', 'b.proj_desc','b.proj_git_url','b.proj_local_path','b.proj_user_name','b.proj_user_email','b.proj_backup_files', 'b.add_time','b.env_type')
+            ->field('a.proj_id', 'b.proj_name', 'b.proj_desc','b.proj_git_url','b.proj_local_path','b.proj_user_name','b.proj_user_email','b.proj_backup_files', 'b.add_time','b.env_type','b.active_branch')
             ->where([['a.user_id', $this->user_id],['status',1]])
             ->order(['b.add_time' => 'desc'])
             ->limit($lim_start,$page_size)
@@ -99,10 +99,9 @@ class show extends model
     {
         errno::set(3002);
         $conf = $this->conf($proj_id);
-        $ctrl = ctrl::new($conf);
-        $output = $ctrl->branch();
+        $output = ctrl::new($conf)->branch();
         $branch_names = [];
-        $active_branch = $ctrl->active_branch_name();
+        $active_branch = $conf['active_branch'];
         foreach ($output as $value) {
             $branch_name = substr($value,2);
             $branch_name_arr = explode('/',$branch_name);
@@ -143,8 +142,7 @@ class show extends model
     public function pull_logs(int $proj_id,int $page = 1,int $page_size = 10):array
     {
         errno::set(3002);
-        $conf = $this->conf($proj_id);
-        $branch = ctrl::new($conf)->active_branch_name();
+        $branch = $this->active_branch($proj_id);
         $count = $this->select('project_log a')
             ->join('user b',['a.user_id','b.user_id'],'LEFT')
             ->where([['a.proj_id',$proj_id],['a.branch',$branch],['log_type','IN',[ctrl::GIT_CMD_TYPE_PULL,ctrl::GIT_CMD_TYPE_RESET]]])
@@ -178,6 +176,15 @@ class show extends model
         return $res;
     }
 
+    public function active_branch(int $proj_id):string
+    {
+        $proj = $this->select('project')
+            ->field('active_branch')
+            ->where(['proj_id',$proj_id])
+            ->fetch(true);
+        return $proj[0]??'';
+    }
+
     public function conf(int $proj_id) :array
     {
         $project = $this->select('project')
@@ -195,7 +202,8 @@ class show extends model
             'user_email' => $project['proj_user_email'],
             'proj_backup_files' => $project['proj_backup_files'],
             'proj_id' => $proj_id,
-            'user_id' => $this->user_id
+            'user_id' => $this->user_id,
+            'active_branch' => $project['active_branch']
         ];
         return $conf;
     }

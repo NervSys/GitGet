@@ -45,6 +45,7 @@
                             <th style="width:8%;">开发者名称</th>
                             <th style="width:8%;">开发者邮箱</th>
                             <th style="width:8%;">备份文件</th>
+                            <th style="width:8%;">当前分支</th>
                             <th style="width:8%;">添加时间</th>
                             <th>操作</th>
                         </tr>
