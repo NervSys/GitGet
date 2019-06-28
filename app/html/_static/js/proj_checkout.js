@@ -31,6 +31,11 @@ $(function () {
 
 
     $("#form-member-add").submit(function () {
+        if($("select[name='branch']").val()==$("input[name='active_branch']").val()){
+            layer.msg("该项目已经在需要切换的分支上", {icon: 2});
+            return false;
+        }
+        return false;
         if (status == 'true') {
             status = 'false';
             $("input[name='token']").val(token);
