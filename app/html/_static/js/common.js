@@ -9,11 +9,12 @@ function ajax_com(post_data, callback) {
     if(typeof post_data=='object'){
         post_data['token']=token;
     }else{
+        post_data=decodeURIComponent(post_data,true);
         var post_arr=post_data.split('&');
         var post_data={};
         for(var i=0;i<post_arr.length;i++){
             var data=post_arr[i].split('=');
-            post_data[data[0]]=data[1].replace('%2F','/');
+            post_data[data[0]]=data[1];
         }
         post_data['token']=token;
     }
