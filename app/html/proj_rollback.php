@@ -36,7 +36,8 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">回滚到历史版本：</label>
                             <div class="col-sm-10" id="loglist">
-                                <select></select>
+                                <input type="text" class="form-control" onclick="layer_show('选择版本','./proj_loglist.php',900,500)"
+                                       readonly>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>

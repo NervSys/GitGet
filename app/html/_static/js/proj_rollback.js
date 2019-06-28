@@ -7,14 +7,14 @@ $(function () {
             if (data.errno === 0) {
                 var data = data.data;
                 $("input[name='proj_name']").val(proj_name);
-                $("input[name='active_branch']").val(data.active_branch);
+                $("input[name='active_branch']").val(data.branch);
                 $("input[name='proj_id']").val(proj_id);
-                var h='<select name="commit" class="form-control">';
-                $(data.branch_names).each(function (i,v) {
-                    h+='<option value="'+v+'" >'+v+'</option>';
+                /*var h='<select name="commit" class="form-control">';
+                $(data.list).each(function (i,v) {
+                    h+='<option value="7f82c90" >'+v.current_commit_id+'-'+v.current_commit_data+'</option>';
                 })
                 h+='</select>';
-                $('#loglist').html(h);
+                $('#loglist').html(h);*/
             } else {
                 layer.msg(data.message, {icon: 2});
                 setTimeout(function () {

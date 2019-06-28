@@ -61,10 +61,11 @@ class show extends model
                 $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" class="ml-5" onClick="proj_edit(\'编辑\', \'./proj_checkout.php?proj_id=' . $item['proj_id'] . '&proj_name=' . $proj_name.'\', 1300)" href="javascript:;" title="切换">切换</a>';
             }
             $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" class="ml-5" onClick="proj_update('.$proj_id.')" href="javascript:;" title="更新">更新</a>';
-            $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" class="ml-5" onClick="proj_edit(\'回滚\', \'./proj_rollback.php?proj_id=' . $item['proj_id'] . '&proj_name=' . $proj_name.'\', 1300)" href="javascript:;" title="回滚">回滚</a>';
+            $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" class="ml-5" onClick="layer_show(\'回滚\', \'./proj_loglist.php?proj_id=' . $item['proj_id'] . '&proj_name=' . $proj_name.'\', 1000,600)" href="javascript:;" title="回滚">回滚</a>';
             $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" class="ml-5" onClick="proj_edit(\'项目人员\', \'./proj_user.php?proj_id=' . $item['proj_id'] . '&proj_name=' . $proj_name.'\', 1300)" href="javascript:;" title="项目人员">项目人员</a>';
             $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:;" class="suoding mar-R" style="color:red;" onclick="project_del(this, ' . $item['proj_id'] . ')" href="javascript:;" title="删除">删除</a>';
             $item['option'] = $operate;
+
         }
         return [
             'cnt_data' => $cnt_data,
@@ -173,6 +174,7 @@ class show extends model
                 $re['before_commit_id'] = $proj_log['before_commit_id'];
                 $re['current_commit_id'] = $proj_log['after_commit_id'];
                 $re['current_commit_data'] = $proj_log['current_commit_data'];
+                $re['radio_html']='<input type="radio" name="commit" value="'.$proj_log['after_commit_id'].'" />';
             }
         }
         $res = [
