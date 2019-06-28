@@ -22,11 +22,8 @@ class ctrl extends factory
     const GIT_CMD_TYPE_RESET = 3;
 
     public $git_log_stack = [
-        'before_commit_id'=>'',
         'after_commit_id'=>'',
         'current_commit_data'=>'',
-        'log_json' => '',
-        'log_desc'=>''
     ];
 
     const TEMP_PATH = __DIR__ . DIRECTORY_SEPARATOR . 'temp';
@@ -86,76 +83,67 @@ class ctrl extends factory
     /**
      * @api 部署为某分支
      * @param string $branch
-     * @return array
+     * @return bool
      */
-    public function deploy(string $branch): array
+    public function deploy(string $branch): bool
     {
         $this->stash_file();
 
-        $this->git_checkout($this->active_branch,$branch,$this->active_branch."切换到".$branch);
-        $this->git_pull($branch,$this->active_branch."切换到".$branch."并更新");
+        $res = $this->git_checkout($branch);
+        $this->git_pull();
 
         $this->apply_file();
-        $now = $this->current_branch();
-        $now_branch = $now[0]??'';
-        if ($now_branch == $this->active_branch) {
-            return errno::get(1001, 1);
+        if ($res) {
+            return true;
         }
-
-        return errno::get(1000);
+        return false;
     }
 
     /**
      * @api 更新分支
-     * @return array
+     * @return bool
      */
-    public function pull():array
+    public function pull():bool
     {
         $this->stash_file();
-        $logs = $this->git_pull($this->active_branch,$this->active_branch.'更新');
+        $res = $this->git_pull();
         $this->apply_file();
-        errno::set(1000);
-        return $logs;
+        if ($res) {
+            return true;
+        }
+        return false;
     }
 
-    public function reset(string $commit):array
+
+    /**
+     * @api 回滚
+     * @param string $commit
+     * @return bool
+     */
+    public function reset(string $commit):bool
     {
         $this->stash_file();
         $before_commit_id = $this->git_instance->current_commit();
-        $log = $this->git_instance->reset($commit);
-        if ($before_commit_id != $commit){
-            $this->git_log_stack['before_commit_id'] = $before_commit_id;
-            $this->git_log_stack['after_commit_id'] = $commit;
-            $curr_branch = $this->current_branch();
-            list($curr_branch_name,$curr_branch_data) = $curr_branch;
-            $this->git_log_stack['current_commit_data'] = trim($curr_branch_data);
-            $this->git_log_stack['log_json'] = json_encode($log);
-            $this->git_log_stack['log_desc'] = $curr_branch_name."节点重置";
-            proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_RESET,$curr_branch_name);
-        }
+        $this->git_instance->reset($commit);
         $this->apply_file();
-        errno::set(1000);
-        return $log;
+        if ($before_commit_id != $commit){
+            $this->git_log_stack['after_commit_id'] = $commit;
+            $this->git_log_stack['current_commit_data'] = trim($this->active_branch_commit());
+            proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_RESET,$this->active_branch);
+            return true;
+        }
+        return false;
     }
 
     /**
-     * @api 分支状态
+     * @api 所有分支名称
      * @return array
      */
-    public function get_status(): array
+    public function branch():array
     {
-        $curr = $this->current_branch();
-        $logs = $this->git_instance->status();
-
-        list($curr_branch, $curr_commit) = $curr;
-
-        errno::set(1000);
-
-        return [
-            'branch' => $curr_branch,
-            'commit' => $curr_commit,
-            'logs'   => $logs
-        ];
+        $this->git_instance->update_remote();
+        $output = $this->git_instance->all_branch_name();
+        return $output;
     }
 
     //当前分支信息
@@ -176,19 +164,7 @@ class ctrl extends factory
         return $result;
     }
 
-    //所有分支名称
-    public function branch():array
-    {
-        $this->git_instance->update_remote();
-        $output = $this->git_instance->all_branch_name();
-        return $output;
-    }
 
-    //获取当前分支名称
-    public function active_branch_name():string
-    {
-        return $this->active_branch;
-    }
 
     //获取当前提交
     public function active_branch_commit():string
@@ -198,37 +174,35 @@ class ctrl extends factory
     }
 
     //切换分支
-    private function git_checkout(string $curr_branch, string $branch,string $desc):array
+    private function git_checkout(string $branch):bool
     {
-        $before_commit_id = $this->git_instance->current_commit();
-        $log = $this->git_instance->checkout($branch);
-        $after_commit_id = $this->git_instance->current_commit();
-        if ($before_commit_id != $after_commit_id){
-            $this->git_log_stack['before_commit_id'] = $before_commit_id;
+        $this->git_instance->checkout($branch);
+        $now = $this->current_branch();
+        $now_branch = $now[0] ?? '';
+        $now_commit = $now[1] ?? '';
+        if ($this->active_branch != $now_branch){
+            $after_commit_id = $this->git_instance->current_commit();
             $this->git_log_stack['after_commit_id'] = $after_commit_id;
-            $this->git_log_stack['current_commit_data'] = trim($this->active_branch_commit());
-            $this->git_log_stack['log_json'] = json_encode($log);
-            $this->git_log_stack['log_desc'] = $desc;
-            proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_CHECKOUT,$curr_branch);
+            $this->git_log_stack['current_commit_data'] = trim($now_commit);
+            proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_CHECKOUT,$this->active_branch);
+            return true;
         }
-        return $log;
+        return false;
     }
 
     //更新分支
-    private function git_pull(string $branch,string $desc):array
+    private function git_pull():bool
     {
         $before_commit_id = $this->git_instance->current_commit();
-        $log = $this->git_instance->pull($branch);
+        $this->git_instance->pull($this->active_branch);
         $after_commit_id = $this->git_instance->current_commit();
         if ($before_commit_id != $after_commit_id){
-            $this->git_log_stack['before_commit_id'] = $before_commit_id;
             $this->git_log_stack['after_commit_id'] = $after_commit_id;
             $this->git_log_stack['current_commit_data'] = trim($this->active_branch_commit());
-            $this->git_log_stack['log_json'] = json_encode($log);
-            $this->git_log_stack['log_desc'] = $desc;
-            proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_PULL,$branch);
+            proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_PULL,$this->active_branch);
+            return true;
         }
-        return $log;
+        return false;
     }
 
     //保存备份文件

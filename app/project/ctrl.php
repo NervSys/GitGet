@@ -101,7 +101,6 @@ class ctrl extends model
                     'user_email' => $proj_user_email,
                 ];
                 git_ctrl::new($conf);
-                $this->add_log($proj_id,$this->user_id,'添加项目');
             }else{
                 $time = time();
                 $this->update('project')
@@ -115,7 +114,6 @@ class ctrl extends model
                     ])
                     ->where(['proj_id',$proj_id])
                     ->execute();
-                $this->add_log($proj_id,$this->user_id,'修改项目');
             }
 
             $this->commit();
@@ -139,13 +137,14 @@ class ctrl extends model
     {
         $conf = show::new()->conf($proj_id);
         $res = git_ctrl::new($conf)->deploy($branch);
-        if ($res['errno'] == 0){
+        if ($res){
             $this->update('project')
                 ->value(['active_branch'=>$branch])
                 ->where(['proj_id',$proj_id])
                 ->execute();
+            return errno::get(3002);
         }
-        return $res;
+        return errno::get(3003);
     }
 
     /**
@@ -174,26 +173,32 @@ class ctrl extends model
     /**
      * @api 更新分支
      * @param int $proj_id
-     * @param string $branch
      * @return array
      */
     public function pull(int $proj_id):array
     {
         $conf = show::new()->conf($proj_id);
-        return git_ctrl::new($conf)->pull();
+        $res = git_ctrl::new($conf)->pull();
+        if ($res){
+            return errno::get(3002);
+        }
+        return errno::get(3003,1);
     }
 
     /**
      * @api 重置某项目的某分支到某节点
      * @param int $proj_id
-     * @param string $branch
      * @param string $commit
      * @return array
      */
     public function reset(int $proj_id,string $commit):array
     {
         $conf = show::new()->conf($proj_id);
-        return git_ctrl::new($conf)->reset($commit);
+        $res = git_ctrl::new($conf)->reset($commit);
+        if ($res){
+            return errno::get(3002);
+        }
+        return errno::get(3003,1);
     }
 
     /**

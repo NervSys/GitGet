@@ -110,7 +110,7 @@ class show extends model
             }
         }
         return [
-            'branch_names'=>$branch_names,
+            'branch_names' => $branch_names,
             'active_branch' => $active_branch
         ];
     }
@@ -158,9 +158,6 @@ class show extends model
                 $re['add_time'] = date('Y-m-d H:i:s',$re['add_time']);
                 $proj_log = json_decode($re['proj_log'],true);
                 unset($re['proj_log']);
-                $re['log_desc'] = $proj_log['log_desc'];
-                $re['log_json'] = json_decode($proj_log['log_json'],true);
-                $re['before_commit_id'] = $proj_log['before_commit_id'];
                 $re['current_commit_id'] = $proj_log['after_commit_id'];
                 $re['current_commit_data'] = $proj_log['current_commit_data'];
                 $re['radio_html']='<input type="radio" name="commit" value="'.$proj_log['after_commit_id'].'" />';
