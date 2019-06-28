@@ -186,7 +186,7 @@ class ctrl extends model
         if ($res){
             return errno::get(3002);
         }
-        return errno::get(3003,1);
+        return errno::get(3007,1);
     }
 
     /**
