@@ -88,7 +88,8 @@ class ctrl extends factory
     public function deploy(string $branch): bool
     {
         $this->stash_file();
-
+        $this->git_instance->clean();
+        $this->git_instance->checkout('.');
         $res = $this->git_checkout($branch);
         $this->git_pull();
 
