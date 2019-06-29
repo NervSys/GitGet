@@ -18,7 +18,7 @@
 
 ### 环境配置
 
-1、下载最新的NervSys（地址：[https://github.com/NervSys/NervSys.git]），将core、ext、logs几个核心目录移至项目的根目录
+1、下载最新的NervSys（地址：<https://github.com/NervSys/NervSys.git>），将core、ext、logs几个核心目录移至项目的根目录
 
 2、nginx配置地址要直接到api.php文件所在目录;
 
@@ -30,9 +30,9 @@
 
 1、新建数据库，运行db/pending/*.sql文件初始化数据表
 
-2、访问 [http://域名/api.php/user/ctrl-init]，初始化后台用户
+2、访问 <http://域名/api.php/user/ctrl-init>，初始化后台用户
 
-3、访问页面，[http://域名/html]，通过admin:admin登录
+3、访问页面，<http://域名/html>，通过admin:admin登录
 
 4、添加项目：
    * 备份文件地址：如conf/mysql.ini，添加后，无论什么操作不会改变配置文件
