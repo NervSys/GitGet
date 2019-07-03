@@ -18,13 +18,15 @@
 
 ### 环境配置
 
-1、下载最新的NervSys（地址：<https://github.com/NervSys/NervSys.git>），将core、ext、logs几个核心目录移至项目的根目录
+1、clone时带子模块，git clone --recursive https://github.com/NervSys/GitGet.git
 
-2、nginx配置地址要直接到api.php文件所在目录;
+2、nginx配置地址要直接到html/api.php文件所在目录;
 
 3、要给nginx的用户操作该项目的权限;
 
 4、修改conf/mysql.ini文件
+
+5、修改NervSys/core/system.ini的[INIT]模块下添加 Start = start
 
 ### 用法介绍
 
@@ -32,7 +34,7 @@
 
 2、访问 <http://域名/api.php/user/ctrl-init>，初始化后台用户
 
-3、访问页面，<http://域名/html>，通过admin:admin登录
+3、访问页面，<http://域名/index.php>，通过admin:admin登录
 
 4、添加项目：
    * 备份文件地址：如conf/mysql.ini，添加后，无论什么操作不会改变配置文件
