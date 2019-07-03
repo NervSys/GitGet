@@ -1,0 +1,3 @@
+[submodule "NervSys"]
+	path = NervSys
+	url = https://github.com/NervSys/NervSys.git

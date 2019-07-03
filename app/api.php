@@ -21,8 +21,14 @@
 //Declare strict types
 declare(strict_types = 1);
 
+//Define root path
+define('ROOT', __DIR__ . '/../');
+
+//Define entry path
+define('ENTRY_SCRIPT', __FILE__);
+
 //Load system script
-require __DIR__ . '/../core/system.php';
+require __DIR__ . '/../NervSys/core/system.php';
 
 //Boot system
 \core\system::boot();
