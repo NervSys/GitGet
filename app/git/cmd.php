@@ -114,11 +114,11 @@ class cmd extends factory
     /**
      * @return string
      */
-    public function current_commit() :string
+    public function current_commit(): string
     {
         exec($this->build_cmd($this->git_cmd['current_commit']), $output);
 
-        return $output[0]??'';
+        return $output[0] ?? '';
     }
 
     /**
@@ -164,7 +164,7 @@ class cmd extends factory
     /**
      * @return array
      */
-    public function all_branch_name():array
+    public function all_branch_name(): array
     {
         exec($this->build_cmd($this->git_cmd['all_branch_name']), $output);
 
@@ -174,7 +174,7 @@ class cmd extends factory
     /**
      * @return array
      */
-    public function update_remote():array
+    public function update_remote(): array
     {
         exec($this->build_cmd($this->git_cmd['update_remote']), $output);
         return $output;

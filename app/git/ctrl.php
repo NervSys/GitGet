@@ -17,13 +17,13 @@ class ctrl extends factory
 {
     const PROJ_CONF_KEY = ['git_url', 'local_path', 'user_name', 'user_email'];
 
-    const GIT_CMD_TYPE_PULL = 1;
+    const GIT_CMD_TYPE_PULL     = 1;
     const GIT_CMD_TYPE_CHECKOUT = 2;
-    const GIT_CMD_TYPE_RESET = 3;
+    const GIT_CMD_TYPE_RESET    = 3;
 
     public $git_log_stack = [
-        'after_commit_id'=>'',
-        'current_commit_data'=>'',
+        'after_commit_id'     => '',
+        'current_commit_data' => '',
     ];
 
     const TEMP_PATH = __DIR__ . DIRECTORY_SEPARATOR . 'temp';
@@ -69,21 +69,22 @@ class ctrl extends factory
         $this->user_name  = &$conf['user_name'];
         $this->user_email = &$conf['user_email'];
 
-        $this->proj_id = $conf['proj_id'];
-        $this->user_id = $conf['user_id'];
+        $this->proj_id       = $conf['proj_id'];
+        $this->user_id       = $conf['user_id'];
         $this->active_branch = $conf['active_branch'];
 
         if (isset($conf['proj_backup_files'])) {
-            $this->copy_files = json_decode($conf['proj_backup_files'],true);
+            $this->copy_files = json_decode($conf['proj_backup_files'], true);
         }
 
         unset($conf);
     }
 
     /**
-     * @api 部署为某分支
      * @param string $branch
+     *
      * @return bool
+     * @api 部署为某分支
      */
     public function deploy(string $branch): bool
     {
@@ -101,10 +102,10 @@ class ctrl extends factory
     }
 
     /**
-     * @api 更新分支
      * @return bool
+     * @api 更新分支
      */
-    public function pull():bool
+    public function pull(): bool
     {
         $this->stash_file();
         $res = $this->git_pull();
@@ -117,30 +118,31 @@ class ctrl extends factory
 
 
     /**
-     * @api 回滚
      * @param string $commit
+     *
      * @return bool
+     * @api 回滚
      */
-    public function reset(string $commit):bool
+    public function reset(string $commit): bool
     {
         $this->stash_file();
         $before_commit_id = $this->git_instance->current_commit();
         $this->git_instance->reset($commit);
         $this->apply_file();
-        if ($before_commit_id != $commit){
-            $this->git_log_stack['after_commit_id'] = $commit;
+        if ($before_commit_id != $commit) {
+            $this->git_log_stack['after_commit_id']     = $commit;
             $this->git_log_stack['current_commit_data'] = trim($this->active_branch_commit());
-            proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_RESET,$this->active_branch);
+            proj_ctrl::new()->add_log($this->proj_id, $this->user_id, $this->git_log_stack, self::GIT_CMD_TYPE_RESET, $this->active_branch);
             return true;
         }
         return false;
     }
 
     /**
-     * @api 所有分支名称
      * @return array
+     * @api 所有分支名称
      */
-    public function branch():array
+    public function branch(): array
     {
         $this->git_instance->update_remote();
         $output = $this->git_instance->all_branch_name();
@@ -166,31 +168,31 @@ class ctrl extends factory
     }
 
     //当前分支名称
-    public function active_branch_name():string
+    public function active_branch_name(): string
     {
         $curr = $this->current_branch();
-        return $curr[0]??'';
+        return $curr[0] ?? '';
     }
 
     //获取当前提交
-    public function active_branch_commit():string
+    public function active_branch_commit(): string
     {
         $curr = $this->current_branch();
-        return $curr[1]??'';
+        return $curr[1] ?? '';
     }
 
     //切换分支
-    private function git_checkout(string $branch):bool
+    private function git_checkout(string $branch): bool
     {
         $this->git_instance->checkout($branch);
-        $now = $this->current_branch();
+        $now        = $this->current_branch();
         $now_branch = $now[0] ?? '';
         $now_commit = $now[1] ?? '';
-        if ($this->active_branch != $now_branch){
-            $after_commit_id = $this->git_instance->current_commit();
-            $this->git_log_stack['after_commit_id'] = $after_commit_id;
+        if ($this->active_branch != $now_branch) {
+            $after_commit_id                            = $this->git_instance->current_commit();
+            $this->git_log_stack['after_commit_id']     = $after_commit_id;
             $this->git_log_stack['current_commit_data'] = trim($now_commit);
-            proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_CHECKOUT,$this->active_branch);
+            proj_ctrl::new()->add_log($this->proj_id, $this->user_id, $this->git_log_stack, self::GIT_CMD_TYPE_CHECKOUT, $this->active_branch);
             $this->active_branch = $now_branch;
             return true;
         }
@@ -198,15 +200,15 @@ class ctrl extends factory
     }
 
     //更新分支
-    private function git_pull():bool
+    private function git_pull(): bool
     {
         $before_commit_id = $this->git_instance->current_commit();
         $this->git_instance->pull($this->active_branch);
         $after_commit_id = $this->git_instance->current_commit();
-        if ($before_commit_id != $after_commit_id){
-            $this->git_log_stack['after_commit_id'] = $after_commit_id;
+        if ($before_commit_id != $after_commit_id) {
+            $this->git_log_stack['after_commit_id']     = $after_commit_id;
             $this->git_log_stack['current_commit_data'] = trim($this->active_branch_commit());
-            proj_ctrl::new()->add_log($this->proj_id,$this->user_id,$this->git_log_stack,self::GIT_CMD_TYPE_PULL,$this->active_branch);
+            proj_ctrl::new()->add_log($this->proj_id, $this->user_id, $this->git_log_stack, self::GIT_CMD_TYPE_PULL, $this->active_branch);
             return true;
         }
         return false;
@@ -215,7 +217,7 @@ class ctrl extends factory
     //保存备份文件
     private function stash_file(): void
     {
-        if (empty($this->copy_files)){
+        if (empty($this->copy_files)) {
             return;
         }
         foreach ($this->copy_files as $item) {

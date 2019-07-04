@@ -20,6 +20,8 @@ class model extends pdo_mysql
      */
     public function __construct()
     {
+        conf::load('/', 'mysql');
+        conf::set('openssl', ['conf' => ROOT . 'conf' . DIRECTORY_SEPARATOR . 'openssl.conf']);
         $this->instance = $this->config(conf::get('mysql'))->connect()->get_pdo();
     }
 
@@ -43,5 +45,5 @@ class model extends pdo_mysql
         return $data['user_id'] ?? 0;
     }
 
-   
+
 }
