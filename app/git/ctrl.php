@@ -108,6 +108,8 @@ class ctrl extends factory
     public function pull(): bool
     {
         $this->stash_file();
+        $this->git_instance->clean();
+        $this->git_instance->checkout('.');
         $res = $this->git_pull();
         $this->apply_file();
         if ($res) {
@@ -126,6 +128,8 @@ class ctrl extends factory
     public function reset(string $commit): bool
     {
         $this->stash_file();
+        $this->git_instance->clean();
+        $this->git_instance->checkout('.');
         $before_commit_id = $this->git_instance->current_commit();
         $this->git_instance->reset($commit);
         $this->apply_file();
