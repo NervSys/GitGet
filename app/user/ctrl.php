@@ -37,7 +37,7 @@ class ctrl extends model
      */
     public function init(): array
     {
-        $users = $this->select('user')->field('user_id')->fetch(true);
+        $users = $this->select('user')->field('user_id')->fetch(\PDO::FETCH_COLUMN);
 
         if (!empty($users)) {
             return errno::get(2001, 1);
@@ -185,7 +185,7 @@ class ctrl extends model
                     ->join('project AS b', ['a.proj_id', 'b.proj_id'])
                     ->where(['a.user_id', $user['user_id']])
                     ->field('group_concat(b.proj_name)')
-                    ->fetch(true)[0] ?? '';
+                    ->fetch(\PDO::FETCH_COLUMN)[0] ?? '';
             $user['add_time'] = date('Y-m-d H:i:s', $user['add_time']);
             $option           = '<a style="text-decoration:none" class="ml-5" onClick="member_edit(\'编辑\', \'./user_edit.php?uid=' . $user['user_id'] . '\', 1300)" href="javascript:;" title="编辑">编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:;" class="suoding mar-R" style="color:red;" onclick="user_del(this, ' . $user['user_id'] . ')" href="javascript:;" title="删除">删除</a>';
             if ($user['user_id'] != 1) {
@@ -221,7 +221,7 @@ class ctrl extends model
             ->fetch();
         $cnt_user  = $this->select('user')
             ->field('count(*)')
-            ->fetch(true)[0];
+            ->fetch(\PDO::FETCH_COLUMN)[0];
         $cnt_page  = ceil($cnt_user / $page_size);
         return compact('user_list', 'cnt_user', 'cnt_page');
     }

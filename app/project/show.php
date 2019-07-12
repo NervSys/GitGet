@@ -43,7 +43,7 @@ class show extends model
     public function list(int $page = 1, int $page_size = 10): array
     {
         errno::set(3002);
-        $cnt_data  = $this->select('project_team')->where(['user_id', $this->user_id])->field('count(*)')->fetch(true)[0];
+        $cnt_data  = $this->select('project_team')->where(['user_id', $this->user_id])->field('count(*)')->fetch(\PDO::FETCH_COLUMN)[0];
         $cnt_page  = ceil($cnt_data / $page_size);
         $lim_start = ($page - 1) * $page_size;
         $list      = $this->select('project_team AS a')
@@ -132,7 +132,7 @@ class show extends model
         $selected_user_ids = $this->select('project_team')
             ->field('user_id')
             ->where(['proj_id', $proj_id])
-            ->fetch(true);
+            ->fetch(\PDO::FETCH_COLUMN);
         foreach ($user_list as &$user) {
             $user['selected'] = false;
             if (in_array($user['user_id'], $selected_user_ids)) {
@@ -149,7 +149,7 @@ class show extends model
         $count  = $this->select('project_log a')
             ->join('user b', ['a.user_id', 'b.user_id'], 'LEFT')
             ->where([['a.proj_id', $proj_id], ['a.branch', $branch], ['log_type', 'IN', [ctrl::GIT_CMD_TYPE_PULL, ctrl::GIT_CMD_TYPE_RESET]]])
-            ->field('count(*) as cnt')->fetch(true);
+            ->field('count(*) as cnt')->fetch(\PDO::FETCH_COLUMN);
         $count  = $count[0] ?? 0;
         $list   = $this->select('project_log a')
             ->join('user b', ['a.user_id', 'b.user_id'], 'LEFT')
@@ -181,7 +181,7 @@ class show extends model
         $proj = $this->select('project')
             ->field('active_branch')
             ->where(['proj_id', $proj_id])
-            ->fetch(true);
+            ->fetch(\PDO::FETCH_COLUMN);
         return $proj[0] ?? '';
     }
 

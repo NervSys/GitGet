@@ -64,7 +64,7 @@ class ctrl extends model
             $proj_local_paths = $this->select('project')
                 ->field('proj_local_path')
                 ->where(['status', 1])
-                ->fetch(true);
+                ->fetch(\PDO::FETCH_COLUMN);
             if (in_array($proj_local_path, $proj_local_paths)) {
                 return errno::get(3005, 1);
             }
