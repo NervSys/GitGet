@@ -9,15 +9,17 @@
 
 namespace app\user;
 
+use core\system;
 use ext\conf;
 use ext\crypt;
 use ext\errno;
 use ext\misc;
 use app\library\model;
+use app\library\rpc;
 
 class ctrl extends model
 {
-    public $tz = 'init,login,user_menu,login_info,user_list,user_detail,user_edit,delete_user';
+    public $tz = 'init,login,user_menu,login_info,user_list,user_detail,user_edit,delete_user,test1,test2';
 
     private $unit_crypt = null;
 
@@ -293,6 +295,27 @@ class ctrl extends model
         }
         $this->commit();
         return errno::get(2007, 0);
+    }
+
+    public function test1()
+    {
+        $url='http://la.iscore.top/api.php';
+        $cmd='user/ctrl-test2';
+        $send_data=[
+            'cmd'=>$cmd
+        ];
+        $res=rpc::new()->send($url,'123',$send_data);
+        errno::set(2006);
+        return $res;
+    }
+
+    public function test2(){
+        $token=$_SERVER['HTTP_S_TOKEN'];
+        $res=rpc::new()->checkToken($token);
+        if(!$res){
+            return errno::get(2011, 1);
+        }
+        return $res;
     }
 
 
