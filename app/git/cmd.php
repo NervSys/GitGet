@@ -17,7 +17,7 @@ class cmd extends factory
      */
     public function __construct(string $git_url, string $local_path)
     {
-        conf::load('app/git', 'git_cmd');
+        conf::load('app/git', 'git');
 
         $this->git_cmd = conf::get('git_cmd');
 

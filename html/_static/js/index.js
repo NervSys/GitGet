@@ -7,7 +7,7 @@ $(function () {
         }
     })
 
-    ajax_com({'cmd': "user/ctrl-user_menu"}, function (result) {
+    ajax_com({'cmd': "user/show-user_menu"}, function (result) {
         if (result.errno === 0) {
             var str = '';
             $.each(result.data, function (k, v) {

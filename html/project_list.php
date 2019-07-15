@@ -39,16 +39,11 @@
                         <thead>
                         <tr>
                             <th style="width:8%;">ID</th>
-                            <th style="width:8%;">项目名称</th>
+                            <th style="width:12%;">项目名称</th>
                             <th style="width:20%;">项目简介</th>
-                            <th style="width:8%;">git地址</th>
-                            <th style="width:8%;">本地路径</th>
-                            <th style="width:8%;">开发者名称</th>
-                            <th style="width:8%;">开发者邮箱</th>
-                            <th style="width:8%;">备份文件</th>
-                            <th style="width:8%;">当前分支</th>
-                            <th style="width:8%;">添加时间</th>
-                            <th>操作</th>
+                            <th style="width:20%;">git地址</th>
+                            <th style="width:20%;">添加时间</th>
+                            <th style="width:20%;">操作</th>
                         </tr>
                         </thead>
                         <tbody>

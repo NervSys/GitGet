@@ -48,12 +48,7 @@ function show_list() {
             {data: 'proj_name'},
             {data: 'proj_desc'},
             {data: 'proj_git_url'},
-            {data: 'proj_local_path'},
-            {data: 'proj_user_name'},
-            {data: 'proj_user_email'},
-            {data: 'proj_backup_files'},
-            {data: 'active_branch'},
-            {data: 'add_time'},
+            {data: 'create_time'},
             {data: 'option'},
         ]
     }).api();

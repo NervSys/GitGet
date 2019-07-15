@@ -9,11 +9,14 @@
 
 namespace app\project;
 
+use app\enum\operate;
+use app\model\auth;
+use app\model\user;
+use core\helper\log;
 use ext\errno;
-use app\library\model;
 use app\git\ctrl;
 
-class show extends model
+class show
 {
     public $tz = 'list,info,branch,team_list,pull_logs';
 
@@ -24,49 +27,53 @@ class show extends model
      */
     public function __construct()
     {
-        parent::__construct();
-
-        errno::load('app', 'proj_ctrl');
-        if (0 === $this->user_id = $this->get_user_id()) {
-            errno::set(3000);
-            parent::stop();
-        }
+        errno::load('app', 'project');
+        $this->user_id = user::new()->get_user_id();
     }
 
     /**
-     * @param int $page
-     * @param int $page_size
+     * @api 项目列表
+     *
+     * @param int    $page
+     * @param int    $page_size
+     * @param string $proj_name
      *
      * @return array
-     * @api 项目列表
+     * @throws \Exception
      */
-    public function list(int $page = 1, int $page_size = 10): array
+    public function list(int $page = 1, int $page_size = 10, string $proj_name = ''): array
     {
+        log::debug('test',['test1']);
         errno::set(3002);
-        $cnt_data  = $this->select('project_team')->where(['user_id', $this->user_id])->field('count(*)')->fetch(\PDO::FETCH_COLUMN)[0];
-        $cnt_page  = ceil($cnt_data / $page_size);
-        $lim_start = ($page - 1) * $page_size;
-        $list      = $this->select('project_team AS a')
-            ->join('project AS b', ['a.proj_id', 'b.proj_id'])
-            ->field('a.proj_id', 'b.proj_name', 'b.proj_desc', 'b.proj_git_url', 'b.proj_local_path', 'b.proj_user_name', 'b.proj_user_email', 'b.proj_backup_files', 'b.add_time', 'b.env_type', 'b.active_branch')
-            ->where([['a.user_id', $this->user_id], ['status', 1]])
-            ->order(['b.add_time' => 'desc'])
-            ->limit($lim_start, $page_size)
-            ->fetch();
-        foreach ($list as &$item) {
-            $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
-            $proj_name        = $item['proj_name'];
-            $proj_id          = $item['proj_id'];
-            $operate          = '<a style="text-decoration:none" class="ml-5" onClick="proj_edit(\'编辑\', \'./project_edit.php?proj_id=' . $item['proj_id'] . '\', 1300)" href="javascript:;" title="编辑">编辑</a>';
-            if ($item['env_type'] == 0) {
-                $operate .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" class="ml-5" onClick="proj_edit(\'编辑\', \'./proj_checkout.php?proj_id=' . $item['proj_id'] . '&proj_name=' . $proj_name . '\', 1300)" href="javascript:;" title="切换">切换</a>';
-            }
-            $operate        .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" class="ml-5" onClick="proj_update(' . $proj_id . ')" href="javascript:;" title="更新">更新</a>';
-            $operate        .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" class="ml-5" onClick="layer_show(\'回滚\', \'./proj_loglist.php?proj_id=' . $item['proj_id'] . '&proj_name=' . $proj_name . '\', 1000,600)" href="javascript:;" title="回滚">回滚</a>';
-            $operate        .= '&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none" class="ml-5" onClick="proj_edit(\'项目人员\', \'./proj_user.php?proj_id=' . $item['proj_id'] . '&proj_name=' . $proj_name . '\', 1300)" href="javascript:;" title="项目人员">项目人员</a>';
-            $operate        .= '&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:;" class="suoding mar-R" style="color:red;" onclick="project_del(this, ' . $item['proj_id'] . ')" href="javascript:;" title="删除">删除</a>';
-            $item['option'] = $operate;
+        $where   = [
+            ['operate_id', operate::OPERATE_GET]
+        ];
+        $user_id = $this->user_id;
+        if ($user_id) {
+            $where[] = ['user_id', $user_id];
+        }
+        if ($proj_name){
+            $where[] = ['b.proj_name',$proj_name];
+        }
+        $cnt_data = auth::new()
+            ->alias('a')
+            ->join('project as b', ['a.proj_id', 'b.proj_id'], 'LEFT')
+            ->where($where)
+            ->count();
 
+        $list = auth::new()
+            ->alias('a')
+            ->join('project as b', ['a.proj_id', 'b.proj_id'], 'LEFT')
+            ->where($where)
+            ->limit(($page - 1) * 10, $page_size)
+            ->field('b.proj_id', 'b.proj_name', 'b.proj_desc', 'b.proj_git_url', 'b.create_time')
+            ->get();
+
+        $cnt_page = ceil($cnt_data / $page_size);
+        foreach ($list as &$item) {
+            $operate[]      = $this->get_operate($item['proj_id'], operate::OPERATE_GET);
+            $operate[]      = $this->get_operate($item['proj_id'], operate::OPERATE_DEPLOY);
+            $item['option'] = implode('&nbsp;&nbsp;&nbsp;&nbsp;', $operate);
         }
         return [
             'cnt_data'  => $cnt_data,
@@ -206,5 +213,21 @@ class show extends model
             'active_branch'     => $project['active_branch']
         ];
         return $conf;
+    }
+
+    //获得用户是否拥有某个权限
+    public function get_operate($proj_id, $operate_id)
+    {
+        $user_id = $this->user_id;
+        $exist   = auth::new()->where([['user_id', $user_id], ['proj_id', $proj_id], ['operate_id', $operate_id]])->exist();
+        if (!$exist) {
+            return '';
+        }
+        switch ($operate_id) {
+            case operate::OPERATE_GET:
+                return '<a style="text-decoration:none" class="ml-5" onClick="proj_edit(\'编辑\', \'./project_edit.php?proj_id=' . $proj_id . '\', 1300)" href="javascript:;" title="编辑">编辑</a>';
+            case operate::OPERATE_DEPLOY:
+                return '<a style="text-decoration:none" class="ml-5" href = "./project_deploy.php?proj_id="' . $proj_id . ' title="部署">部署</a>';
+        }
     }
 }

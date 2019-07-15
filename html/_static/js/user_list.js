@@ -44,7 +44,6 @@ function show_list() {
         "columns": [
             {data: 'user_id'},
             {data: 'user_acc'},
-            {data: 'projects'},
             {data: 'add_time'},
             {data: 'option'},
         ]

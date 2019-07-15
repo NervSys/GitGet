@@ -26,7 +26,7 @@ class ctrl extends model
     {
         parent::__construct();
 
-        errno::load('app', 'proj_ctrl');
+        errno::load('app', 'project');
 
         if (0 === $this->user_id = $this->get_user_id()) {
             errno::set(3000);
