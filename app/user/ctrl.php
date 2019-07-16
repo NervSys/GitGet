@@ -9,14 +9,14 @@
 
 namespace app\user;
 
-use app\model\project;
+use app\model\base_model;
 use app\model\user;
 use ext\conf;
 use ext\crypt;
 use ext\errno;
 use ext\misc;
 
-class ctrl
+class ctrl extends base_model
 {
     public $tz = 'login,user_edit,delete_user';
 
@@ -30,22 +30,23 @@ class ctrl
      */
     public function __construct()
     {
+        parent::__construct();
         errno::load('app', 'user');
         $this->unit_crypt = crypt::new(conf::get('openssl'));
     }
 
     /**
-     * @api 登录
      * @param string $acc
      * @param string $pwd
      *
      * @return array
      * @throws \Exception
+     * @api 登录
      */
     public function login(string $acc, string $pwd): array
     {
-        $check_res = $this->check_root($acc,$pwd);
-        if ($check_res !== false){
+        $check_res = $this->check_root($acc, $pwd);
+        if ($check_res !== false) {
             return $check_res;
         }
         $user_data = user::new()
@@ -68,7 +69,7 @@ class ctrl
         unset($user_data['user_key'], $user_data['user_pwd']);
 
         return [
-            'name'  => $user_data['user_acc'],
+            'name' => $user_data['user_acc'],
             'token' => $this->unit_crypt->sign(json_encode($user_data))
         ];
     }
@@ -77,12 +78,12 @@ class ctrl
     {
         $data = [
             'user_uuid' => misc::uuid($user_acc),
-            'user_acc'  => $user_acc,
-            'add_time'  => time()
+            'user_acc' => $user_acc,
+            'add_time' => time()
         ];
         if ($user_pwd) {
-            $user_key         = $this->unit_crypt->get_key();
-            $u_pwd            = $this->unit_crypt->hash_pwd($user_pwd, $user_key);
+            $user_key = $this->unit_crypt->get_key();
+            $u_pwd = $this->unit_crypt->hash_pwd($user_pwd, $user_key);
             $data['user_pwd'] = $u_pwd;
             $data['user_key'] = $user_key;
         }
@@ -114,21 +115,18 @@ class ctrl
      */
     public function delete_user(int $user_id): array
     {
-        if ($user_id == 1) return errno::get(2009, 1);
-        $this->begin();
-        try {
-            user::new()->where(['user_id', $user_id])->delete();
-        } catch (\PDOException $e) {
-            $this->rollback();
+        $affect_rows = user::new()->del_user($user_id);
+        if ($affect_rows > 0) {
+            return errno::get(2007, 0);
+        } else {
             return errno::get(2008, 1);
         }
-        $this->commit();
-        return errno::get(2007, 0);
+
     }
 
     private function check_root($acc, $pwd)
     {
-        if ($acc != $this->root_acc || $pwd != $this->root_pwd){
+        if ($acc != $this->root_acc || $pwd != $this->root_pwd) {
             return false;
         }
         $user_key = $this->unit_crypt->get_key();
@@ -141,7 +139,7 @@ class ctrl
         ];
         errno::set(2005);
         return [
-            'name'  => $user_data['user_acc'],
+            'name' => $user_data['user_acc'],
             'token' => $this->unit_crypt->sign(json_encode($user_data))
         ];
     }

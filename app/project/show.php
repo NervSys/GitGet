@@ -225,9 +225,9 @@ class show
         }
         switch ($operate_id) {
             case operate::OPERATE_GET:
-                return '<a style="text-decoration:none" class="ml-5" onClick="proj_edit(\'编辑\', \'./project_edit.php?proj_id=' . $proj_id . '\', 1300)" href="javascript:;" title="编辑">编辑</a>';
+                return '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-primary" onClick="proj_edit(\'编辑\', \'./project_edit.php?proj_id=' . $proj_id . '\', 1300)" href="javascript:;" title="编辑">编辑</a>';
             case operate::OPERATE_DEPLOY:
-                return '<a style="text-decoration:none" class="ml-5" href = "./project_deploy.php?proj_id="' . $proj_id . ' title="部署">部署</a>';
+                return '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-success" href = "./project_deploy.php?proj_id="' . $proj_id . ' title="部署">部署</a>';
         }
     }
 }

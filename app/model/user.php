@@ -33,4 +33,9 @@ class user extends base_model
 
         return $data['user_id'] ?? 0;
     }
+
+    public function del_user(int $user_id){
+        $this->where(['user_id',$user_id])->delete()->execute();
+        return $this->last_affect();
+    }
 }
