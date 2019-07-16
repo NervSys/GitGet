@@ -128,7 +128,7 @@ class show
         $cnt_page = ceil($cnt_user / $page_size);
         foreach ($user_list as &$user) {
             $user['add_time'] = date('Y-m-d H:i:s', $user['add_time']);
-            $option           = '<a style="text-decoration:none" class="ml-5" onClick="member_edit(\'编辑\', \'./user_edit.php?uid=' . $user['user_id'] . '\', 1300)" href="javascript:;" title="编辑">编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:;" class="suoding mar-R" style="color:red;" onclick="user_del(this, ' . $user['user_id'] . ')" href="javascript:;" title="删除">删除</a>';
+            $option           = '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-primary" onClick="member_edit(\'编辑\', \'./user_edit.php?uid=' . $user['user_id'] . '\', 1300)" href="javascript:;" title="编辑">编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:;" class="suoding mar-R btn btn-xs btn-danger" onclick="user_del(this, ' . $user['user_id'] . ')" href="javascript:;" title="删除">删除</a>';
             if (user::new()->get_user_id() == 0) {
                 $user['option'] = $option;
             } else {
