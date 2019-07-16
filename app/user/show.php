@@ -50,12 +50,12 @@ class show
                     'menu_name' => '用户管理',
                     'menu_icon' => 'user',
                     'child'     => [
-                        ['menu_id'   => 2,
+                        ['menu_id'   => 11,
                          'parent_id' => 1,
                          'menu_name' => '用户列表',
                          'menu_icon' => 'show',
                          'menu_url'  => 'user_list.php'],
-                        ['menu_id'   => 3,
+                        ['menu_id'   => 12,
                          'parent_id' => 1,
                          'menu_name' => '权限分配',
                          'menu_icon' => '',
@@ -63,35 +63,61 @@ class show
                     ],
                 ],
                 [
-                    'menu_id'   => 3,
+                    'menu_id'   => 2,
                     'parent_id' => 0,
                     'menu_name' => '项目管理',
                     'menu_icon' => 'cubes',
                     'child'     => [
-                        ['menu_id'   => 4,
-                         'parent_id' => 3,
+                        ['menu_id'   => 21,
+                         'parent_id' => 2,
                          'menu_name' => '项目列表',
                          'menu_icon' => '',
                          'menu_url'  => 'project_list.php'],
                     ],
-                ]
+                ],
+                [
+                    'menu_id'   => 3,
+                    'parent_id' => 0,
+                    'menu_name' => '服务器管理',
+                    'menu_icon' => 'server',
+                    'child'     => [
+                        ['menu_id'   => 31,
+                            'parent_id' => 3,
+                            'menu_name' => '服务器列表',
+                            'menu_icon' => '',
+                            'menu_url'  => 'serv_list.php'],
+                    ],
+                ],
             ];
         } else {
             //固定菜单
             $menu = [
                 [
-                    'menu_id'   => 3,
+                    'menu_id'   => 2,
                     'parent_id' => 0,
                     'menu_name' => '项目管理',
                     'menu_icon' => 'cubes',
                     'child'     => [
-                        ['menu_id'   => 4,
-                         'parent_id' => 3,
+                        ['menu_id'   => 21,
+                         'parent_id' => 2,
                          'menu_name' => '项目列表',
                          'menu_icon' => '',
                          'menu_url'  => 'project_list.php'],
                     ],
-                ]
+                ],
+                [
+                    'menu_id'   => 3,
+                    'parent_id' => 0,
+                    'menu_name' => '服务器管理',
+                    'menu_icon' => 'server',
+                    'child'     => [
+                        ['menu_id'   => 31,
+                            'parent_id' => 3,
+                            'menu_name' => '服务器列表',
+                            'menu_icon' => '',
+                            'menu_url'  => 'serv_list.php'],
+                    ],
+                ],
             ];
         }
 
