@@ -66,6 +66,10 @@ function getQueryString(name) {
 }
 
 
+function info_edit(title, url, w, h) {
+    layer_show(title, url, w, h);
+}
+
 /*弹出层*/
 
 /*

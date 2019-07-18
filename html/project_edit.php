@@ -48,6 +48,13 @@
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">选择服务器：</label>
+                            <div class="col-sm-10" id="srvlist">
+
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
                             <div class="col-sm-4 col-sm-offset-2">
                                 <button class="btn btn-primary" type="submit">保存内容</button>
                                 <button class="btn btn-white" type="button" onclick="layer_close()">取消</button>

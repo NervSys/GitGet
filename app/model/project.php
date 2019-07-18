@@ -30,4 +30,15 @@ class project extends base_model
 
         return json_decode(current($conf), true);
     }
+
+    public function addProject(array $data){
+        $this->value($data)->create();
+        return $this->last_insert();
+    }
+
+
+    public function updateProject(array $data,int $proj_id){
+        $this->where(['proj_id',$proj_id])->value($data)->save();
+        return $this->last_affect();
+    }
 }

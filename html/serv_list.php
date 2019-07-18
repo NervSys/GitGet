@@ -35,7 +35,7 @@
                             <th style="width:8%;">服务器名称</th>
                             <th style="width:8%;">服务器IP</th>
                             <th style="width:8%;">服务器端口</th>
-                            <th style="width:8%;">域名</th>
+                            <th style="width:8%;">服务器描述</th>
                             <th>操作</th>
                         </tr>
                         </thead>

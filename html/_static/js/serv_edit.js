@@ -8,7 +8,7 @@ $(function () {
                         $("input[name='srv_id']").val(srv_id);
                         $("input[name='srv_ip']").val(data.srv_ip);
                         $("input[name='srv_port']").val(data.srv_port);
-                        $("input[name='srv_desc']").val(data.srv_desc);
+                        $("textarea[name='srv_desc']").text(data.srv_desc);
                         $("input[name='srv_name']").val(data.srv_name);
                     } else {
                         layer.msg(data.message, {icon: 2});
@@ -30,7 +30,7 @@ $(function () {
             return false;
         }
         if($("input[name='srv_port']").val() == ''){
-            $("input[name='srv_port']").val(0);
+            $("input[name='srv_port']").attr('disabled','disabled');
         }
         if (status == 'true') {
             status = 'false';

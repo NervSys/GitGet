@@ -28,12 +28,16 @@ class server extends base_model
 
     public function updateSrv(array $data, array $where)
     {
-        return $this->where($where)->value($data)->update();
+        return $this->where($where)->value($data)->save();
     }
 
     public function del_serv(int $srv_id){
         $this->where(['srv_id',$srv_id])->delete()->execute();
         return $this->last_affect();
+    }
+
+    public function getServList(){
+        return $this->field('srv_id,srv_ip,srv_name')->get();
     }
 
 }

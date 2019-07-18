@@ -47,15 +47,10 @@ function show_list() {
     }).api();
 }
 
-function member_edit(title, url, w, h) {
-    layer_show(title, url, w, h);
-}
-
-
 /*用户-删除*/
-function user_del(obj, id) {
+function info_del(obj, id) {
     layer.confirm('确认要删除吗？', function (index) {
-            ajax_com({'cmd':'user/ctrl-delete_user','user_id':id},function (data) {
+            ajax_com({'cmd':'server/ctrl-delete_serv','srv_id':id},function (data) {
                 if (data.errno === 0) {
                     $(obj).parents("tr").remove();
                     layer.msg('已删除!',{icon:1,time:1000});

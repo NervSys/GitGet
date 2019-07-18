@@ -34,6 +34,27 @@ $(function () {
                 }, 1000)
             }
         })
+
+        ajax_com({'cmd': 'server/show-sel_list', 'proj_id': proj_id}, function (data) {
+            if (data.errno === 0) {
+                var data = data.data;
+                var h='';
+                $(data).each(function (i,v) {
+                    var s='';
+                    if(v.selected){
+                        s='checked';
+                    }
+                    h+='<input type="checkbox" name="srv_ids[]" value="'+v.srv_id+'" '+s+' style="margin-left:10px;"/>'+v.srv_ip+'（'+v.srv_name+'）';
+                })
+                $('#srvlist').html(h);
+            } else {
+                layer.msg(data.message, {icon: 2});
+                setTimeout(function () {
+                    parent.location.reload();
+                }, 1000)
+            }
+        })
+
     }else{
         var h='<div class="col-sm-12" style="margin-bottom:10px;">\n' +
             '                                <input type="text" class="form-control" name="proj_backup_files[]"\n' +

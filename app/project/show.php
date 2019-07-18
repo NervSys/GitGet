@@ -11,12 +11,13 @@ namespace app\project;
 
 use app\enum\operate;
 use app\model\auth;
+use app\model\base_model;
 use app\model\user;
 use core\helper\log;
 use ext\errno;
 use app\git\ctrl;
 
-class show
+class show extends base_model
 {
     public $tz = 'list,info,branch,team_list,pull_logs';
 
@@ -27,6 +28,7 @@ class show
      */
     public function __construct()
     {
+        parent::__construct();
         errno::load('app', 'project');
         $this->user_id = user::new()->get_user_id();
     }
@@ -45,9 +47,10 @@ class show
     {
         log::debug('test',['test1']);
         errno::set(3002);
-        $where   = [
+        $where=[[1,1]];
+       /* $where   = [
             ['operate_id', operate::OPERATE_GET]
-        ];
+        ];*/
         $user_id = $this->user_id;
         if ($user_id) {
             $where[] = ['user_id', $user_id];
@@ -60,7 +63,6 @@ class show
             ->join('project as b', ['a.proj_id', 'b.proj_id'], 'LEFT')
             ->where($where)
             ->count();
-
         $list = auth::new()
             ->alias('a')
             ->join('project as b', ['a.proj_id', 'b.proj_id'], 'LEFT')
@@ -100,7 +102,6 @@ class show
         if (empty($project)) {
             return [];
         }
-        $project[0]['proj_backup_files'] = json_decode($project[0]['proj_backup_files'], true);
         return $project[0];
     }
 
@@ -219,7 +220,7 @@ class show
     public function get_operate($proj_id, $operate_id)
     {
         $user_id = $this->user_id;
-        $exist   = auth::new()->where([['user_id', $user_id], ['proj_id', $proj_id], ['operate_id', $operate_id]])->exist();
+        $exist   = auth::new()->where([['user_id', $user_id], ['proj_id', $proj_id], ['operate_ids','like', '%'.$operate_id.'%']])->exist();
         if (!$exist) {
             return '';
         }

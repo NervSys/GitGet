@@ -50,9 +50,6 @@ function show_list() {
     }).api();
 }
 
-function member_edit(title, url, w, h) {
-    layer_show(title, url, w, h);
-}
 
 
 /*用户-删除*/

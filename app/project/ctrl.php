@@ -9,11 +9,14 @@
 
 namespace app\project;
 
+use app\model\base_model;
+use app\model\proj_srv;
+use app\model\project;
+use app\model\user;
 use ext\errno;
-use app\library\model;
 use app\git\ctrl as git_ctrl;
 
-class ctrl extends model
+class ctrl extends base_model
 {
     public $tz = 'add,checkout,del,team_edit,reset,pull';
 
@@ -28,7 +31,7 @@ class ctrl extends model
 
         errno::load('app', 'project');
 
-        if (0 === $this->user_id = $this->get_user_id()) {
+        if (0 === $this->user_id = user::new()->get_user_id()) {
             errno::set(3000);
             parent::stop();
         }
@@ -38,28 +41,15 @@ class ctrl extends model
      * @param string $proj_name
      * @param string $proj_desc
      * @param string $proj_git_url
-     * @param string $proj_local_path
-     * @param string $proj_user_name
-     * @param string $proj_user_email
-     * @param array  $proj_backup_files
      * @param int    $proj_id
+     * @param int    $srv_ids
      *
      * @return array
      * @api 新增或编辑项目
      */
-    public function add(
-        string $proj_name,
-        string $proj_desc,
-        string $proj_git_url,
-        string $proj_local_path,
-        string $proj_user_name,
-        string $proj_user_email,
-        int $env_type,
-        array $proj_backup_files = [],
-        int $proj_id = 0
-    ): array
+    public function add(string $proj_name,string $proj_desc,string $proj_git_url,array $srv_ids,int $proj_id = 0): array
     {
-        if ($proj_id == 0) {
+        /*if ($proj_id == 0) {
             //新增时判断
             $proj_local_paths = $this->select('project')
                 ->field('proj_local_path')
@@ -68,65 +58,41 @@ class ctrl extends model
             if (in_array($proj_local_path, $proj_local_paths)) {
                 return errno::get(3005, 1);
             }
-        }
-        $this->begin();
-        try {
+        }*/
             if ($proj_id == 0) {
-                $conf          = [
+                /*$conf          = [
                     'git_url'       => $proj_git_url,
-                    'local_path'    => $proj_local_path,
-                    'user_name'     => $proj_user_name,
-                    'user_email'    => $proj_user_email,
                     'proj_id'       => $proj_id,
                     'user_id'       => $this->user_id,
                     'active_branch' => 'master'
                 ];
-                $active_branch = git_ctrl::new($conf)->active_branch_name();
+                $active_branch = git_ctrl::new($conf)->active_branch_name();*/
                 //新增
                 $time = time();
-                $this->insert('project')
-                    ->value([
-                        'proj_name'         => $proj_name,
-                        'proj_desc'         => $proj_desc,
-                        'proj_git_url'      => $proj_git_url,
-                        'proj_local_path'   => $proj_local_path,
-                        'proj_user_name'    => $proj_user_name,
-                        'proj_user_email'   => $proj_user_email,
-                        'proj_backup_files' => json_encode($proj_backup_files),
-                        'env_type'          => $env_type,
-                        'active_branch'     => $active_branch,
-                        'add_time'          => $time
-                    ])
-                    ->execute();
-                $proj_id = $this->last_insert();
-                $this->insert('project_team')
-                    ->value([
-                        'proj_id'  => $proj_id,
-                        'user_id'  => $this->user_id,
-                        'add_time' => $time
-                    ])
-                    ->execute();
+                $data=[
+                    'proj_name'         => $proj_name,
+                    'proj_desc'         => $proj_desc,
+                    'proj_git_url'      => $proj_git_url,
+                    'add_time'          => $time
+                ];
+                $proj_id=project::new()->addProject($data);
             } else {
-                $time = time();
-                $this->update('project')
-                    ->value([
-                        'proj_name'         => $proj_name,
-                        'proj_desc'         => $proj_desc,
-                        'proj_user_name'    => $proj_user_name,
-                        'proj_user_email'   => $proj_user_email,
-                        'env_type'          => $env_type,
-                        'proj_backup_files' => json_encode($proj_backup_files),
-                    ])
-                    ->where(['proj_id', $proj_id])
-                    ->execute();
+                $data=[
+                    'proj_name'         => $proj_name,
+                    'proj_desc'         => $proj_desc,
+                ];
+               project::new()->updateProject($data);
+               proj_srv::new()->delSrv($proj_id);
             }
 
-            $this->commit();
-        } catch (\PDOException $e) {
-            $this->rollback();
-            $err = $e->getMessage();
-            errno::set(3003, 1);
-            return ['err' => $err];
+        if($srv_ids){
+            foreach($srv_ids as $srv_id){
+                $srvdata=[
+                    'proj_id'=>$proj_id,
+                    'srv_id'=>$srv_id,
+                ];
+                proj_srv::new()->addProjectSrv($srvdata);
+            }
         }
         return errno::get(3002);
     }

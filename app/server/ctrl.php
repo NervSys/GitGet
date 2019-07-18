@@ -15,7 +15,7 @@ use ext\errno;
 
 class ctrl extends base_model
 {
-    public $tz = 'addOrEdit';
+    public $tz = 'addOrEdit,delete_serv';
 
     /**
      * ctrl constructor.
@@ -38,6 +38,7 @@ class ctrl extends base_model
      */
     public function addOrEdit(string $srv_ip, string $srv_name, int $srv_port=80, string $srv_desc='', int $srv_id = 0): array
     {
+
         $data = [
             'srv_ip' => $srv_ip,
             'srv_name' => $srv_name,
@@ -50,7 +51,7 @@ class ctrl extends base_model
                 //新增
                 server::new()->addSrv($data);
             } else {
-                server::new()->updateSrv($data, ['srv_id', $srv_id]);
+                server::new()->updateSrv($data, ['srv_id',$srv_id]);
             }
             $this->commit();
         } catch (\PDOException $e) {
