@@ -70,10 +70,10 @@ class show extends base_model
             ->limit(($page - 1) * 10, $page_size)
             ->field('b.proj_id', 'b.proj_name', 'b.proj_desc', 'b.proj_git_url', 'b.create_time')
             ->get();
-
         $cnt_page = ceil($cnt_data / $page_size);
         foreach ($list as &$item) {
             $operate[]      = $this->get_operate($item['proj_id'], operate::OPERATE_GET);
+            $operate[]      = $this->get_operate($item['proj_id'], operate::OPERATE_SERVER_MANAGER);
             $operate[]      = $this->get_operate($item['proj_id'], operate::OPERATE_DEPLOY);
             $item['option'] = implode('&nbsp;&nbsp;&nbsp;&nbsp;', $operate);
         }
@@ -229,6 +229,8 @@ class show extends base_model
                 return '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-primary" onClick="proj_edit(\'编辑\', \'./project_edit.php?proj_id=' . $proj_id . '\', 1300)" href="javascript:;" title="编辑">编辑</a>';
             case operate::OPERATE_DEPLOY:
                 return '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-success" href = "./project_deploy.php?proj_id="' . $proj_id . ' title="部署">部署</a>';
+            case operate::OPERATE_SERVER_MANAGER:
+                return '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-info" onClick="info_edit(\'服务器管理\', \'./project_serv_list.php?proj_id=' . $proj_id . '\', 1000)" href="javascript:;" title="服务器管理">服务器管理</a>';
         }
     }
 }

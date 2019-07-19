@@ -30,8 +30,7 @@ class user extends base_model
         if ('' === $json_data || !is_array($data = json_decode($json_data, true))) {
             return 0;
         }
-//var_dump($data);die;
-        return $data['user_id'] ?? 0;
+        return $data['user_id'] ?? -1;
     }
 
     public function del_user(int $user_id){

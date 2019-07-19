@@ -9,6 +9,8 @@
 
 namespace app\project;
 
+use app\enum\operate;
+use app\model\auth;
 use app\model\base_model;
 use app\model\proj_srv;
 use app\model\project;
@@ -31,7 +33,7 @@ class ctrl extends base_model
 
         errno::load('app', 'project');
 
-        if (0 === $this->user_id = user::new()->get_user_id()) {
+        if (-1 === $this->user_id = user::new()->get_user_id()) {
             errno::set(3000);
             parent::stop();
         }
@@ -68,20 +70,20 @@ class ctrl extends base_model
                 ];
                 $active_branch = git_ctrl::new($conf)->active_branch_name();*/
                 //新增
-                $time = time();
                 $data=[
                     'proj_name'         => $proj_name,
                     'proj_desc'         => $proj_desc,
                     'proj_git_url'      => $proj_git_url,
-                    'add_time'          => $time
                 ];
                 $proj_id=project::new()->addProject($data);
+                $operate_ids=operate::getAllAuth();
+                auth::new()->addAuth(['user_id'=>0,'proj_id'=>$proj_id,'operate_ids'=>$operate_ids]);
             } else {
                 $data=[
                     'proj_name'         => $proj_name,
                     'proj_desc'         => $proj_desc,
                 ];
-               project::new()->updateProject($data);
+               project::new()->updateProject($data,$proj_id);
                proj_srv::new()->delSrv($proj_id);
             }
 

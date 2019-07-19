@@ -1,12 +1,12 @@
 var status = 'true';
 var token=sessionStorage.getItem('token');
 $(function () {
-    var proj_id = getQueryString('proj_id');
-    if (proj_id != '' && proj_id != null) {
-        ajax_com({'cmd': 'project/show-info', 'proj_id': proj_id}, function (data) {
+    var id = getQueryString('id');
+    if (id != '' && id != null) {
+        ajax_com({'cmd': 'server/show-project_serv_info', 'id': id}, function (data) {
             if (data.errno === 0) {
                 var data = data.data;
-                $("input[name='proj_id']").val(data.proj_id);
+                $("input[name='id']").val(data.id);
                 $("input[name='proj_name']").val(data.proj_name);
                 $("textarea[name='proj_desc']").text(data.proj_desc);
                 $("input[name='proj_git_url']").val(data.proj_git_url);

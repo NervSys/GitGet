@@ -11,4 +11,8 @@ namespace app\model;
 
 class auth extends base_model
 {
+    public function addAuth(array $data)
+    {
+        return $this->value($data)->create();
+    }
 }
