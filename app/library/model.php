@@ -14,7 +14,7 @@ use ext\pdo;
 
 class model extends pdo_mysql
 {
-    public $prefix = 'zhj_';
+    public $prefix = 'git_';
     public $table = '';
 
     public function __construct()

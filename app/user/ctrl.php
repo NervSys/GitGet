@@ -9,31 +9,17 @@
 
 namespace app\user;
 
+use app\enum\error_enum;
+use app\library\base;
+use app\library\base_func;
+use app\library\error_code;
 use app\model\base_model;
 use app\model\user;
-use ext\conf;
-use ext\crypt;
-use ext\errno;
-use ext\misc;
 
-class ctrl extends base_model
+class ctrl extends base
 {
-    public $tz = 'login,user_edit,delete_user';
-
-    private $unit_crypt = null;
-
-    public $root_acc = 'root';
-    public $root_pwd = 'root';
-
-    /**
-     * ctrl constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        errno::load('app', 'user');
-        $this->unit_crypt = crypt::new(conf::get('openssl'));
-    }
+    public $tz          = '*';
+    public $check_token = false;
 
     /**
      * @param string $acc
@@ -45,102 +31,42 @@ class ctrl extends base_model
      */
     public function login(string $acc, string $pwd): array
     {
-        $check_res = $this->check_root($acc, $pwd);
-        if ($check_res !== false) {
-            return $check_res;
+        $cnt = user::new()->count();
+        if ($cnt == 0) {
+            $this->make_user($acc, $pwd);
         }
-        $user_data = user::new()
-            ->field('user_id', 'user_uuid', 'user_acc', 'user_pwd', 'user_key')
-            ->where(['user_uuid', misc::uuid($acc)])
-            ->limit(1)
-            ->get_one();
-
-        if (empty($user_data)) {
-            return errno::get(2003, 1);
+        $user = user::new()->where(['user_acc', $acc])->field('*')->get_one();
+        if (empty($user)) {
+            return $this->response(error_enum::NO_USER);
         }
-
-        $pass_verify = $this->unit_crypt->check_pwd($pwd, $user_data['user_key'], $user_data['user_pwd']);
-        if (!$pass_verify) {
-            return errno::get(2004, 1);
+        if ($user['user_pwd'] != $this->get_pwd($pwd, $user['user_entry'])) {
+            return $this->response(error_enum::PW_ERROR);
         }
-
-        errno::set(2005);
-
-        unset($user_data['user_key'], $user_data['user_pwd']);
-
-        return [
-            'name' => $user_data['user_acc'],
-            'token' => $this->unit_crypt->sign(json_encode($user_data))
-        ];
+        $token = $this->make(['user_id' => $user['user_id'], 'user_acc' => $user['user_acc']]);
+        return $this->succeed(['gg_token' => $token]);
     }
 
-    public function user_edit(int $user_id, string $user_acc, string $user_pwd = '')
+    public function make_user($acc, $pwd)
     {
-        $data = [
-            'user_uuid' => misc::uuid($user_acc),
-            'user_acc' => $user_acc,
-            'add_time' => time()
-        ];
-        if ($user_pwd) {
-            $user_key = $this->unit_crypt->get_key();
-            $u_pwd = $this->unit_crypt->hash_pwd($user_pwd, $user_key);
-            $data['user_pwd'] = $u_pwd;
-            $data['user_key'] = $user_key;
-        }
-        try {
-            if ($user_id) {
-                //更新
-                user::new()
-                    ->value($data)
-                    ->where(['user_id', $user_id])
-                    ->update();
-            } else {
-                //新增
-                user::new()
-                    ->value($data)
-                    ->insert();
-            }
-        } catch (\PDOException $e) {
-            return errno::get(2008, 1);
-        }
-        errno::set(2007);
-        return [];
+        $entry = $this->get_rand_str();
+        $pwd   = $this->get_pwd($pwd, $entry);
+        user::new()->value(['user_acc' => $acc, 'user_pwd' => $pwd, 'user_entry' => $entry])->insert_data();
     }
 
-    /**
-     * @param int $user_id 用户id
-     *
-     * @return array
-     * @api 删除用户
-     */
-    public function delete_user(int $user_id): array
+    public function get_pwd($pwd, $salt)
     {
-        $affect_rows = user::new()->del_user($user_id);
-        if ($affect_rows > 0) {
-            return errno::get(2007, 0);
+        return md5(md5($pwd) . md5($salt));
+    }
+
+    public function get_rand_str($len = 6, $type = 'str')
+    {
+        if ($type == 'str') {
+            $arr = array_merge(range(0, 9), range('a', 'z'), range('A', 'Z'));
         } else {
-            return errno::get(2008, 1);
+            $arr = array_merge(range(0, 9));
         }
-
-    }
-
-    private function check_root($acc, $pwd)
-    {
-        if ($acc != $this->root_acc || $pwd != $this->root_pwd) {
-            return false;
-        }
-        $user_key = $this->unit_crypt->get_key();
-        $user_data = [
-            'user_id' => 0,
-            'user_uuid' => misc::uuid($acc),
-            'user_acc' => $acc,
-            'user_pwd' => $pwd,
-            'user_key' => $user_key
-        ];
-        errno::set(2005);
-        return [
-            'name' => $user_data['user_acc'],
-            'token' => $this->unit_crypt->sign(json_encode($user_data))
-        ];
+        shuffle($arr);
+        $sub_arr = array_slice($arr, 0, $len);
+        return implode('', $sub_arr);
     }
 }

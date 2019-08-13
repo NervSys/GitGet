@@ -9,32 +9,23 @@
 
 namespace app\model;
 
-use ext\conf;
-use ext\crypt;
+use app\library\model;
 
-class user extends base_model
+class user extends model
 {
-    /**
-     * @return int
-     * @throws \Exception
-     */
-    public function get_user_id(): int
+    public function get_user_info(int $user_id)
     {
-        if (!isset(parent::$data['token'])) {
-            return 0;
-        }
-
-        $unit_crypt = crypt::new(conf::get('openssl'));
-
-        $json_data = $unit_crypt->verify(parent::$data['token']);
-        if ('' === $json_data || !is_array($data = json_decode($json_data, true))) {
-            return 0;
-        }
-        return $data['user_id'] ?? -1;
+        return $this->where(['user_id',$user_id])->field('*')->get_one();
     }
 
-    public function del_user(int $user_id){
-        $this->where(['user_id',$user_id])->delete()->execute();
-        return $this->last_affect();
+    public function get_user_key(int $user_id, string $key)
+    {
+        return $this->where(['user_id', $user_id])->field($key)->get_value();
+    }
+
+    public function get_user(int $user_id, array $info_keys)
+    {
+        $fields = implode(',', $info_keys);
+        return $this->field($fields)->where(['user_id', $user_id])->get_one();
     }
 }
