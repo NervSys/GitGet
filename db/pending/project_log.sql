@@ -9,4 +9,4 @@ CREATE TABLE `git_project_log` (
   KEY `add_time` (`add_time`),
   KEY `proj_id` (`proj_id`) USING BTREE,
   KEY `branch_id` (`branch_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='项目日志表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='项目日志表';

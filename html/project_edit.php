@@ -21,7 +21,6 @@
                 <div class="ibox-content">
                     <form method="post" class="form-horizontal" id="form-member-add">
                         <input type="hidden" name="proj_id" value="0">
-                        <input type="hidden" name="token" value="">
                         <input type="hidden" name="cmd" value="project/ctrl-add">
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
@@ -42,22 +41,39 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label"><span style="color:red">*</span>Git 地址：</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="proj_git_url" name="proj_git_url"
+                                <input type="text" class="form-control" id="git_url" name="git_url"
                                        placeholder="请输入Git 地址">
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">选择服务器：</label>
+                            <label class="col-sm-2 control-label"><span style="color:red">*</span>本地地址：</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="local_path" name="local_path"
+                                       placeholder="请输入本地地址">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"><span style="color:red">*</span>选择服务器：</label>
                             <div class="col-sm-10" id="srvlist">
 
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <div class="col-sm-4 col-sm-offset-2">
-                                <button class="btn btn-primary" type="submit">保存内容</button>
-                                <button class="btn btn-white" type="button" onclick="layer_close()">取消</button>
+                            <label class="col-sm-2 control-label"><span style="color:red">*</span>添加保护文件：</label>
+                            <div class="col-sm-10" id="backup">
+                                <div class="col-sm-12" style="margin-bottom:10px;">
+                                    <a onclick="add()" href="javascript:void(0);"
+                                       class="btn btn-success">添加</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2" id="operate">
+                                <button class="btn btn-primary" type="submit">保存</button>
                             </div>
                         </div>
                     </form>

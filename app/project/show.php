@@ -10,79 +10,42 @@
 namespace app\project;
 
 use app\enum\operate;
+use app\library\base;
 use app\model\auth;
-use app\model\base_model;
-use app\model\user;
-use core\helper\log;
+use app\model\branch_list;
+use app\model\project;
+use app\model\project_log;
+use app\model\server;
 use ext\errno;
 use app\git\ctrl;
 
-class show extends base_model
+class show extends base
 {
     public $tz = 'list,info,branch,team_list,pull_logs';
 
-    private $user_id = 0;
-
     /**
-     * ctrl constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        errno::load('app', 'project');
-        $this->user_id = user::new()->get_user_id();
-    }
-
-    /**
-     * @api 项目列表
+     * 项目列表
      *
-     * @param int    $page
-     * @param int    $page_size
-     * @param string $proj_name
+     * @param int $page
+     * @param int $page_size
      *
      * @return array
-     * @throws \Exception
      */
-    public function list(int $page = 1, int $page_size = 10, string $proj_name = ''): array
+    public function list(int $page = 1, int $page_size = 10): array
     {
-        log::debug('test',['test1']);
-        errno::set(3002);
-        $where=[[1,1]];
-       /* $where   = [
-            ['operate_id', operate::OPERATE_GET]
-        ];*/
-        $user_id = $this->user_id;
-        if ($user_id) {
-            $where[] = ['user_id', $user_id];
+        $res = project::new()->field('proj_id', 'proj_name', 'status', 'is_lock')->where([['status', '<>', 2]])->get_page($page, $page_size);
+        foreach ($res['list'] as &$item) {
+            $branch         = branch_list::new()->where([['proj_id', $item['proj_id']], ['active', 1]])->field('branch_id', 'branch_name')->get_one();
+            $item['branch'] = $branch['branch_name'];
+            $item['commit'] = project_log::new()->where([['proj_id', $item['proj_id']], ['branch_id', $branch['branch_id']]])->field('proj_log')->get_value();
+            $btn_type       = $item['is_lock'] ? 'default disabled' : 'primary';
+            $html           = $item['is_lock'] ? '进行中' : '更新';
+            $option         = '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-success" onClick="proj_edit(\'编辑\', \'./project_edit.php?proj_id=' . $item['proj_id'] . '\', 1300)" href="javascript:;" title="编辑">编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;';
+            $option         .= '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-' . $btn_type . '" onClick="proj_update(this,' . $item['proj_id'] . ')">' . $html . '</a>&nbsp;&nbsp;&nbsp;&nbsp;';
+            $option         .= '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-warning" onClick="proj_edit(\'git\', \'./project_edit.php?proj_id=' . $item['proj_id'] . '\', 1300)" href="javascript:;" title="git">git</a>&nbsp;&nbsp;&nbsp;&nbsp;';
+            $item['option'] = $option;
         }
-        if ($proj_name){
-            $where[] = ['b.proj_name',$proj_name];
-        }
-        $cnt_data = auth::new()
-            ->alias('a')
-            ->join('project as b', ['a.proj_id', 'b.proj_id'], 'LEFT')
-            ->where($where)
-            ->count();
-        $list = auth::new()
-            ->alias('a')
-            ->join('project as b', ['a.proj_id', 'b.proj_id'], 'LEFT')
-            ->where($where)
-            ->limit(($page - 1) * 10, $page_size)
-            ->field('b.proj_id', 'b.proj_name', 'b.proj_desc', 'b.proj_git_url', 'b.create_time')
-            ->get();
-        $cnt_page = ceil($cnt_data / $page_size);
-        foreach ($list as &$item) {
-            $operate[]      = $this->get_operate($item['proj_id'], operate::OPERATE_GET);
-            $operate[]      = $this->get_operate($item['proj_id'], operate::OPERATE_SERVER_MANAGER);
-            $operate[]      = $this->get_operate($item['proj_id'], operate::OPERATE_DEPLOY);
-            $item['option'] = implode('&nbsp;&nbsp;&nbsp;&nbsp;', $operate);
-        }
-        return [
-            'cnt_data'  => $cnt_data,
-            'cnt_page'  => $cnt_page,
-            'curr_page' => $page,
-            'list'      => $list
-        ];
+        return $this->succeed($res);
     }
 
     /**
@@ -93,16 +56,18 @@ class show extends base_model
      */
     public function info(int $proj_id): array
     {
-        errno::set(3002);
-        $project = $this->select('project')
-            ->field('*')
-            ->where(['proj_id', $proj_id])
-            ->limit(1)
-            ->fetch();
-        if (empty($project)) {
-            return [];
+        $proj_info                      = project::new()->where(['proj_id', $proj_id])->get_one();
+        $srv_list                       = !empty($proj_info['srv_list']) ? json_decode($proj_info['srv_list'], true) : [];
+        $proj_info['proj_backup_files'] = !empty($proj_info['proj_backup_files']) ? json_decode($proj_info['proj_backup_files'], true) : [];
+        $all_srv                        = server::new()->where(['status', 1])->get();
+        foreach ($all_srv as &$srv) {
+            $srv['is_check'] = 0;
+            if (in_array($srv['srv_id'], $srv_list)) {
+                $srv['is_check'] = 1;
+            }
         }
-        return $project[0];
+        $proj_info['srv_list'] = $all_srv;
+        return $this->succeed($proj_info);
     }
 
     public function branch(int $proj_id): array
@@ -220,7 +185,7 @@ class show extends base_model
     public function get_operate($proj_id, $operate_id)
     {
         $user_id = $this->user_id;
-        $exist   = auth::new()->where([['user_id', $user_id], ['proj_id', $proj_id], ['operate_ids','like', '%'.$operate_id.'%']])->exist();
+        $exist   = auth::new()->where([['user_id', $user_id], ['proj_id', $proj_id], ['operate_ids', 'like', '%' . $operate_id . '%']])->exist();
         if (!$exist) {
             return '';
         }

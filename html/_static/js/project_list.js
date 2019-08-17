@@ -46,9 +46,8 @@ function show_list() {
         "columns": [
             {data: 'proj_id'},
             {data: 'proj_name'},
-            {data: 'proj_desc'},
-            {data: 'proj_git_url'},
-            {data: 'create_time'},
+            {data: 'branch'},
+            {data: 'commit'},
             {data: 'option'},
         ]
     }).api();
@@ -73,10 +72,11 @@ function project_del(obj, id) {
     });
 }
 
-function proj_update(id) {
+function proj_update(obj,id) {
     ajax_com({'cmd':'project/ctrl-pull','proj_id':id},function (data) {
         if (data.errno === 0) {
-            layer.msg('已更新',{icon:1,time:1000});
+            $(obj).addClass('btn-default disabled');
+            $(obj).html('进行中');
         } else {
             layer.msg(data.message,{icon:2});
         }

@@ -11,6 +11,6 @@ namespace app\model;
 
 use app\library\model;
 
-class proj_log extends model
+class project_log extends model
 {
 }

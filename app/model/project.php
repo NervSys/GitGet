@@ -9,7 +9,9 @@
 
 namespace app\model;
 
-class project extends base_model
+use app\library\model;
+
+class project extends model
 {
     /**
      * @param int $id

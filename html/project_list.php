@@ -5,7 +5,9 @@
     <title>项目列表</title>
     <link href="./_static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
     <style type="text/css">
-
+        .disabled {
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="gray-bg">
@@ -23,12 +25,6 @@
                     <input type="hidden" name="page" value="1">
                     <input type="hidden" name="cmd" value="project/show-list">
                     <input type="hidden" name="token" value="">
-                    <div class="ibox-content">
-                        项目名称：<input type="text" class="form-control m-b" name="proj_name" style="width:10%;">
-                        <button type="submit" class="btn btn-primary" data-toggle="tooltip" data-placement="left"
-                                title="搜索"><i class="fa fa-search"></i> 搜索
-                        </button>
-                    </div>
                 </form>
                 <div class="ibox-content">
                     <div class="">
@@ -40,10 +36,9 @@
                         <tr>
                             <th style="width:8%;">ID</th>
                             <th style="width:12%;">项目名称</th>
-                            <th style="width:20%;">项目简介</th>
-                            <th style="width:20%;">git地址</th>
-                            <th style="width:20%;">添加时间</th>
-                            <th style="width:20%;">操作</th>
+                            <th style="width:15%;">所在分支</th>
+                            <th style="width:50%;">最新提交</th>
+                            <th style="width:15%;">操作</th>
                         </tr>
                         </thead>
                         <tbody>

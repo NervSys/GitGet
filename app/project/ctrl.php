@@ -10,115 +10,56 @@
 namespace app\project;
 
 use app\enum\operate;
+use app\library\base;
 use app\model\auth;
 use app\model\base_model;
+use app\model\branch_list;
 use app\model\proj_srv;
 use app\model\project;
 use app\model\user;
 use ext\errno;
 use app\git\ctrl as git_ctrl;
 
-class ctrl extends base_model
+class ctrl extends base
 {
     public $tz = 'add,checkout,del,team_edit,reset,pull';
 
-    private $user_id = 0;
-
     /**
-     * ctrl constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-
-        errno::load('app', 'project');
-
-        if (-1 === $this->user_id = user::new()->get_user_id()) {
-            errno::set(3000);
-            parent::stop();
-        }
-    }
-
-    /**
+     * 新增或编辑项目
+     *
      * @param string $proj_name
      * @param string $proj_desc
-     * @param string $proj_git_url
+     * @param string $git_url
+     * @param string $local_path
+     * @param array  $srv_ids
+     * @param array  $backup_files
      * @param int    $proj_id
-     * @param int    $srv_ids
      *
      * @return array
-     * @api 新增或编辑项目
      */
-    public function add(string $proj_name,string $proj_desc,string $proj_git_url,array $srv_ids,int $proj_id = 0): array
+    public function add(string $proj_name, string $proj_desc, string $git_url, string $local_path, array $srv_ids, array $backup_files, int $proj_id = 0)
     {
-        /*if ($proj_id == 0) {
-            //新增时判断
-            $proj_local_paths = $this->select('project')
-                ->field('proj_local_path')
-                ->where(['status', 1])
-                ->fetch(\PDO::FETCH_COLUMN);
-            if (in_array($proj_local_path, $proj_local_paths)) {
-                return errno::get(3005, 1);
-            }
-        }*/
-            if ($proj_id == 0) {
-                /*$conf          = [
-                    'git_url'       => $proj_git_url,
-                    'proj_id'       => $proj_id,
-                    'user_id'       => $this->user_id,
-                    'active_branch' => 'master'
-                ];
-                $active_branch = git_ctrl::new($conf)->active_branch_name();*/
-                //新增
-                $data=[
-                    'proj_name'         => $proj_name,
-                    'proj_desc'         => $proj_desc,
-                    'proj_git_url'      => $proj_git_url,
-                ];
-                $proj_id=project::new()->addProject($data);
-                $operate_ids=operate::getAllAuth();
-                auth::new()->addAuth(['user_id'=>0,'proj_id'=>$proj_id,'operate_ids'=>$operate_ids]);
-            } else {
-                $data=[
-                    'proj_name'         => $proj_name,
-                    'proj_desc'         => $proj_desc,
-                ];
-               project::new()->updateProject($data,$proj_id);
-               proj_srv::new()->delSrv($proj_id);
-            }
-
-        if($srv_ids){
-            foreach($srv_ids as $srv_id){
-                $srvdata=[
-                    'proj_id'=>$proj_id,
-                    'srv_id'=>$srv_id,
-                ];
-                proj_srv::new()->addProjectSrv($srvdata);
-            }
+        $data = [
+            'proj_name'         => $proj_name,
+            'proj_desc'         => $proj_desc,
+            'proj_git_url'      => $git_url,
+            'proj_local_path'   => $local_path,
+            'srv_list'          => json_encode($srv_ids),
+            'proj_backup_files' => json_encode($backup_files),
+        ];
+        if ($proj_id == 0) {
+            project::new()->value($data)->insert_data();
+            $proj_id = project::new()->lastInsertId();
+            $data    = [
+                'branch_name' => 'master',
+                'proj_id'     => (int)$proj_id,
+                'active'      => 1,
+            ];
+            branch_list::new()->value($data)->insert_data();
+        } else {
+            project::new()->value($data)->where(['proj_id', $proj_id])->update_data();
         }
-        return errno::get(3002);
-    }
-
-
-    /**
-     * @param int    $proj_id
-     * @param string $branch
-     *
-     * @return array
-     * @api 切换分支
-     */
-    public function checkout(int $proj_id, string $branch): array
-    {
-        $conf = show::new()->conf($proj_id);
-        $res  = git_ctrl::new($conf)->deploy($branch);
-        if ($res) {
-            $this->update('project')
-                ->value(['active_branch' => $branch])
-                ->where(['proj_id', $proj_id])
-                ->execute();
-            return errno::get(3002);
-        }
-        return errno::get(3003);
+        return $this->succeed();
     }
 
     /**
@@ -129,20 +70,13 @@ class ctrl extends base_model
      */
     public function del(int $proj_id): array
     {
-        $conf = show::new()->conf($proj_id);
-        if (empty($conf)) {
-            return errno::get(3003, 1);
-        }
-        $local_path = $conf['local_path'];
-        $this->deldir($local_path);
-        if (is_dir($local_path)) {
-            @rmdir($local_path);
-        }
-        $this->update('project')
-            ->value(['status' => 0])
-            ->where(['proj_id', $proj_id])
-            ->execute();
-        return errno::get(3002);
+        project::new()->value(['status' => 2])->where(['proj_id', $proj_id])->update_data();
+        //暂时先不删除文件
+//        $this->deldir($local_path);
+//        if (is_dir($local_path)) {
+//            @rmdir($local_path);
+//        }
+        return $this->succeed();
     }
 
     /**
@@ -153,12 +87,8 @@ class ctrl extends base_model
      */
     public function pull(int $proj_id): array
     {
-        $conf = show::new()->conf($proj_id);
-        $res  = git_ctrl::new($conf)->pull();
-        if ($res) {
-            return errno::get(3002);
-        }
-        return errno::get(3007, 1);
+        project::new()->where(['proj_id',$proj_id])->value(['is_lock'=>1])->update_data();
+        return $this->succeed();
     }
 
     /**
