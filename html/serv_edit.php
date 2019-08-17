@@ -32,17 +32,9 @@
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label"><span style="color:red;margin-right:5px;font-size:18px;">*</span>域名：</label>
+                            <label class="col-sm-2 control-label">名称：</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" name="srv_name" id="srv_name">
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">服务器描述：</label>
-                            <div class="col-sm-10">
-                                <textarea name="srv_desc" class="form-control" id="srv_desc" >
-                                </textarea>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>

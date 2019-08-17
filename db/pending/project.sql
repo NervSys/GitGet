@@ -15,17 +15,6 @@ CREATE TABLE IF NOT EXISTS `git_project` (
     INDEX (`add_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='项目表';
 
-CREATE TABLE IF NOT EXISTS `git_project_log` (
-    `proj_id` INT (10) NOT NULL COMMENT '项目 ID',
-    `proj_log` VARCHAR (256) NOT NULL COMMENT '执行日志',
-    `user_id` INT (10) NOT NULL COMMENT '操作人 ID',
-    `log_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '操作类型（1pull,2checkout,3reset）',
-    `branch` varchar(50) NOT NULL COMMENT '当前分支',
-    `add_time` INT (10) UNSIGNED NOT NULL COMMENT '操作时间',
-    INDEX (`proj_id`, `user_id`),
-    INDEX (`add_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='项目日志表';
-
 CREATE TABLE IF NOT EXISTS `git_project_team` (
     `proj_id` INT (10) NOT NULL COMMENT '项目 ID',
     `user_id` INT (10) NOT NULL COMMENT '成员 ID',

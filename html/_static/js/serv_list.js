@@ -16,7 +16,8 @@ function show_list() {
             sInfoEmpty: "暂无数据",
         },
         "ajax": function (data, callback, settings) {
-            //封装请求参数
+            //封装请求参数\
+            console.log(data);
             var page = (data.start / data.length) + 1;//当前页码
             $("input[name='page']").val(page);
             ajax_com($("form").serialize(), function (data) {
@@ -26,7 +27,7 @@ function show_list() {
                     returnData.draw = data.draw;//这里直接自行返回了draw计数器,应该由后台返回
                     returnData.recordsTotal = data.cnt_data;//返回数据全部记录
                     returnData.recordsFiltered = data.cnt_data;//返回数据全部记录
-                    returnData.data = data.data;//返回的数据列表
+                    returnData.data = data.list;//返回的数据列表
                     callback(returnData);
                     $(".dataTables_paginate").append("<div style='float:right;margin: 0 10px'><input type='number' style='width: 30px;height: 22px;'><input type='button' value='确定' id='direct_page' style='background: #ffffff;line-height: 28px;border:1px solid #ccc;height: 26px;padding: 0 6px;margin-left: 5px;cursor: pointer;'></div>");
                     $("#direct_page").click(function () {
@@ -38,11 +39,10 @@ function show_list() {
         },
         "columns": [
             {data: 'srv_id'},
+            {data: 'ip'},
+            {data: 'port'},
             {data: 'srv_name'},
-            {data: 'srv_ip'},
-            {data: 'srv_port'},
-            {data: 'srv_desc'},
-            {data: 'option'},
+            {data: 'operate'},
         ]
     }).api();
 }

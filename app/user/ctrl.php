@@ -18,7 +18,7 @@ use app\model\user;
 
 class ctrl extends base
 {
-    public $tz          = '*';
+    public $tz = '*';
     public $check_token = false;
 
     /**
@@ -42,23 +42,24 @@ class ctrl extends base
         if ($user['user_pwd'] != $this->get_pwd($pwd, $user['user_entry'])) {
             return $this->response(error_enum::PW_ERROR);
         }
-        $token = $this->make(['user_id' => $user['user_id'], 'user_acc' => $user['user_acc']]);
-        return $this->succeed(['gg_token' => $token]);
+        $token = $this->make(['user_id' => $user['user_id'], 'expire' => time() + 3600 * 24 * 7]);
+        setcookie('gg_token', $token);
+        return $this->succeed();
     }
 
-    public function make_user($acc, $pwd)
+    private function make_user($acc, $pwd)
     {
         $entry = $this->get_rand_str();
-        $pwd   = $this->get_pwd($pwd, $entry);
+        $pwd = $this->get_pwd($pwd, $entry);
         user::new()->value(['user_acc' => $acc, 'user_pwd' => $pwd, 'user_entry' => $entry])->insert_data();
     }
 
-    public function get_pwd($pwd, $salt)
+    private function get_pwd($pwd, $salt)
     {
         return md5(md5($pwd) . md5($salt));
     }
 
-    public function get_rand_str($len = 6, $type = 'str')
+    private function get_rand_str($len = 6, $type = 'str')
     {
         if ($type == 'str') {
             $arr = array_merge(range(0, 9), range('a', 'z'), range('A', 'Z'));

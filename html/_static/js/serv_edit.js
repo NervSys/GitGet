@@ -6,9 +6,8 @@ $(function () {
                     if (data.errno === 0) {
                         var data = data.data;
                         $("input[name='srv_id']").val(srv_id);
-                        $("input[name='srv_ip']").val(data.srv_ip);
-                        $("input[name='srv_port']").val(data.srv_port);
-                        $("textarea[name='srv_desc']").text(data.srv_desc);
+                        $("input[name='srv_ip']").val(data.ip);
+                        $("input[name='srv_port']").val(data.port);
                         $("input[name='srv_name']").val(data.srv_name);
                     } else {
                         layer.msg(data.message, {icon: 2});
@@ -26,7 +25,7 @@ $(function () {
             return false;
         }
         if ($("input[name='srv_name']").val() == '') {
-            layer.msg("请输入服务器域名", {icon: 2});
+            layer.msg("请输入服务器名称", {icon: 2});
             return false;
         }
         if($("input[name='srv_port']").val() == ''){

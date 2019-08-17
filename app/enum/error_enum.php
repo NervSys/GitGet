@@ -12,6 +12,7 @@ class error_enum
 
     const PW_ERROR         = 1001;
     const TOKEN_MUST_EXIST = 1002;
+    const TOKEN_ERROR      = 1003;
 
     public static $table = [
         self::OK             => 'ok',
@@ -22,6 +23,7 @@ class error_enum
     ] + [
         self::PW_ERROR         => '密码错误',
         self::TOKEN_MUST_EXIST => 'token必须存在',
+        self::TOKEN_ERROR      => 'token错误',
     ];
 }
 

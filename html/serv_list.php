@@ -21,7 +21,7 @@
                 </div>
                 <form action="" onsubmit="return false" id="search_form" style="text-align: center">
                     <input type="hidden" name="page" value="1">
-                    <input type="hidden" name="cmd" value="server/show-serv_list">
+                    <input type="hidden" name="cmd" value="server/show-srv_list">
                 </form>
                 <div class="ibox-content">
                     <div class="">
@@ -31,12 +31,11 @@
                     <table class="table table-striped table-bordered table-hover table-sort" id="editable">
                         <thead>
                         <tr>
-                            <th style="width:8%;">ID</th>
-                            <th style="width:8%;">项目域名</th>
-                            <th style="width:8%;">服务器IP</th>
+                            <th style="width:8%;">SrvId</th>
+                            <th style="width:18%;">IP地址</th>
                             <th style="width:8%;">服务器端口</th>
-                            <th style="width:8%;">服务器描述</th>
-                            <th>操作</th>
+                            <th style="width:18%;">服务器名称</th>
+                            <th style="width:18%;">操作</th>
                         </tr>
                         </thead>
                         <tbody>

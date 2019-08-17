@@ -14,12 +14,12 @@ use ext\redis;
 
 class base extends factory
 {
-    public    $user_id;
+    public $user_id;
     protected $check_token = true;
-    protected $redis       = null;
-    protected $crypt       = null;
-    protected $pdo         = null;
-    public    $env         = 'prod';
+    protected $redis = null;
+    protected $crypt = null;
+    protected $pdo = null;
+    public $env = 'prod';
     const ENV_FILE = ROOT . 'conf/.env';
 
     public function __construct()
@@ -36,9 +36,14 @@ class base extends factory
         is_null($this->redis) && $this->redis = redis::new()->config(conf::get('redis'))->as('main')->get_redis();
         is_null($this->crypt) && $this->crypt = crypt::new(base_keygen::class)->config(conf::get('crypt'))->as('main');
         if ($this->check_token) {
-            if (empty(parent::$data['gg_token'])) {
+            if (empty($_COOKIE['gg_token'])) {
                 return $this->response(error_enum::TOKEN_MUST_EXIST);
             }
+            $token = $this->parse($_COOKIE['gg_token']);
+            if (empty($token['data']['user_id']) || empty($token['data']['expire']) || $token['data']['expire'] < time()){
+                return $this->response(error_enum::TOKEN_ERROR);
+            }
+            $this->user_id = $token['data']['user_id'];
         }
     }
 
@@ -93,15 +98,13 @@ class base extends factory
 
     public function succeed(array $data = [])
     {
-        return $this->response(error_enum::OK, $data);
+        errno::set(error_enum::OK, 0, error_enum::$table[error_enum::OK]);
+        return $data;
     }
 
-    public function response(int $code, array $data = [])
+    public function response(int $code)
     {
-        return [
-            'code' => $code,
-            'msg'  => error_enum::$table[$code] ?? '未知提示',
-            'data' => $data
-        ];
+        errno::set($code, 1, error_enum::$table[$code] ?? '未知提示');
+        parent::stop();
     }
 }

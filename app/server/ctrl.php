@@ -9,58 +9,45 @@
 
 namespace app\server;
 
+use app\enum\error_enum;
+use app\library\base;
+use app\library\model;
 use app\model\base_model;
 use app\model\server;
 use ext\errno;
 
-class ctrl extends base_model
+class ctrl extends base
 {
     public $tz = 'addOrEdit,delete_serv';
 
     /**
-     * ctrl constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        errno::load('app', 'server');
-    }
-
-    /**
+     * 新增或编辑服务器
      * @param string $srv_ip
      * @param string $srv_name
-     * @param int $srv_port
-     * @param string $srv_desc
+     * @param int $port
      * @param int $srv_id
-     *
      * @return array
-     * @api 新增或编辑服务器
      */
-    public function addOrEdit(string $srv_ip, string $srv_name, int $srv_port=80, string $srv_desc='', int $srv_id = 0): array
+    public function addOrEdit(string $srv_ip, string $srv_name = '', int $port = 80, int $srv_id = 0): array
     {
-
         $data = [
-            'srv_ip' => $srv_ip,
+            'ip' => $srv_ip,
+            'port' => $port,
             'srv_name' => $srv_name,
-            'srv_port' => $srv_port,
-            'srv_desc' => $srv_desc,
         ];
-        $this->begin();
+        model::new()->begin();
         try {
             if ($srv_id == 0) {
-                //新增
-                server::new()->addSrv($data);
+                server::new()->value($data)->insert_data();
             } else {
-                server::new()->updateSrv($data, ['srv_id',$srv_id]);
+                server::new()->value($data)->where(['srv_id', $srv_id])->update_data();
             }
-            $this->commit();
+            model::new()->commit();
         } catch (\PDOException $e) {
-            $this->rollback();
-            $err = $e->getMessage();
-            errno::set(3003, 1);
-            return ['err' => $err];
+            model::new()->rollback();
+            return $this->response(error_enum::SQL_ERROR);
         }
-        return errno::get(3002);
+        return $this->succeed();
     }
 
     /**
@@ -71,12 +58,7 @@ class ctrl extends base_model
      */
     public function delete_serv(int $srv_id): array
     {
-        $affect_rows = server::new()->del_serv($srv_id);
-        if ($affect_rows > 0) {
-            return errno::get(3002, 0);
-        } else {
-            return errno::get(3003, 1);
-        }
-
+        $res = server::new()->where(['srv_id', $srv_id])->value(['status' => 2])->update_data();
+        return $this->succeed();
     }
 }
