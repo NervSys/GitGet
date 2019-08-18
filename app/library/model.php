@@ -107,4 +107,9 @@ class model extends pdo_mysql
     {
         return $this->insert($this->table)->execute();
     }
+
+    public function del()
+    {
+        return $this->delete($this->table)->execute();
+    }
 }

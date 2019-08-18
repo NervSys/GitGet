@@ -38,11 +38,12 @@ class show extends base
             $branch         = branch_list::new()->where([['proj_id', $item['proj_id']], ['active', 1]])->field('branch_id', 'branch_name')->get_one();
             $item['branch'] = $branch['branch_name'];
             $item['commit'] = project_log::new()->where([['proj_id', $item['proj_id']], ['branch_id', $branch['branch_id']]])->field('proj_log')->get_value();
-            $btn_type       = $item['is_lock'] ? 'default disabled' : 'primary';
-            $html           = $item['is_lock'] ? '进行中' : '更新';
+            $btn_type       = $item['is_lock'] == 1 ? 'default disabled' : 'primary';
+            $html           = $item['is_lock'] == 1 ? '进行中' : '更新';
+            $git_type       = $item['is_lock'] == 0 ? 'warning' : 'default disabled';
             $option         = '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-success" onClick="proj_edit(\'编辑\', \'./project_edit.php?proj_id=' . $item['proj_id'] . '\', 1300)" href="javascript:;" title="编辑">编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;';
             $option         .= '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-' . $btn_type . '" onClick="proj_update(this,' . $item['proj_id'] . ')">' . $html . '</a>&nbsp;&nbsp;&nbsp;&nbsp;';
-            $option         .= '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-warning" onClick="proj_edit(\'git\', \'./project_edit.php?proj_id=' . $item['proj_id'] . '\', 1300)" href="javascript:;" title="git">git</a>&nbsp;&nbsp;&nbsp;&nbsp;';
+            $option         .= '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-' . $git_type . '" onClick="git(\'编辑\', \'./project_git.php?proj_id=' . $item['proj_id'] . '\', 1300)" href="javascript:;" title="编辑">git</a>&nbsp;&nbsp;&nbsp;&nbsp;';
             $item['option'] = $option;
         }
         return $this->succeed($res);
@@ -90,31 +91,6 @@ class show extends base
         ];
     }
 
-    /**
-     * @param $proj_id
-     *
-     * @return array
-     * @api 团队用户列表
-     */
-    public function team_list($proj_id): array
-    {
-        errno::set(3002);
-        $user_list         = $this->select('user')
-            ->field('user_id', 'user_acc')
-            ->fetch();
-        $selected_user_ids = $this->select('project_team')
-            ->field('user_id')
-            ->where(['proj_id', $proj_id])
-            ->fetch(\PDO::FETCH_COLUMN);
-        foreach ($user_list as &$user) {
-            $user['selected'] = false;
-            if (in_array($user['user_id'], $selected_user_ids)) {
-                $user['selected'] = true;
-            }
-        }
-        return $user_list;
-    }
-
     public function pull_logs(int $proj_id, int $page = 1, int $page_size = 10): array
     {
         errno::set(3002);
@@ -147,55 +123,5 @@ class show extends base
             'list'      => $list
         ];
         return $res;
-    }
-
-    public function active_branch(int $proj_id): string
-    {
-        $proj = $this->select('project')
-            ->field('active_branch')
-            ->where(['proj_id', $proj_id])
-            ->fetch(\PDO::FETCH_COLUMN);
-        return $proj[0] ?? '';
-    }
-
-    public function conf(int $proj_id): array
-    {
-        $project = $this->select('project')
-            ->field('*')
-            ->where(['proj_id', $proj_id])
-            ->fetch();
-        if (empty($project)) {
-            return [];
-        }
-        $project = $project[0];
-        $conf    = [
-            'git_url'           => $project['proj_git_url'],
-            'local_path'        => $project['proj_local_path'],
-            'user_name'         => $project['proj_user_name'],
-            'user_email'        => $project['proj_user_email'],
-            'proj_backup_files' => $project['proj_backup_files'],
-            'proj_id'           => $proj_id,
-            'user_id'           => $this->user_id,
-            'active_branch'     => $project['active_branch']
-        ];
-        return $conf;
-    }
-
-    //获得用户是否拥有某个权限
-    public function get_operate($proj_id, $operate_id)
-    {
-        $user_id = $this->user_id;
-        $exist   = auth::new()->where([['user_id', $user_id], ['proj_id', $proj_id], ['operate_ids', 'like', '%' . $operate_id . '%']])->exist();
-        if (!$exist) {
-            return '';
-        }
-        switch ($operate_id) {
-            case operate::OPERATE_GET:
-                return '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-primary" onClick="proj_edit(\'编辑\', \'./project_edit.php?proj_id=' . $proj_id . '\', 1300)" href="javascript:;" title="编辑">编辑</a>';
-            case operate::OPERATE_DEPLOY:
-                return '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-success" href = "./project_deploy.php?proj_id="' . $proj_id . ' title="部署">部署</a>';
-            case operate::OPERATE_SERVER_MANAGER:
-                return '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-info" onClick="info_edit(\'服务器管理\', \'./project_serv_list.php?proj_id=' . $proj_id . '\', 1000)" href="javascript:;" title="服务器管理">服务器管理</a>';
-        }
     }
 }

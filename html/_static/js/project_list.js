@@ -57,6 +57,10 @@ function proj_edit(title, url, w, h) {
     layer_show(title, url, w, h);
 }
 
+function git(title, url, w, h) {
+    layer_show(title, url, w, h);
+}
+
 
 /*项目-删除*/
 function project_del(obj, id) {
@@ -73,10 +77,11 @@ function project_del(obj, id) {
 }
 
 function proj_update(obj,id) {
-    ajax_com({'cmd':'project/ctrl-pull','proj_id':id},function (data) {
+    ajax_com({'cmd':'project/proj_git-update','proj_id':id},function (data) {
         if (data.errno === 0) {
             $(obj).addClass('btn-default disabled');
             $(obj).html('进行中');
+            $(obj).next().addClass('btn-default disabled');
         } else {
             layer.msg(data.message,{icon:2});
         }
