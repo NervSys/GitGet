@@ -37,7 +37,7 @@ class show extends base
         foreach ($res['list'] as &$item) {
             $branch         = branch_list::new()->where([['proj_id', $item['proj_id']], ['active', 1]])->field('branch_id', 'branch_name')->get_one();
             $item['branch'] = $branch['branch_name'];
-            $item['commit'] = project_log::new()->where([['proj_id', $item['proj_id']], ['branch_id', $branch['branch_id']]])->field('proj_log')->get_value();
+            $item['commit'] = project_log::new()->where([['proj_id', $item['proj_id']], ['branch_id', $branch['branch_id']],['active',1]])->field('proj_log')->get_value();
             $btn_type       = $item['is_lock'] == 1 ? 'default disabled' : 'primary';
             $html           = $item['is_lock'] == 1 ? '进行中' : '更新';
             $git_type       = $item['is_lock'] == 0 ? 'warning' : 'default disabled';

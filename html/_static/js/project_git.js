@@ -89,6 +89,22 @@ function update_branch() {
     })
 }
 
+function reset_commit(proj_id, log_id) {
+    ajax_com({'cmd': 'project/proj_git-reset', 'proj_id': proj_id, 'log_id': log_id}, function (data) {
+        if (data.errno === 0) {
+            layer.msg('ok', {icon: 1});
+            setTimeout(function () {
+                parent.location.reload();
+            }, 1000)
+        } else {
+            layer.msg(data.message, {icon: 2});
+            setTimeout(function () {
+                parent.location.reload();
+            }, 1000)
+        }
+    })
+}
+
 function add() {
     var html = ' <div class="col-sm-12" style="margin-bottom:10px;">\n' +
         '                                <input type="text" class="form-control" name="backup_files[]"\n' +

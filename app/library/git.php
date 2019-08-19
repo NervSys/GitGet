@@ -54,7 +54,11 @@ class git extends factory
      */
     public function reset(string $commit): array
     {
+        $this->stash_file();
+        $this->clean();
+        $this->checkout('.');
         exec($this->build_cmd('git reset --hard %s', $commit), $output);
+        $this->apply_file();
         return $output;
     }
 

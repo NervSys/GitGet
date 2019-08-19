@@ -21,11 +21,11 @@ use ext\mpc;
 
 class proj_git extends base
 {
-    public $tz          = '*';
+    public $tz = '*';
     public $check_token = false;
-    const GIT_CMD_TYPE_PULL     = 1;
+    const GIT_CMD_TYPE_PULL = 1;
     const GIT_CMD_TYPE_CHECKOUT = 2;
-    const GIT_CMD_TYPE_RESET    = 3;
+    const GIT_CMD_TYPE_RESET = 3;
 
     /**
      * 更新
@@ -159,8 +159,8 @@ class proj_git extends base
     public function checkout_cli(int $proj_id, string $branch_name)
     {
         git::new($proj_id)->checkout($branch_name);
-        $this->add_log($proj_id, self::GIT_CMD_TYPE_CHECKOUT);
         $this->update_branch($proj_id);
+        $this->add_log($proj_id, self::GIT_CMD_TYPE_CHECKOUT);
         $this->unlock($proj_id);
     }
 
@@ -176,34 +176,84 @@ class proj_git extends base
      */
     public function log_list(int $proj_id, int $branch_id, int $page = 1, int $page_size = 10)
     {
-        $logs = project_log::new()->where([['proj_id', $proj_id], ['branch_id', $branch_id],['log_type',1]])->get_page($page, $page_size);
+        $logs = project_log::new()->where([['proj_id', $proj_id], ['branch_id', $branch_id]])->order(['log_id' => 'desc'])->get_page($page, $page_size);
         foreach ($logs['list'] as &$log) {
-            $log['option'] = '<button class="btn btn-success" type="button" onclick="reset()">回滚</button>';
+            $btn_type      = $log['active'] == 1 ? 'default disabled' : 'success';
+            $log['option'] = '<button class="btn btn-' . $btn_type . '" type="button" onclick="reset_commit(' . $proj_id . ',' . $log['log_id'] . ')">回滚</button>';
         }
         return $this->succeed($logs);
     }
 
-    public function reset(int $proj_id, int $commit_id)
+    /**
+     * 回滚
+     *
+     * @param int $proj_id
+     * @param int $log_id
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function reset(int $proj_id, int $log_id)
     {
-
+        project::new()->where(['proj_id', $proj_id])->value(['is_lock' => 1])->update_data();
+        mpc::new()->add([
+            'cmd'  => 'project/proj_git-reset_cli',
+            'data' => [
+                'proj_id' => $proj_id,
+                'log_id'  => $log_id
+            ]
+        ])->go(false);
+        return $this->succeed();
     }
 
+    /**
+     * 后台回滚进程
+     *
+     * @param int $proj_id
+     * @param int $log_id
+     *
+     * @return array
+     */
+    public function reset_cli(int $proj_id, int $log_id)
+    {
+        sleep(5);
+        $commit_id = project_log::new()->where(['log_id', $log_id])->field('commit_id')->get_value();
+        git::new($proj_id)->reset($commit_id);
+        $this->add_log($proj_id, self::GIT_CMD_TYPE_RESET);
+        $this->unlock($proj_id);
+        return $this->succeed();
+    }
+
+    /**
+     * 解锁
+     *
+     * @param int $proj_id
+     */
     private function unlock(int $proj_id)
     {
         project::new()->where(['proj_id', $proj_id])->value(['is_lock' => 0])->update_data();
     }
 
+    /**
+     * 增加日志
+     *
+     * @param int $proj_id
+     * @param int $log_type
+     */
     private function add_log(int $proj_id, int $log_type)
     {
         $data              = [];
         $curr_branch       = git::new($proj_id)->curr_branch();
         $data['proj_id']   = $proj_id;
-        $data['proj_log']  = $curr_branch[1] ?? '';
+        $data['proj_log']  = trim($curr_branch[1] ?? '');
         $data['log_type']  = $log_type;
         $data['commit_id'] = git::new($proj_id)->curr_commit_id();;
         $data['branch_id'] = branch_list::new()->where([['proj_id', $proj_id], ['active', 1]])->field('branch_id')->get_value();
+        $data['active']    = 1;
+        project_log::new()->where(['proj_id', $proj_id])->value(['active' => 0])->update_data();
         if (!project_log::new()->where([['proj_id', $proj_id], ['branch_id', $data['branch_id']], ['commit_id', $data['commit_id']]])->exist()) {
             project_log::new()->value($data)->insert_data();
         }
+        project_log::new()->where([['proj_id', $proj_id], ['commit_id', $data['commit_id']]])->value(['active' => 1])->update_data();
     }
 }
