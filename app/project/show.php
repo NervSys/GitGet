@@ -21,7 +21,7 @@ use app\git\ctrl;
 
 class show extends base
 {
-    public $tz = 'list,info,branch,team_list,pull_logs';
+    public $tz = '*';
 
     /**
      * 项目列表
@@ -69,59 +69,5 @@ class show extends base
         }
         $proj_info['srv_list'] = $all_srv;
         return $this->succeed($proj_info);
-    }
-
-    public function branch(int $proj_id): array
-    {
-        errno::set(3002);
-        $conf          = $this->conf($proj_id);
-        $output        = ctrl::new($conf)->branch();
-        $branch_names  = [];
-        $active_branch = $conf['active_branch'];
-        foreach ($output as $value) {
-            $branch_name     = substr($value, 2);
-            $branch_name_arr = explode('/', $branch_name);
-            if (!empty($branch_name_arr[1])) {
-                $branch_names[] = $branch_name_arr[1];
-            }
-        }
-        return [
-            'branch_names'  => $branch_names,
-            'active_branch' => $active_branch
-        ];
-    }
-
-    public function pull_logs(int $proj_id, int $page = 1, int $page_size = 10): array
-    {
-        errno::set(3002);
-        $branch = $this->active_branch($proj_id);
-        $count  = $this->select('project_log a')
-            ->join('user b', ['a.user_id', 'b.user_id'], 'LEFT')
-            ->where([['a.proj_id', $proj_id], ['a.branch', $branch], ['log_type', 'IN', [ctrl::GIT_CMD_TYPE_PULL, ctrl::GIT_CMD_TYPE_RESET]]])
-            ->field('count(*) as cnt')->fetch(\PDO::FETCH_COLUMN);
-        $count  = $count[0] ?? 0;
-        $list   = $this->select('project_log a')
-            ->join('user b', ['a.user_id', 'b.user_id'], 'LEFT')
-            ->where([['a.proj_id', $proj_id], ['a.branch', $branch], ['log_type', 'IN', [ctrl::GIT_CMD_TYPE_PULL, ctrl::GIT_CMD_TYPE_RESET]]])
-            ->field('a.proj_id', 'a.user_id', 'a.proj_log', 'a.log_type', 'b.user_acc', 'a.add_time')->order(['add_time' => 'DESC'])->fetch();
-
-        if (!empty($list)) {
-            foreach ($list as &$re) {
-                $re['add_time'] = date('Y-m-d H:i:s', $re['add_time']);
-                $proj_log       = json_decode($re['proj_log'], true);
-                unset($re['proj_log']);
-                $re['current_commit_id']   = $proj_log['after_commit_id'];
-                $re['current_commit_data'] = $proj_log['current_commit_data'];
-                $re['radio_html']          = '<input type="radio" name="commit" value="' . $proj_log['after_commit_id'] . '" />';
-            }
-        }
-        $res = [
-            'cnt_data'  => $count,
-            'cnt_page'  => ceil($count / $page_size),
-            'curr_page' => $page,
-            'branch'    => $branch,
-            'list'      => $list
-        ];
-        return $res;
     }
 }

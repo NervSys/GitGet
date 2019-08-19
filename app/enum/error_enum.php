@@ -13,6 +13,8 @@ class error_enum
     const PW_ERROR         = 1001;
     const TOKEN_MUST_EXIST = 1002;
     const TOKEN_ERROR      = 1003;
+    const BRANCH_NO_CHECK  = 1004;
+    const BRANCH_NOT_EXIST = 1005;
 
     public static $table = [
         self::OK             => 'ok',
@@ -24,6 +26,8 @@ class error_enum
         self::PW_ERROR         => '密码错误',
         self::TOKEN_MUST_EXIST => 'token必须存在',
         self::TOKEN_ERROR      => 'token错误',
+        self::BRANCH_NO_CHECK  => '已在当前分支',
+        self::BRANCH_NOT_EXIST => '该分支已经不存在',
     ];
 }
 

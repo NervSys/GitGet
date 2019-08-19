@@ -21,15 +21,24 @@ use ext\mpc;
 
 class proj_git extends base
 {
-    public $tz = '*';
+    public $tz          = '*';
     public $check_token = false;
-    const GIT_CMD_TYPE_PULL = 1;
+    const GIT_CMD_TYPE_PULL     = 1;
     const GIT_CMD_TYPE_CHECKOUT = 2;
-    const GIT_CMD_TYPE_RESET = 3;
+    const GIT_CMD_TYPE_RESET    = 3;
 
+    /**
+     * 更新
+     *
+     * @param int $proj_id
+     *
+     * @return array
+     * @throws \Exception
+     */
     public function update(int $proj_id)
     {
         project::new()->where(['proj_id', $proj_id])->value(['is_lock' => 1])->update_data();
+        $this->update_branch($proj_id);
         mpc::new()->add([
             'cmd'  => 'project/proj_git-update_cli',
             'data' => [
@@ -39,14 +48,38 @@ class proj_git extends base
         return $this->succeed();
     }
 
+    /**
+     * 后台更新脚本
+     *
+     * @param int $proj_id
+     */
     public function update_cli(int $proj_id)
     {
-        $this->update_branch_cli($proj_id);
         git::new($proj_id)->pull();
         $this->add_log($proj_id, self::GIT_CMD_TYPE_PULL);
         $this->unlock($proj_id);
     }
 
+    /**
+     * 本地分支列表
+     *
+     * @param int $proj_id
+     *
+     * @return array
+     */
+    public function branch_list(int $proj_id)
+    {
+        $branch_list = branch_list::new()->where(['proj_id', $proj_id])->get();
+        return $this->succeed($branch_list);
+    }
+
+    /**
+     * 更新本地分支
+     *
+     * @param int $proj_id
+     *
+     * @return array
+     */
     public function update_branch(int $proj_id)
     {
         //获取远程分支
@@ -77,7 +110,6 @@ class proj_git extends base
                     'branch_name' => $branch_name,
                     'proj_id'     => $proj_id
                 ];
-                log::alert('add', [$add]);
                 branch_list::new()->value($add)->insert_data();
             }
         }
@@ -88,32 +120,72 @@ class proj_git extends base
         return $this->succeed();
     }
 
-
+    /**
+     * 切换分支
+     *
+     * @param int $proj_id
+     * @param int $branch_id
+     *
+     * @return array|void
+     * @throws \Exception
+     */
     public function checkout(int $proj_id, int $branch_id)
     {
+        $this->update_branch($proj_id);
+        $branch_info = branch_list::new()->where([['proj_id', $proj_id], ['branch_id', $branch_id]])->get_one();
+        if (empty($branch_info)) {
+            return $this->response(error_enum::BRANCH_NOT_EXIST);
+        }
+        if ($branch_info['active']) {
+            return $this->response(error_enum::BRANCH_NO_CHECK);
+        }
+        project::new()->where(['proj_id', $proj_id])->value(['is_lock' => 1])->update_data();
+        mpc::new()->add([
+            'cmd'  => 'project/proj_git-checkout_cli',
+            'data' => [
+                'proj_id'     => $proj_id,
+                'branch_name' => $branch_info['branch_name']
+            ]
+        ])->go(false);
+        return $this->succeed();
+    }
 
+    /**
+     * 切换分支后台进程
+     *
+     * @param int    $proj_id
+     * @param string $branch_name
+     */
+    public function checkout_cli(int $proj_id, string $branch_name)
+    {
+        git::new($proj_id)->checkout($branch_name);
+        $this->add_log($proj_id, self::GIT_CMD_TYPE_CHECKOUT);
+        $this->update_branch($proj_id);
+        $this->unlock($proj_id);
+    }
+
+    /**
+     * log列表
+     *
+     * @param int $proj_id
+     * @param int $branch_id
+     * @param int $page
+     * @param int $page_size
+     *
+     * @return array
+     */
+    public function log_list(int $proj_id, int $branch_id, int $page = 1, int $page_size = 10)
+    {
+        $logs = project_log::new()->where([['proj_id', $proj_id], ['branch_id', $branch_id],['log_type',1]])->get_page($page, $page_size);
+        foreach ($logs['list'] as &$log) {
+            $log['option'] = '<button class="btn btn-success" type="button" onclick="reset()">回滚</button>';
+        }
+        return $this->succeed($logs);
     }
 
     public function reset(int $proj_id, int $commit_id)
     {
 
-    }
-
-    public function branch_list(int $proj_id)
-    {
-        $branch_list = branch_list::new()->where(['proj_id', $proj_id])->get();
-        return $this->succeed($branch_list);
-    }
-
-    public function git_info(int $proj_id, int $page = 1, int $page_size = 10)
-    {
-        $active_branch_id = branch_list::new()->get_active_branch_id($proj_id);
-
-        $git_logs = proj_log::new()
-            ->field('*')
-            ->where([['proj_id', $proj_id], ['branch_id', $active_branch_id]])
-            ->get_page($page, $page_size);
-        return $this->succeed($git_logs);
     }
 
     private function unlock(int $proj_id)
