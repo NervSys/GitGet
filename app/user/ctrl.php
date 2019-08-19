@@ -11,9 +11,6 @@ namespace app\user;
 
 use app\enum\error_enum;
 use app\library\base;
-use app\library\base_func;
-use app\library\error_code;
-use app\model\base_model;
 use app\model\user;
 
 class ctrl extends base
@@ -22,12 +19,13 @@ class ctrl extends base
     public $check_token = false;
 
     /**
+     * 登录
+     *
      * @param string $acc
      * @param string $pwd
      *
      * @return array
      * @throws \Exception
-     * @api 登录
      */
     public function login(string $acc, string $pwd): array
     {
@@ -50,7 +48,7 @@ class ctrl extends base
     private function make_user($acc, $pwd)
     {
         $entry = $this->get_rand_str();
-        $pwd = $this->get_pwd($pwd, $entry);
+        $pwd   = $this->get_pwd($pwd, $entry);
         user::new()->value(['user_acc' => $acc, 'user_pwd' => $pwd, 'user_entry' => $entry])->insert_data();
     }
 

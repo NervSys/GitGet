@@ -13,10 +13,8 @@ use app\enum\error_enum;
 use app\library\base;
 use app\library\git;
 use app\model\branch_list;
-use app\model\proj_log;
 use app\model\project;
 use app\model\project_log;
-use core\helper\log;
 use ext\mpc;
 
 class proj_git extends base

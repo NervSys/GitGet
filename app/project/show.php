@@ -9,15 +9,11 @@
 
 namespace app\project;
 
-use app\enum\operate;
 use app\library\base;
-use app\model\auth;
 use app\model\branch_list;
 use app\model\project;
 use app\model\project_log;
 use app\model\server;
-use ext\errno;
-use app\git\ctrl;
 
 class show extends base
 {
@@ -37,7 +33,7 @@ class show extends base
         foreach ($res['list'] as &$item) {
             $branch         = branch_list::new()->where([['proj_id', $item['proj_id']], ['active', 1]])->field('branch_id', 'branch_name')->get_one();
             $item['branch'] = $branch['branch_name'];
-            $item['commit'] = project_log::new()->where([['proj_id', $item['proj_id']], ['branch_id', $branch['branch_id']],['active',1]])->field('proj_log')->get_value();
+            $item['commit'] = project_log::new()->where([['proj_id', $item['proj_id']], ['branch_id', $branch['branch_id']], ['active', 1]])->field('proj_log')->get_value();
             $btn_type       = $item['is_lock'] == 1 ? 'default disabled' : 'primary';
             $html           = $item['is_lock'] == 1 ? '进行中' : '更新';
             $git_type       = $item['is_lock'] == 0 ? 'warning' : 'default disabled';
@@ -50,10 +46,11 @@ class show extends base
     }
 
     /**
+     * 详细信息
+     *
      * @param int $proj_id
      *
      * @return array
-     * @api 详细信息
      */
     public function info(int $proj_id): array
     {

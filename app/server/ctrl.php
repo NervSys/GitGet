@@ -12,27 +12,27 @@ namespace app\server;
 use app\enum\error_enum;
 use app\library\base;
 use app\library\model;
-use app\model\base_model;
 use app\model\server;
-use ext\errno;
 
 class ctrl extends base
 {
-    public $tz = 'addOrEdit,delete_serv';
+    public $tz = '*';
 
     /**
      * 新增或编辑服务器
+     *
      * @param string $srv_ip
      * @param string $srv_name
-     * @param int $port
-     * @param int $srv_id
+     * @param int    $port
+     * @param int    $srv_id
+     *
      * @return array
      */
     public function addOrEdit(string $srv_ip, string $srv_name = '', int $port = 80, int $srv_id = 0): array
     {
         $data = [
-            'ip' => $srv_ip,
-            'port' => $port,
+            'ip'       => $srv_ip,
+            'port'     => $port,
             'srv_name' => $srv_name,
         ];
         model::new()->begin();
@@ -51,10 +51,11 @@ class ctrl extends base
     }
 
     /**
+     * 删除服务器
+     *
      * @param int $srv_id 服务器id
      *
      * @return array
-     * @api 删除服务器
      */
     public function delete_serv(int $srv_id): array
     {
