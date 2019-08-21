@@ -70,21 +70,11 @@ class ctrl extends base
             'key'   => $key,
             'value' => $value,
         ];
-        if ($key != 'local_path' && !system_setting::new()->where(['key','local_path'])->exist()) {
-            return $this->response(error_enum::SETTING_PATH);
-        }
 
         if (system_setting::new()->where(['key', $key])->exist()) {
             system_setting::new()->value($setting)->where(['key', $key])->update_data();
         } else {
             system_setting::new()->value($setting)->insert_data();
-        }
-
-        if ($key == 'local_path') {
-            $path = $value . "/.ssh";
-            if (!is_dir($path)) {
-                mkdir($value, 0777, true);
-            }
         }
 
         if ($key == 'user_name') {
@@ -96,7 +86,7 @@ class ctrl extends base
         }
 
         if ($key == 'pri_key') {
-            $path = "~/.ssh";
+            $path = "/../.ssh";
             if (!is_dir($path)) {
                 mkdir($path, 0777, true);
             }
@@ -105,7 +95,7 @@ class ctrl extends base
         }
 
         if ($key == 'pub_key') {
-            $path = "~/.ssh";
+            $path = "/../.ssh";
             if (!is_dir($path)) {
                 mkdir($path, 0777, true);
             }

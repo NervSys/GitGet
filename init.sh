@@ -1,25 +1,5 @@
 #!/bin/bash
 while :; do echo
-    read -e -p "请输入开发者姓名: " git_user
-    if [ ! $git_user ]; then
-        echo "必须输入开发者姓名"
-    else
-        git config --global user.name "$git_user"
-        break
-    fi
-done
-
-while :; do echo
-    read -e -p "请输入开发者邮箱: " git_email
-    if [ ! $git_email ]; then
-        echo "请输入开发者邮箱"
-    else
-        git config --global user.email  "$git_email"
-        break
-    fi
-done
-
-while :; do echo
     read -e -p "请输入服务器操作用户: (www)" user
     if [ ! $user ];then
         user="www"
@@ -28,7 +8,7 @@ while :; do echo
 done
 
 while :; do echo
-    read -e -p "请输入项目父目录: (/data/wwwroot)" local_path
+    read -e -p "请输入项目根目录: (/data/wwwroot)" local_path
     if [ ! $local_path ];then
         local_path="/data/wwwroot"
     fi
