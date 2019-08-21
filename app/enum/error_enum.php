@@ -15,6 +15,7 @@ class error_enum
     const TOKEN_ERROR      = 1003;
     const BRANCH_NO_CHECK  = 1004;
     const BRANCH_NOT_EXIST = 1005;
+    const SETTING_PATH     = 1006;
 
     public static $table = [
         self::OK             => 'ok',
@@ -28,6 +29,7 @@ class error_enum
         self::TOKEN_ERROR      => 'token错误',
         self::BRANCH_NO_CHECK  => '已在当前分支',
         self::BRANCH_NOT_EXIST => '该分支已经不存在',
+        self::SETTING_PATH     => '请先设置项目根目录',
     ];
 }
 

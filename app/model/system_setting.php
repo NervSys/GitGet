@@ -11,6 +11,6 @@ namespace app\model;
 
 use app\library\model;
 
-class user extends model
+class system_setting extends model
 {
 }
