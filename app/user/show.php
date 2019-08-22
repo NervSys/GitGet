@@ -43,7 +43,7 @@ class show extends base
             [
                 'menu_id'   => 2,
                 'parent_id' => 0,
-                'menu_name' => '服务器管理',
+                'menu_name' => '初始配置',
                 'menu_icon' => 'server',
                 'child'     => [
                     [
@@ -52,6 +52,13 @@ class show extends base
                         'menu_name' => '服务器列表',
                         'menu_icon' => '',
                         'menu_url'  => 'serv_list.php'
+                    ],
+                    [
+                        'menu_id'   => 22,
+                        'parent_id' => 2,
+                        'menu_name' => '系统设置',
+                        'menu_icon' => '',
+                        'menu_url'  => 'system_setting.php'
                     ],
                 ],
             ],

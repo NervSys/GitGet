@@ -13,6 +13,7 @@ use app\enum\error_enum;
 use app\library\base;
 use app\library\model;
 use app\model\server;
+use app\model\system_setting;
 
 class ctrl extends base
 {
@@ -60,6 +61,47 @@ class ctrl extends base
     public function delete_serv(int $srv_id): array
     {
         $res = server::new()->where(['srv_id', $srv_id])->value(['status' => 2])->update_data();
+        return $this->succeed();
+    }
+
+    public function system_setting(string $key, string $value)
+    {
+        $setting = [
+            'key'   => $key,
+            'value' => $value,
+        ];
+
+        if (system_setting::new()->where(['key', $key])->exist()) {
+            system_setting::new()->value($setting)->where(['key', $key])->update_data();
+        } else {
+            system_setting::new()->value($setting)->insert_data();
+        }
+
+        if ($key == 'user_name') {
+            exec(escapeshellcmd('git config --global user.name "' . $value . '"'), $output);
+        }
+
+        if ($key == 'user_email') {
+            exec(escapeshellcmd('git config --global user.email "' . $value . '"'), $output);
+        }
+
+        if ($key == 'pri_key') {
+            $path = "/../.ssh";
+            if (!is_dir($path)) {
+                mkdir($path, 0777, true);
+            }
+            chdir($path);
+            file_put_contents("id_rsa", $value);
+        }
+
+        if ($key == 'pub_key') {
+            $path = "/../.ssh";
+            if (!is_dir($path)) {
+                mkdir($path, 0777, true);
+            }
+            chdir($path);
+            file_put_contents("id_rsa.pub", $value);
+        }
         return $this->succeed();
     }
 }

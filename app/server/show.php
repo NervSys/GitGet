@@ -11,6 +11,7 @@ namespace app\server;
 
 use app\library\base;
 use app\model\server;
+use app\model\system_setting;
 
 class show extends base
 {
@@ -45,5 +46,14 @@ class show extends base
     public function serv_detail(int $srv_id)
     {
         return $this->succeed(server::new()->where([['srv_id', $srv_id], ['status', 1]])->get_one());
+    }
+
+    public function system_setting()
+    {
+        $setting = system_setting::new()->get();
+        $key = array_column($setting,'key');
+        $value = array_column($setting,'value');
+        $settings = array_combine($key,$value);
+        return $this->succeed($settings);
     }
 }
