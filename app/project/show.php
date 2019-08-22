@@ -34,9 +34,11 @@ class show extends base
             $branch         = branch_list::new()->where([['proj_id', $item['proj_id']], ['active', 1]])->field('branch_id', 'branch_name')->get_one();
             $item['branch'] = $branch['branch_name'];
             $item['commit'] = project_log::new()->where([['proj_id', $item['proj_id']], ['branch_id', $branch['branch_id']], ['active', 1]])->field('proj_log')->get_value();
-            $btn_type       = $item['is_lock'] == 1 ? 'default disabled' : 'primary';
-            $html           = $item['is_lock'] == 1 ? '进行中' : '更新';
-            $git_type       = $item['is_lock'] == 0 ? 'warning' : 'default disabled';
+            $key            = "proj_lock:" . $item['proj_id'];
+            $is_lock        = $this->redis->exists($key);
+            $btn_type       = $is_lock ? 'default disabled' : 'primary';
+            $html           = $is_lock ? '进行中' : '更新';
+            $git_type       = $is_lock ? 'default disabled':'warning';
             $option         = '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-success" onClick="proj_edit(\'编辑\', \'./project_edit.php?proj_id=' . $item['proj_id'] . '\', 1300)" href="javascript:;" title="编辑">编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;';
             $option         .= '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-' . $btn_type . '" onClick="proj_update(this,' . $item['proj_id'] . ')">' . $html . '</a>&nbsp;&nbsp;&nbsp;&nbsp;';
             $option         .= '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-' . $git_type . '" onClick="git(\'编辑\', \'./project_git.php?proj_id=' . $item['proj_id'] . '\', 1300)" href="javascript:;" title="编辑">git</a>&nbsp;&nbsp;&nbsp;&nbsp;';

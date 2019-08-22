@@ -7,4 +7,4 @@ CREATE TABLE `git_branch_list` (
   KEY `proj_id` (`proj_id`) USING BTREE,
   KEY `active` (`active`) USING BTREE,
   KEY `branch_name` (`branch_name`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='分支列表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='分支列表';

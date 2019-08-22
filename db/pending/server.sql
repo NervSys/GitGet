@@ -6,4 +6,4 @@ CREATE TABLE `git_server` (
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0停用1启用2删除',
   PRIMARY KEY (`srv_id`),
   UNIQUE KEY `srv` (`ip`,`port`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

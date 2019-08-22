@@ -10,4 +10,4 @@ CREATE TABLE `git_project` (
   `is_lock` tinyint(1) NOT NULL DEFAULT '2' COMMENT '是否加锁（0未锁1锁2只锁git）',
   PRIMARY KEY (`proj_id`),
   KEY `status` (`status`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COMMENT='项目表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='项目表';

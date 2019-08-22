@@ -15,15 +15,18 @@ use app\library\git;
 use app\model\branch_list;
 use app\model\project;
 use app\model\project_log;
+use app\model\project_srv;
+use app\model\server;
+use core\helper\log;
 use ext\mpc;
 
 class proj_git extends base
 {
-    public $tz = '*';
+    public $tz          = '*';
     public $check_token = false;
-    const GIT_CMD_TYPE_PULL = 1;
+    const GIT_CMD_TYPE_PULL     = 1;
     const GIT_CMD_TYPE_CHECKOUT = 2;
-    const GIT_CMD_TYPE_RESET = 3;
+    const GIT_CMD_TYPE_RESET    = 3;
 
     /**
      * 更新
@@ -35,15 +38,30 @@ class proj_git extends base
      */
     public function update(int $proj_id)
     {
-        project::new()->where(['proj_id', $proj_id])->value(['is_lock' => 1])->update_data();
+        $data = [
+            'cmd'     => 'project/proj_git-local_update',
+            'proj_id' => $proj_id
+        ];
+        $this->lock($proj_id, $data);
         $this->update_branch($proj_id);
+        return $this->succeed();
+    }
+
+    /**
+     * 本地接收处理
+     *
+     * @param int $proj_id
+     *
+     * @throws \Exception
+     */
+    public function local_update(int $proj_id)
+    {
         mpc::new()->add([
             'cmd'  => 'project/proj_git-update_cli',
             'data' => [
                 'proj_id' => $proj_id
             ]
         ])->go(false);
-        return $this->succeed();
     }
 
     /**
@@ -137,15 +155,32 @@ class proj_git extends base
         if ($branch_info['active']) {
             return $this->response(error_enum::BRANCH_NO_CHECK);
         }
-        project::new()->where(['proj_id', $proj_id])->value(['is_lock' => 1])->update_data();
+        $data = [
+            'cmd'         => 'project/proj_git-local_checkout',
+            'proj_id'     => $proj_id,
+            'branch_name' => $branch_info['branch_name']
+        ];
+        $this->lock($proj_id, $data);
+        return $this->succeed();
+    }
+
+    /**
+     * 本地接收处理
+     *
+     * @param int    $proj_id
+     * @param string $branch_name
+     *
+     * @throws \Exception
+     */
+    public function local_checkout(int $proj_id, string $branch_name)
+    {
         mpc::new()->add([
             'cmd'  => 'project/proj_git-checkout_cli',
             'data' => [
                 'proj_id'     => $proj_id,
-                'branch_name' => $branch_info['branch_name']
+                'branch_name' => $branch_name
             ]
         ])->go(false);
-        return $this->succeed();
     }
 
     /**
@@ -193,7 +228,25 @@ class proj_git extends base
      */
     public function reset(int $proj_id, int $log_id)
     {
-        project::new()->where(['proj_id', $proj_id])->value(['is_lock' => 1])->update_data();
+        $data = [
+            'cmd'     => 'project/proj_git-local_reset',
+            'proj_id' => $proj_id,
+            'log_id'  => $log_id
+        ];
+        $this->lock($proj_id, $data);
+        return $this->succeed();
+    }
+
+    /**
+     * 本地接收处理
+     *
+     * @param int $proj_id
+     * @param int $log_id
+     *
+     * @throws \Exception
+     */
+    public function local_reset(int $proj_id, int $log_id)
+    {
         mpc::new()->add([
             'cmd'  => 'project/proj_git-reset_cli',
             'data' => [
@@ -201,7 +254,6 @@ class proj_git extends base
                 'log_id'  => $log_id
             ]
         ])->go(false);
-        return $this->succeed();
     }
 
     /**
@@ -214,7 +266,6 @@ class proj_git extends base
      */
     public function reset_cli(int $proj_id, int $log_id)
     {
-        sleep(5);
         $commit_id = project_log::new()->where(['log_id', $log_id])->field('commit_id')->get_value();
         git::new($proj_id)->reset($commit_id);
         $this->add_log($proj_id, self::GIT_CMD_TYPE_RESET);
@@ -223,13 +274,54 @@ class proj_git extends base
     }
 
     /**
+     * 加锁
+     *
+     * @param int   $proj_id
+     * @param array $data
+     *
+     * @return bool
+     */
+    private function lock(int $proj_id, array $data)
+    {
+        $srv_list = project::new()->field('srv_list')->where(['proj_id', $proj_id])->get_value();
+        $srv_list = json_decode($srv_list, true);
+        $count    = count($srv_list);
+        if ($count <= 0) {
+            return false;
+        }
+        $key = "proj_lock:" . $proj_id;
+        if ($this->redis->exists($key)) {
+            return false;
+        }
+        $this->redis->incrBy($key, $count);
+        $this->redis->expire($key, 3600 * 5);
+        $servers = server::new()->where([['srv_id', $srv_list]])->get();
+        foreach ($servers as $server) {
+            $ip   = $server['ip'];
+            $port = $server['port'];
+            $url  = $ip . ":" . $port . "/api.php";
+            $this->curl_post($url, $data);
+        }
+        return true;
+    }
+
+    /**
      * 解锁
      *
      * @param int $proj_id
+     *
+     * @return bool
      */
     private function unlock(int $proj_id)
     {
-        project::new()->where(['proj_id', $proj_id])->value(['is_lock' => 0])->update_data();
+        $key = "proj_lock:" . $proj_id;
+        if (!$this->redis->exists($key)) {
+            return false;
+        }
+        $res = $this->redis->decrBy($key, 3);
+        if ($res <= 0) {
+            $this->redis->delete($key);
+        }
     }
 
     /**
@@ -253,5 +345,20 @@ class proj_git extends base
             project_log::new()->value($data)->insert_data();
         }
         project_log::new()->where([['proj_id', $proj_id], ['commit_id', $data['commit_id']]])->value(['active' => 1])->update_data();
+    }
+
+    private function curl_post($url, $params)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        $result = curl_exec($ch);
+        $result = json_decode($result, true);
+        return $result;
     }
 }

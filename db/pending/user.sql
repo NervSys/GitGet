@@ -7,4 +7,4 @@ CREATE TABLE `git_user` (
   PRIMARY KEY (`user_id`),
   KEY `user_acc` (`user_acc`),
   KEY `add_time` (`add_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
