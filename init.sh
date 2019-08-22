@@ -26,5 +26,5 @@ if [ ! -d $local_path/.ssh ]; then
 mkdir $local_path/.ssh
 fi
 
-chmod 777 -R "$local_path
+chmod 777 -R "$local_path"
 chown $user:$user -R "$local_path"

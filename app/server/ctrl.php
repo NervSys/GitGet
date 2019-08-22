@@ -86,21 +86,11 @@ class ctrl extends base
         }
 
         if ($key == 'pri_key') {
-            $path = "/../.ssh";
-            if (!is_dir($path)) {
-                mkdir($path, 0777, true);
-            }
-            chdir($path);
-            file_put_contents("id_rsa", $value);
+            file_put_contents("~/.ssh/id_rsa", $value);
         }
 
         if ($key == 'pub_key') {
-            $path = "/../.ssh";
-            if (!is_dir($path)) {
-                mkdir($path, 0777, true);
-            }
-            chdir($path);
-            file_put_contents("id_rsa.pub", $value);
+            file_put_contents("~/.ssh/id_rsa.pub", $value);
         }
         return $this->succeed();
     }
