@@ -318,7 +318,7 @@ class proj_git extends base
         if (!$this->redis->exists($key)) {
             return false;
         }
-        $res = $this->redis->decrBy($key, 3);
+        $res = $this->redis->decrBy($key, 1);
         if ($res <= 0) {
             $this->redis->delete($key);
         }
