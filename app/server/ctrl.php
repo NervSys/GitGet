@@ -88,10 +88,12 @@ class ctrl extends base
         $home_path = system_setting::new()->where(['key','home_path'])->field('value')->get_value();
         if ($key == 'pri_key') {
             file_put_contents($home_path."/.ssh/id_rsa", $value);
+            chmod($home_path."/.ssh/id_rsa", 0600);
         }
 
         if ($key == 'pub_key') {
             file_put_contents($home_path."/.ssh/id_rsa.pub", $value);
+            chmod($home_path."/.ssh/id_rsa.pub", 0600);
         }
         return $this->succeed();
     }

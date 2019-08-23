@@ -36,10 +36,11 @@ class proj_git extends base
     public function set_home_path($home_path)
     {
         $key = "home_path";
+        $setting = ['value'=>$home_path];
         if (system_setting::new()->where(['key', $key])->exist()) {
-            system_setting::new()->value($home_path)->where(['key', $key])->update_data();
+            system_setting::new()->value($setting)->where(['key', $key])->update_data();
         } else {
-            system_setting::new()->value($home_path)->insert_data();
+            system_setting::new()->value($setting)->insert_data();
         }
         return $this->succeed();
     }
