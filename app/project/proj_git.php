@@ -15,9 +15,8 @@ use app\library\git;
 use app\model\branch_list;
 use app\model\project;
 use app\model\project_log;
-use app\model\project_srv;
 use app\model\server;
-use core\helper\log;
+use app\model\system_setting;
 use ext\mpc;
 
 class proj_git extends base
@@ -27,6 +26,23 @@ class proj_git extends base
     const GIT_CMD_TYPE_PULL     = 1;
     const GIT_CMD_TYPE_CHECKOUT = 2;
     const GIT_CMD_TYPE_RESET    = 3;
+
+    /**
+     * 保存home目录地址
+     * @param $home_path
+     *
+     * @return array
+     */
+    public function set_home_path($home_path)
+    {
+        $key = "home_path";
+        if (system_setting::new()->where(['key', $key])->exist()) {
+            system_setting::new()->value($home_path)->where(['key', $key])->update_data();
+        } else {
+            system_setting::new()->value($home_path)->insert_data();
+        }
+        return $this->succeed();
+    }
 
     /**
      * 更新

@@ -85,12 +85,13 @@ class ctrl extends base
             exec(escapeshellcmd('git config --global user.email "' . $value . '"'), $output);
         }
 
+        $home_path = system_setting::new()->where(['key','home_path'])->field('value')->get_value();
         if ($key == 'pri_key') {
-            file_put_contents("~/.ssh/id_rsa", $value);
+            file_put_contents($home_path."/.ssh/id_rsa", $value);
         }
 
         if ($key == 'pub_key') {
-            file_put_contents("~/.ssh/id_rsa.pub", $value);
+            file_put_contents($home_path."/.ssh/id_rsa.pub", $value);
         }
         return $this->succeed();
     }

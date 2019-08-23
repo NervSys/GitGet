@@ -8,7 +8,7 @@ while :; do echo
 done
 
 while :; do echo
-    read -e -p "请输入项目根目录: (/data/wwwroot)" local_path
+    read -e -p "请输入用户home目录: (/data/wwwroot)" local_path
     if [ ! $local_path ];then
         local_path="/data/wwwroot"
     fi
@@ -23,8 +23,10 @@ echo $user:x:2000:2000:root:$local_path:/bin/bash >> /etc/passwd
 
 #权限处理
 if [ ! -d $local_path/.ssh ]; then
-mkdir $local_path/.ssh
+mkdir $local_path/.ssh -p
 fi
 
 chmod 777 -R "$local_path"
 chown $user:$user -R "$local_path"
+
+php html/api.php -c"project/proj_git-set_home_path" -d"home_path=$local_path"
