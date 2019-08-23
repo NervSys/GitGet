@@ -47,7 +47,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">私钥：</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" id="pri_key" placeholder="请输入私钥">
+                                <textarea class="form-control" id="pri_key" placeholder="请输入私钥" rows="5"></textarea>
                             </div>
                             <div class="col-sm-2">
                                 <button class="btn btn-primary" type="button" onclick="set_pri_key()">保存</button>
