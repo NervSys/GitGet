@@ -16,6 +16,7 @@ use app\model\project;
 use app\model\server;
 use app\model\system_setting;
 use app\project\proj_git;
+use ext\http;
 
 class ctrl extends base
 {
@@ -83,12 +84,11 @@ class ctrl extends base
             'key'   => $key,
             'value' => $value
         ];
-        $proj    = proj_git::new();
         foreach ($servers as $server) {
             $ip   = $server['ip'];
             $port = $server['port'];
-            $url  = $ip . ":" . $port . "/api.php";
-            $proj->curl_post($url, $data);
+            $url  = "http://".$ip . ":" . $port . "/api.php";
+            http::new()->add(['url'=>$url,'data'=>$data])->fetch();
         }
         return $this->succeed();
     }

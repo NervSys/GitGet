@@ -17,6 +17,7 @@ use app\model\project;
 use app\model\project_log;
 use app\model\server;
 use app\model\system_setting;
+use ext\http;
 use ext\mpc;
 
 class proj_git extends base
@@ -342,7 +343,7 @@ class proj_git extends base
             $ip   = $server['ip'];
             $port = $server['port'];
             $url  = $ip . ":" . $port . "/api.php";
-            $this->curl_post($url, $data);
+            http::new()->add(['url' => $url, 'data' => $data])->fetch();
         }
         return true;
     }
@@ -387,20 +388,5 @@ class proj_git extends base
             project_log::new()->value($data)->insert_data();
         }
         project_log::new()->where([['proj_id', $proj_id], ['commit_id', $data['commit_id']]])->value(['active' => 1])->update_data();
-    }
-
-    public function curl_post($url, $params)
-    {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-        $result = curl_exec($ch);
-        $result = json_decode($result, true);
-        return $result;
     }
 }
