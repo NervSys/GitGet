@@ -94,6 +94,7 @@ class ctrl extends base
         if ($key == 'pub_key') {
             file_put_contents($home_path."/.ssh/id_rsa.pub", $value);
             chmod($home_path."/.ssh/id_rsa.pub", 0600);
+            exec("ssh -T git@gitee.com");
         }
         return $this->succeed();
     }

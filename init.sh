@@ -16,10 +16,16 @@ while :; do echo
 done
 
 #添加组和用户
-sed -i '/'"$user"'/d' /etc/group
+sed -i '/'"2000"'/d' /etc/group
 echo $user:x:2000: >> /etc/group
-sed -i '/'"$user"'/d' /etc/passwd
+sed -i '/'"2000"'/d' /etc/passwd
 echo $user:x:2000:2000:root:$local_path:/bin/bash >> /etc/passwd
+
+#设置ssh配置
+sed -i '/'"StrictHostKeyChecking no"'/d' /etc/ssh/ssh_config
+echo StrictHostKeyChecking no >> /etc/ssh/ssh_config
+sed -i '/'"UserKnownHostsFile /dev/null"'/d' /etc/ssh/ssh_config
+echo UserKnownHostsFile /dev/null >> /etc/ssh/ssh_config
 
 #权限处理
 if [ ! -d $local_path/.ssh ]; then
