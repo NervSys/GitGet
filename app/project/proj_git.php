@@ -63,7 +63,6 @@ class proj_git extends base
             'proj_id' => $proj_id
         ];
         $this->lock($proj_id, $data);
-        $this->update_branch($proj_id);
         return $this->succeed();
     }
 
@@ -92,6 +91,7 @@ class proj_git extends base
     public function update_cli(int $proj_id)
     {
         git::new($proj_id)->pull();
+        $this->update_branch($proj_id);
         $this->add_log($proj_id, self::GIT_CMD_TYPE_PULL);
         $this->unlock($proj_id);
     }

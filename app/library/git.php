@@ -29,7 +29,7 @@ class git extends factory
             chmod($local_path, 0777);
         }
         if (!is_dir($local_path . DIRECTORY_SEPARATOR . '.git')) {
-            exec($this->build_cmd('git clone %s %s', $git_url, $local_path), $output);
+            exec($this->build_cmd('git clone --recursive %s %s', $git_url, $local_path), $output);
         }
         chdir($local_path);
     }
