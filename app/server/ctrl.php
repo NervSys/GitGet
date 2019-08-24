@@ -26,16 +26,16 @@ class ctrl extends base
      *
      * @param string $srv_ip
      * @param string $srv_name
-     * @param int    $port
+     * @param int    $srv_port
      * @param int    $srv_id
      *
      * @return array
      */
-    public function addOrEdit(string $srv_ip, string $srv_name = '', int $port = 80, int $srv_id = 0): array
+    public function addOrEdit(string $srv_ip, string $srv_name = '', int $srv_port = 80, int $srv_id = 0): array
     {
         $data = [
             'ip'       => $srv_ip,
-            'port'     => $port,
+            'port'     => $srv_port,
             'srv_name' => $srv_name,
         ];
         model::new()->begin();
