@@ -342,7 +342,7 @@ class proj_git extends base
         foreach ($servers as $server) {
             $ip   = $server['ip'];
             $port = $server['port'];
-            $url  = $ip . ":" . $port . "/api.php";
+            $url  = "http://" . $ip . ":" . $port . "/api.php";
             http::new()->add(['url' => $url, 'data' => $data])->fetch();
         }
         return true;
