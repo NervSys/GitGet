@@ -12,8 +12,10 @@ namespace app\server;
 use app\enum\error_enum;
 use app\library\base;
 use app\library\model;
+use app\model\project;
 use app\model\server;
 use app\model\system_setting;
+use app\project\proj_git;
 
 class ctrl extends base
 {
@@ -70,31 +72,23 @@ class ctrl extends base
             'key'   => $key,
             'value' => $value,
         ];
-
         if (system_setting::new()->where(['key', $key])->exist()) {
             system_setting::new()->value($setting)->where(['key', $key])->update_data();
         } else {
             system_setting::new()->value($setting)->insert_data();
         }
-
-        if ($key == 'user_name') {
-            exec(escapeshellcmd('git config --global user.name "' . $value . '"'), $output);
-        }
-
-        if ($key == 'user_email') {
-            exec(escapeshellcmd('git config --global user.email "' . $value . '"'), $output);
-        }
-
-        $home_path = system_setting::new()->where(['key','home_path'])->field('value')->get_value();
-        if ($key == 'pri_key') {
-            file_put_contents($home_path."/.ssh/id_rsa", $value);
-            chmod($home_path."/.ssh/id_rsa", 0600);
-        }
-
-        if ($key == 'pub_key') {
-            file_put_contents($home_path."/.ssh/id_rsa.pub", $value);
-            chmod($home_path."/.ssh/id_rsa.pub", 0600);
-            exec("ssh -T git@gitee.com");
+        $servers = server::new()->get();
+        $data    = [
+            'cmd'   => 'project/proj_git-setting_receive',
+            'key'   => $key,
+            'value' => $value
+        ];
+        $proj    = proj_git::new();
+        foreach ($servers as $server) {
+            $ip   = $server['ip'];
+            $port = $server['port'];
+            $url  = $ip . ":" . $port . "/api.php";
+            $proj->curl_post($url, $data);
         }
         return $this->succeed();
     }

@@ -29,14 +29,15 @@ class proj_git extends base
 
     /**
      * 保存home目录地址
+     *
      * @param $home_path
      *
      * @return array
      */
     public function set_home_path($home_path)
     {
-        $key = "home_path";
-        $setting = ['value'=>$home_path];
+        $key     = "home_path";
+        $setting = ['value' => $home_path];
         if (system_setting::new()->where(['key', $key])->exist()) {
             system_setting::new()->value($setting)->where(['key', $key])->update_data();
         } else {
@@ -290,6 +291,29 @@ class proj_git extends base
         return $this->succeed();
     }
 
+    public function setting_receive(string $key, string $value)
+    {
+        if ($key == 'user_name') {
+            exec(escapeshellcmd('git config --global user.name "' . $value . '"'), $output);
+        }
+
+        if ($key == 'user_email') {
+            exec(escapeshellcmd('git config --global user.email "' . $value . '"'), $output);
+        }
+
+        $home_path = system_setting::new()->where(['key', 'home_path'])->field('value')->get_value();
+        if ($key == 'pri_key') {
+            file_put_contents($home_path . "/.ssh/id_rsa", $value);
+            chmod($home_path . "/.ssh/id_rsa", 0600);
+        }
+
+        if ($key == 'pub_key') {
+            file_put_contents($home_path . "/.ssh/id_rsa.pub", $value);
+            chmod($home_path . "/.ssh/id_rsa.pub", 0600);
+            exec("ssh -T git@gitee.com");
+        }
+    }
+
     /**
      * 加锁
      *
@@ -364,7 +388,7 @@ class proj_git extends base
         project_log::new()->where([['proj_id', $proj_id], ['commit_id', $data['commit_id']]])->value(['active' => 1])->update_data();
     }
 
-    private function curl_post($url, $params)
+    public function curl_post($url, $params)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
