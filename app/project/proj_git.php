@@ -363,7 +363,7 @@ class proj_git extends base
         }
         $res = $this->redis->decrBy($key, 1);
         if ($res <= 0) {
-            $this->redis->delete($key);
+            $this->redis->del($key);
         }
     }
 
