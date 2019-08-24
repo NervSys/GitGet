@@ -41,6 +41,7 @@ class proj_git extends base
         if (system_setting::new()->where(['key', $key])->exist()) {
             system_setting::new()->value($setting)->where(['key', $key])->update_data();
         } else {
+            $setting['key'] = $key;
             system_setting::new()->value($setting)->insert_data();
         }
         return $this->succeed();
