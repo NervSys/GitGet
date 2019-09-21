@@ -97,7 +97,7 @@ class proj_git extends base
      */
     public function update_cli(int $proj_id)
     {
-        sleep(10);
+        
         git::new($proj_id)->pull();
         $this->update_branch($proj_id);
         $this->add_log($proj_id, self::GIT_CMD_TYPE_PULL);
@@ -219,7 +219,7 @@ class proj_git extends base
      */
     public function checkout_cli(int $proj_id, string $branch_name)
     {
-        sleep(10);
+        
         git::new($proj_id)->checkout($branch_name);
         $this->update_branch($proj_id);
         $this->add_log($proj_id, self::GIT_CMD_TYPE_CHECKOUT);
@@ -295,7 +295,7 @@ class proj_git extends base
      */
     public function reset_cli(int $proj_id, int $log_id)
     {
-        sleep(10);
+        
         $commit_id = project_log::new()->where(['log_id', $log_id])->field('commit_id')->get_value();
         git::new($proj_id)->reset($commit_id);
         $this->add_log($proj_id, self::GIT_CMD_TYPE_RESET);
