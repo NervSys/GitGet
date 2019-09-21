@@ -6,7 +6,8 @@ $(function () {
         return false;
     })
 })
-var token=sessionStorage.getItem('token');
+var token = sessionStorage.getItem('token');
+
 function show_list() {
     return $("#editable").dataTable({
         "serverSide": true,  //启用服务器端分页
@@ -27,7 +28,7 @@ function show_list() {
             $("input[name='token']").val(token);
             ajax_com($("form").serialize(), function (data) {
                 if (data.errno === 0) {
-                    var data=data.data;
+                    var data = data.data;
                     $("#user_num").text(data.cnt_data);
                     var returnData = {};
                     returnData.draw = data.draw;//这里直接自行返回了draw计数器,应该由后台返回
@@ -39,6 +40,11 @@ function show_list() {
                     $("#direct_page").click(function () {
                         var jump_page = $(this).parent().find("input").val();
                         if (jump_page) $("#editable").dataTable().fnPageChange(jump_page - 1);
+                    })
+                    $.each($(".deploy.disabled"), function (i, item) {
+                        console.log(item);
+                        var proj_id = $(item).attr('id');
+                        update_btn(item,proj_id);
                     })
                 } else layer.msg(data.msg, {icon: 2});
             })
@@ -65,25 +71,42 @@ function git(title, url, w, h) {
 /*项目-删除*/
 function project_del(obj, id) {
     layer.confirm('确认要删除吗？', function (index) {
-        ajax_com({'cmd':'project/ctrl-del','proj_id':id},function (data) {
+        ajax_com({'cmd': 'project/ctrl-del', 'proj_id': id}, function (data) {
             if (data.errno === 0) {
                 $(obj).parents("tr").remove();
-                layer.msg('已删除!',{icon:1,time:1000});
+                layer.msg('已删除!', {icon: 1, time: 1000});
             } else {
-                layer.msg(data.message,{icon:2});
+                layer.msg(data.message, {icon: 2});
             }
         })
     });
 }
 
-function proj_update(obj,id) {
-    ajax_com({'cmd':'project/proj_git-update','proj_id':id},function (data) {
+function proj_update(obj, id) {
+    ajax_com({'cmd': 'project/proj_git-update', 'proj_id': id}, function (data) {
         if (data.errno === 0) {
             $(obj).addClass('btn-default disabled');
             $(obj).html('进行中');
             $(obj).next().addClass('btn-default disabled');
+            update_btn(obj, id);
         } else {
-            layer.msg(data.message,{icon:2});
+            layer.msg(data.message, {icon: 2});
+        }
+    })
+}
+
+function update_btn(obj, id) {
+    ajax_com({'cmd': 'project/proj_git-lock_status', 'proj_id': id}, function (data) {
+        if (data.errno === 0) {
+            if (data.data.status === 0) {
+                location.reload();
+            } else {
+                var setTime = setTimeout(function () {
+                    update_btn(obj, id);
+                }, 1000);
+            }
+        } else {
+            layer.msg(data.message, {icon: 2});
         }
     })
 }
