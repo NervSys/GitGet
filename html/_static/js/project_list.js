@@ -101,9 +101,12 @@ function update_btn(obj, id) {
             if (data.data.status === 0) {
                 location.reload();
             } else {
+                if (data.data.msg !== ''){
+                    layer.msg(data.data.msg, {icon: 2});
+                }
                 var setTime = setTimeout(function () {
                     update_btn(obj, id);
-                }, 1000);
+                }, 1500);
             }
         } else {
             layer.msg(data.message, {icon: 2});

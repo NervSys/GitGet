@@ -2,10 +2,13 @@
 
 namespace app\library;
 
+use app\enum\error_enum;
 use app\model\project;
 use core\handler\factory;
 use core\helper\log;
 use ext\conf;
+use ext\errno;
+use ext\redis;
 
 class git extends factory
 {
@@ -29,7 +32,7 @@ class git extends factory
             chmod($local_path, 0777);
         }
         if (!is_dir($local_path . DIRECTORY_SEPARATOR . '.git')) {
-            exec($this->build_cmd('git clone --recursive %s %s', $git_url, $local_path), $output);
+            $this->execute($this->build_cmd('git clone --recursive %s %s', $git_url, $local_path), $output);
         }
         chdir($local_path);
     }
@@ -42,7 +45,7 @@ class git extends factory
         $this->stash_file();
         $this->clean();
         $this->checkout('.');
-        exec($this->build_cmd('git pull'), $output);
+        $this->execute($this->build_cmd('git pulls'), $output);
         $this->apply_file();
         return $output;
     }
@@ -57,7 +60,7 @@ class git extends factory
         $this->stash_file();
         $this->clean();
         $this->checkout('.');
-        exec($this->build_cmd('git reset --hard %s', $commit), $output);
+        $this->execute($this->build_cmd('git reset --hard %s', $commit), $output);
         $this->apply_file();
         return $output;
     }
@@ -67,7 +70,7 @@ class git extends factory
      */
     public function clean(): array
     {
-        exec($this->build_cmd('git clean -dfx'), $output);
+        $this->execute($this->build_cmd('git clean -dfx'), $output);
         return $output;
     }
 
@@ -76,7 +79,7 @@ class git extends factory
      */
     public function status(): array
     {
-        exec($this->build_cmd('git status'), $output);
+        $this->execute($this->build_cmd('git status'), $output);
         return $output;
     }
 
@@ -87,7 +90,7 @@ class git extends factory
      */
     public function checkout(string $branch): array
     {
-        exec($this->build_cmd('git checkout --force %s', $branch), $output);
+        $this->execute($this->build_cmd('git checkout --force %s', $branch), $output);
         return $output;
     }
 
@@ -96,7 +99,7 @@ class git extends factory
      */
     public function current_commit(): string
     {
-        exec($this->build_cmd('git rev-parse --short HEAD'), $output);
+        $this->execute($this->build_cmd('git rev-parse --short HEAD'), $output);
         return $output[0] ?? '';
     }
 
@@ -105,13 +108,13 @@ class git extends factory
      */
     public function local_branch(): array
     {
-        exec($this->build_cmd('git branch -vv'), $output);
+        $this->execute($this->build_cmd('git branch -vv'), $output);
         return $output;
     }
 
     public function curr_branch()
     {
-        exec($this->build_cmd('git branch -vv'), $output);
+        $this->execute($this->build_cmd('git branch -vv'), $output);
         $result = [];
         foreach ($output as $value) {
             if (0 !== strpos($value, '*')) {
@@ -128,13 +131,13 @@ class git extends factory
     public function branch_list()
     {
         $output = [];
-        exec($this->build_cmd('git branch -r'), $output);
+        $this->execute($this->build_cmd('git branch -r'), $output);
         return $output;
     }
 
     public function curr_commit_id()
     {
-        exec($this->build_cmd('git rev-parse --short HEAD'), $output);
+        $this->execute($this->build_cmd('git rev-parse --short HEAD'), $output);
         return $output[0] ?? '';
     }
 
@@ -185,5 +188,26 @@ class git extends factory
     private function build_cmd(string $cmd, string ...$params): string
     {
         return escapeshellcmd(sprintf($cmd, ...$params));
+    }
+
+    /**
+     * @param $cmd
+     * @param $output
+     */
+    private function execute($cmd, &$output)
+    {
+        exec($cmd . " 2>&1", $output, $res);
+        if ($res != 0) {
+            log::error('exec', [$cmd, $output]);
+            $output = is_array($output) ? json_encode($output) : $output;
+            $this->gg_error($output);
+        }
+    }
+
+    private function gg_error(string $error_msg)
+    {
+        $redis = redis::new()->config(conf::get('redis'))->as('main')->get_redis();
+        $key   = 'gg_error:' . $this->proj_id;
+        $redis->setex($key, 3600, $error_msg);
     }
 }

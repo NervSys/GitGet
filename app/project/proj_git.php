@@ -17,6 +17,7 @@ use app\model\project;
 use app\model\project_log;
 use app\model\server;
 use app\model\system_setting;
+use core\helper\log;
 use ext\http;
 use ext\mpc;
 
@@ -50,9 +51,17 @@ class proj_git extends base
 
     public function lock_status(int $proj_id)
     {
-        $key    = "proj_lock:" . $proj_id;
-        $status = $this->redis->get($key);
-        return $this->succeed(['status' => (int)$status]);
+        $key       = "proj_lock:" . $proj_id;
+        $status    = $this->redis->get($key);
+        $res       = ['status' => (int)$status, 'msg' => ''];
+        $error_key = 'gg_error:' . $proj_id;
+        $error     = $this->redis->get($error_key);
+        if (!empty($error)) {
+            $res['msg'] = $error;
+            $this->redis->del($key);
+            $this->redis->del($error_key);
+        }
+        return $this->succeed($res);
     }
 
     /**
@@ -97,7 +106,6 @@ class proj_git extends base
      */
     public function update_cli(int $proj_id)
     {
-        
         git::new($proj_id)->pull();
         $this->update_branch($proj_id);
         $this->add_log($proj_id, self::GIT_CMD_TYPE_PULL);
@@ -136,6 +144,9 @@ class proj_git extends base
                 $branch_names[] = $branch_name_arr[1];
             }
         }
+        if (empty($branch_names)) {
+            $branch_names = ['master'];
+        }
         //获取本地分支
         $local_branch = branch_list::new()->where(['proj_id', $proj_id])->field('branch_name')->get_col();
         $remove       = [];
@@ -159,6 +170,9 @@ class proj_git extends base
         }
 
         $curr_branch = git::new($proj_id)->curr_branch();
+        if (empty($curr_branch)) {
+            $curr_branch = ['master'];
+        }
         branch_list::new()->where(['proj_id', $proj_id])->value(['active' => 0])->update_data();
         branch_list::new()->where([['proj_id', $proj_id], ['branch_name', $curr_branch[0]]])->value(['active' => 1])->update_data();
         return $this->succeed();
@@ -219,7 +233,6 @@ class proj_git extends base
      */
     public function checkout_cli(int $proj_id, string $branch_name)
     {
-        
         git::new($proj_id)->checkout($branch_name);
         $this->update_branch($proj_id);
         $this->add_log($proj_id, self::GIT_CMD_TYPE_CHECKOUT);
@@ -295,7 +308,6 @@ class proj_git extends base
      */
     public function reset_cli(int $proj_id, int $log_id)
     {
-        
         $commit_id = project_log::new()->where(['log_id', $log_id])->field('commit_id')->get_value();
         git::new($proj_id)->reset($commit_id);
         $this->add_log($proj_id, self::GIT_CMD_TYPE_RESET);
@@ -333,6 +345,7 @@ class proj_git extends base
      * @param array $data
      *
      * @return bool
+     * @throws \Exception
      */
     private function lock(int $proj_id, array $data)
     {
@@ -353,7 +366,10 @@ class proj_git extends base
             $ip   = $server['ip'];
             $port = $server['port'];
             $url  = "http://" . $ip . ":" . $port . "/api.php";
-            http::new()->add(['url' => $url, 'data' => $data])->fetch();
+            $res  = http::new()->add(['url' => $url, 'data' => $data])->fetch();
+            if (!$res) {
+                $this->gg_error($proj_id, '服务器地址错误');
+            }
         }
         return true;
     }
@@ -398,5 +414,11 @@ class proj_git extends base
             project_log::new()->value($data)->insert_data();
         }
         project_log::new()->where([['proj_id', $proj_id], ['commit_id', $data['commit_id']]])->value(['active' => 1])->update_data();
+    }
+
+    private function gg_error(int $proj_id, string $error_msg)
+    {
+        $key = 'gg_error:' . $proj_id;
+        $this->redis->setex($key, 3600, $error_msg);
     }
 }
