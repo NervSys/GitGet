@@ -87,6 +87,7 @@ class proj_git extends base
      *
      * @param int $proj_id
      *
+     * @return array
      * @throws \Exception
      */
     public function local_update(int $proj_id)
@@ -97,6 +98,7 @@ class proj_git extends base
                 'proj_id' => $proj_id
             ]
         ])->go(false);
+        return $this->succeed();
     }
 
     /**
@@ -212,6 +214,7 @@ class proj_git extends base
      * @param int    $proj_id
      * @param string $branch_name
      *
+     * @return array
      * @throws \Exception
      */
     public function local_checkout(int $proj_id, string $branch_name)
@@ -223,6 +226,7 @@ class proj_git extends base
                 'branch_name' => $branch_name
             ]
         ])->go(false);
+        return $this->succeed();
     }
 
     /**
@@ -285,6 +289,7 @@ class proj_git extends base
      * @param int $proj_id
      * @param int $log_id
      *
+     * @return array
      * @throws \Exception
      */
     public function local_reset(int $proj_id, int $log_id)
@@ -296,6 +301,7 @@ class proj_git extends base
                 'log_id'  => $log_id
             ]
         ])->go(false);
+        return $this->succeed();
     }
 
     /**
