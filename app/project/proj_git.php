@@ -368,7 +368,7 @@ class proj_git extends base
             $url  = "http://" . $ip . ":" . $port . "/api.php";
             $res  = http::new()->add(['url' => $url, 'data' => $data])->fetch();
             if (!$res) {
-                $this->gg_error($proj_id, '服务器地址错误');
+                $this->gg_error($proj_id, '服务器请求出错');
             }
         }
         return true;
