@@ -28,6 +28,8 @@
 4、修改conf/mysql.ini文件
 
 5、开放php.ini的exec、shell_exec、proc_open等方法
+
+6、修改app/app.ini的php路径
 ### 用法介绍
 
 1、新建数据库，运行db/pending/*.sql文件初始化数据表
