@@ -36,7 +36,7 @@ class ctrl extends base
         foreach ($srv_ids as &$srv_id) {
             $srv_id = (int)$srv_id;
         }
-        if ($git_url == 'https://github.com/NervSys/GitGet.git') {
+        if ($git_url == 'https://github.com/NervSys/GitGet.git' && !empty($backup_files)) {
             $this->response(error_enum::CLONE_SELF_ERROR);
         }
         $data = [
