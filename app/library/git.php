@@ -3,8 +3,8 @@
 namespace app\library;
 
 use app\model\project;
-use ext\factory;
 use ext\conf;
+use ext\factory;
 use ext\redis;
 
 class git extends factory
@@ -42,7 +42,7 @@ class git extends factory
         $this->stash_file();
         $this->clean();
         $this->checkout('.');
-        $this->execute($this->build_cmd('git pulls'), $output);
+        $this->execute($this->build_cmd('git pull'), $output);
         $this->apply_file();
         return $output;
     }
