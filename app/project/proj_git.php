@@ -17,7 +17,7 @@ use app\model\project;
 use app\model\project_log;
 use app\model\server;
 use app\model\system_setting;
-use core\helper\log;
+
 use ext\http;
 use ext\mpc;
 
@@ -367,7 +367,7 @@ class proj_git extends base
         }
         $this->redis->incrBy($key, $count);
         $this->redis->expire($key, 3600);
-        $servers = server::new()->where([['srv_id', $srv_list]])->get();
+        $servers = server::new()->where([['srv_id', 'IN', $srv_list]])->get();
         foreach ($servers as $server) {
             $ip   = $server['ip'];
             $port = $server['port'];
