@@ -4,43 +4,34 @@ namespace app\library;
 
 use app\enum\error_enum;
 use app\library\enum\cache_key;
-use app\model\user;
-use core\handler\factory;
 use ext\conf;
+use ext\core;
 use ext\crypt;
 use ext\errno;
+use ext\factory;
+use ext\mysql;
 use ext\pdo;
 use ext\redis;
 
 class base extends factory
 {
-    public $user_id;
+    public    $user_id;
     protected $check_token = true;
-    protected $redis = null;
-    protected $crypt = null;
-    protected $pdo = null;
-    public $env = 'prod';
-    const ENV_FILE = ROOT . 'conf/.env';
+    protected $redis       = null;
+    protected $crypt       = null;
+    protected $mysql       = null;
 
     public function __construct()
     {
-        if (is_file(self::ENV_FILE)) {
-            $env = trim(file_get_contents(self::ENV_FILE));
-
-            if (in_array($env, ['dev', 'prod', 'test'])) {
-                $this->env = &$env;
-            }
-        }
-        conf::load('/', $this->env);
-        is_null($this->pdo) && $this->pdo = pdo::new()->config(conf::get('mysql'))->as('main')->get_pdo();
-        is_null($this->redis) && $this->redis = redis::new()->config(conf::get('redis'))->as('main')->get_redis();
-        is_null($this->crypt) && $this->crypt = crypt::new(base_keygen::class)->config(conf::get('crypt'))->as('main');
+        is_null($this->mysql) && $this->mysql = mysql::new(pdo::create(conf::get('mysql'))->connect());
+        is_null($this->redis) && $this->redis = redis::create(conf::get('redis'))->connect();
+        is_null($this->crypt) && $this->crypt = crypt::new();
         if ($this->check_token) {
             if (empty($_COOKIE['gg_token'])) {
                 return $this->response(error_enum::TOKEN_MUST_EXIST);
             }
             $token = $this->parse($_COOKIE['gg_token']);
-            if (empty($token['data']['user_id']) || empty($token['data']['expire']) || $token['data']['expire'] < time()){
+            if (empty($token['data']['user_id']) || empty($token['data']['expire']) || $token['data']['expire'] < time()) {
                 return $this->response(error_enum::TOKEN_ERROR);
             }
             $this->user_id = $token['data']['user_id'];
@@ -105,6 +96,6 @@ class base extends factory
     public function response(int $code)
     {
         errno::set($code, 1, error_enum::$table[$code] ?? '未知提示');
-        parent::stop();
+        core::stop();
     }
 }

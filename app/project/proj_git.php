@@ -150,7 +150,7 @@ class proj_git extends base
             $branch_names = ['master'];
         }
         //获取本地分支
-        $local_branch = branch_list::new()->where(['proj_id', $proj_id])->field('branch_name')->get_col();
+        $local_branch = branch_list::new()->where(['proj_id', $proj_id])->fields('branch_name')->get_col();
         $remove       = [];
         foreach ($local_branch as $branch) {
             if (!in_array($branch, $branch_names)) {
@@ -314,7 +314,7 @@ class proj_git extends base
      */
     public function reset_cli(int $proj_id, int $log_id)
     {
-        $commit_id = project_log::new()->where(['log_id', $log_id])->field('commit_id')->get_value();
+        $commit_id = project_log::new()->where(['log_id', $log_id])->fields('commit_id')->get_value();
         git::new($proj_id)->reset($commit_id);
         $this->add_log($proj_id, self::GIT_CMD_TYPE_RESET);
         $this->unlock($proj_id);
@@ -331,7 +331,7 @@ class proj_git extends base
             exec(escapeshellcmd('git config --global user.email "' . $value . '"'), $output);
         }
 
-        $home_path = system_setting::new()->where(['key', 'home_path'])->field('value')->get_value();
+        $home_path = system_setting::new()->where(['key', 'home_path'])->fields('value')->get_value();
         if ($key == 'pri_key') {
             file_put_contents($home_path . "/.ssh/id_rsa", $value);
             chmod($home_path . "/.ssh/id_rsa", 0600);
@@ -355,7 +355,7 @@ class proj_git extends base
      */
     private function lock(int $proj_id, array $data)
     {
-        $srv_list = project::new()->field('srv_list')->where(['proj_id', $proj_id])->get_value();
+        $srv_list = project::new()->fields('srv_list')->where(['proj_id', $proj_id])->get_value();
         $srv_list = json_decode($srv_list, true);
         $count    = count($srv_list);
         if ($count <= 0) {
@@ -413,7 +413,7 @@ class proj_git extends base
         $data['proj_log']  = trim($curr_branch[1] ?? '');
         $data['log_type']  = $log_type;
         $data['commit_id'] = git::new($proj_id)->curr_commit_id();;
-        $data['branch_id'] = branch_list::new()->where([['proj_id', $proj_id], ['active', 1]])->field('branch_id')->get_value();
+        $data['branch_id'] = branch_list::new()->where([['proj_id', $proj_id], ['active', 1]])->fields('branch_id')->get_value();
         $data['active']    = 1;
         project_log::new()->where(['proj_id', $proj_id])->value(['active' => 0])->update_data();
         if (!project_log::new()->where([['proj_id', $proj_id], ['branch_id', $data['branch_id']], ['commit_id', $data['commit_id']]])->exist()) {

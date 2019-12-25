@@ -2,7 +2,7 @@ var status = 'true';
 $(function () {
     var srv_id = getQueryString('uid');
             if (srv_id != '' && srv_id != null) {
-                ajax_com({'cmd': 'server/show-serv_detail', 'srv_id': srv_id}, function (data) {
+                ajax_com({"c": 'server/show-serv_detail', 'srv_id': srv_id}, function (data) {
                     if (data.errno === 0) {
                         var data = data.data;
                         $("input[name='srv_id']").val(srv_id);

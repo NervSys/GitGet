@@ -31,7 +31,7 @@
         </div>
         <div class="col-sm-5">
             <form method="post" action="" onsubmit="return false">
-                <input type="hidden" name="cmd" value="user/ctrl-login">
+                <input type="hidden" name="c" value="user/ctrl-login">
                 <h4 class="no-margins">登录：</h4>
                 <input type="text" class="form-control uname" placeholder="用户名" name="acc"/>
                 <input type="password" class="form-control pword" placeholder="密码" name="pwd"/>

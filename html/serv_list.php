@@ -21,7 +21,7 @@
                 </div>
                 <form action="" onsubmit="return false" id="search_form" style="text-align: center">
                     <input type="hidden" name="page" value="1">
-                    <input type="hidden" name="cmd" value="server/show-srv_list">
+                    <input type="hidden" name="c" value="server/show-srv_list">
                 </form>
                 <div class="ibox-content">
                     <div class="">

@@ -6,7 +6,7 @@ $(function () {
         proj_id = id;
     }
     $("input[name='proj_id']").val(proj_id);
-    ajax_com({'cmd': 'project/show-info', 'proj_id': proj_id}, function (data) {
+    ajax_com({"c": 'project/show-info', 'proj_id': proj_id}, function (data) {
         if (data.errno === 0) {
             var data = data.data;
             $("input[name='proj_name']").val(data.proj_name);
@@ -85,7 +85,7 @@ $(function () {
 
 function project_del(obj, id) {
     layer.confirm('确认要删除吗？', function (index) {
-        ajax_com({'cmd':'project/ctrl-del','proj_id':id},function (data) {
+        ajax_com({"c":'project/ctrl-del','proj_id':id},function (data) {
             if (data.errno === 0) {
                 layer.msg('已删除!',{icon:1,time:1000});
                 setTimeout(function () {

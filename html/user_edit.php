@@ -15,7 +15,7 @@
                 <div class="ibox-content">
                     <form method="post" class="form-horizontal" id="form-member-add">
                         <input type="hidden" name="user_id" value="0">
-                        <input type="hidden" name="cmd" value="user/ctrl-user_edit">
+                        <input type="hidden" name="c" value="user/ctrl-user_edit">
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">账户：</label>

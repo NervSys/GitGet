@@ -23,7 +23,7 @@
                     <input type="hidden" name="page" value="1">
                     <input type="hidden" name="token" value="">
                     <input type="hidden" name="proj_id" class="proj_id">
-                    <input type="hidden" name="cmd" value="project/show-pull_logs">
+                    <input type="hidden" name="c" value="project/show-pull_logs">
                 </form>
                 <form method="post" class="form-horizontal" id="form-member-add">
                 <div class="ibox-content">
@@ -45,7 +45,7 @@
                 </div>
                     <input type="hidden" name="token" value="">
                     <input type="hidden" name="proj_id" class="proj_id">
-                    <input type="hidden" name="cmd" value="project/ctrl-reset">
+                    <input type="hidden" name="c" value="project/ctrl-reset">
                     <div class="hr-line-dashed"></div>
                     <div class="hr-line-dashed"></div>
                     <div class="form-group">

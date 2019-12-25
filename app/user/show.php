@@ -72,7 +72,7 @@ class show extends base
      */
     public function user_info()
     {
-        $user_info = user::new()->where(['user_id', $this->user_id])->field('user_acc')->get_one();
+        $user_info = user::new()->where(['user_id', $this->user_id])->fields('user_acc')->get_one();
         return $this->succeed($user_info);
     }
 }

@@ -21,7 +21,7 @@
                 </div>
                 <form action="" onsubmit="return false" id="search_form" style="text-align: center">
                     <input type="hidden" name="page" value="1">
-                    <input type="hidden" name="cmd" value="server/show-project_serv_list">
+                    <input type="hidden" name="c" value="server/show-project_serv_list">
                     <input type="hidden" name="proj_id" class="proj_id">
                     <input type="hidden" name="token" value="">
                 </form>

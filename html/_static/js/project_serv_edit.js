@@ -3,7 +3,7 @@ var token=sessionStorage.getItem('token');
 $(function () {
     var id = getQueryString('id');
     if (id != '' && id != null) {
-        ajax_com({'cmd': 'server/show-project_serv_info', 'id': id}, function (data) {
+        ajax_com({"c": 'server/show-project_serv_info', 'id': id}, function (data) {
             if (data.errno === 0) {
                 var data = data.data;
                 $("input[name='id']").val(data.id);
@@ -50,7 +50,7 @@ $(function () {
     }
 
 
-    ajax_com({'cmd': 'server/show-sel_list', 'proj_id': proj_id}, function (data) {
+    ajax_com({"c": 'server/show-sel_list', 'proj_id': proj_id}, function (data) {
         if (data.errno === 0) {
             var data = data.data;
             var h='';

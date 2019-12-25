@@ -22,7 +22,7 @@
                     <form method="post" class="form-horizontal" id="form-member-add">
                         <input type="hidden" name="id" value="0">
                         <input type="hidden" name="token" value="">
-                        <input type="hidden" name="cmd" value="project/ctrl-add">
+                        <input type="hidden" name="c" value="project/ctrl-add">
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">本地路径：</label>

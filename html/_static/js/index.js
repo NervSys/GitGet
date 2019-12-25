@@ -1,5 +1,5 @@
 $(function () {
-    ajax_com({'cmd': 'user/show-user_info'}, function (data) {
+    ajax_com({"c": 'user/show-user_info'}, function (data) {
         if (data.errno === 0) {
             var user_acc=data.data.user_acc;
             //$(".text-xs").html(data.data.role_name + '<b class="caret"></b>');
@@ -7,7 +7,7 @@ $(function () {
         }
     })
 
-    ajax_com({'cmd': "user/show-user_menu"}, function (result) {
+    ajax_com({"c": "user/show-user_menu"}, function (result) {
         if (result.errno === 0) {
             var str = '';
             $.each(result.data, function (k, v) {
@@ -42,7 +42,7 @@ function asyncLoad(src) {
 }
 
 function login_out() {
-    ajax_com({'cmd': 'adminApi/admin_acc-login_out'}, function (data) {
+    ajax_com({"c": 'adminApi/admin_acc-login_out'}, function (data) {
         window.location.href = "./login.php";
     })
 }

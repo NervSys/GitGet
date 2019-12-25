@@ -23,7 +23,7 @@
                 </div>
                 <form action="" onsubmit="return false" id="search_form" style="text-align: center">
                     <input type="hidden" name="page" value="1">
-                    <input type="hidden" name="cmd" value="project/show-list">
+                    <input type="hidden" name="c" value="project/show-list">
                     <input type="hidden" name="token" value="">
                 </form>
                 <div class="ibox-content">

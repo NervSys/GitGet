@@ -50,7 +50,7 @@ function show_list() {
 /*用户-删除*/
 function info_del(obj, id) {
     layer.confirm('确认要删除吗？', function (index) {
-            ajax_com({'cmd':'server/ctrl-delete_serv','srv_id':id},function (data) {
+            ajax_com({"c":'server/ctrl-delete_serv','srv_id':id},function (data) {
                 if (data.errno === 0) {
                     $(obj).parents("tr").remove();
                     layer.msg('已删除!',{icon:1,time:1000});

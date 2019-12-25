@@ -15,7 +15,7 @@
                 <div class="ibox-content">
                     <form method="post" class="form-horizontal" id="form-member-add">
                         <input type="hidden" name="srv_id" value="0">
-                        <input type="hidden" name="cmd" value="server/ctrl-addOrEdit">
+                        <input type="hidden" name="c" value="server/ctrl-addOrEdit">
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label"><span style="color:red;margin-right:5px;font-size:18px;">*</span>服务器IP：</label>

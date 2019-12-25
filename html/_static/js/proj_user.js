@@ -4,7 +4,7 @@ $(function () {
     var proj_id = getQueryString('proj_id');
     var proj_name = getQueryString('proj_name');
     if (proj_id != '' && proj_id != null) {
-        ajax_com({'cmd': 'project/show-team_list', 'proj_id': proj_id}, function (data) {
+        ajax_com({"c": 'project/show-team_list', 'proj_id': proj_id}, function (data) {
             if (data.errno === 0) {
                 var data = data.data;
                 $("input[name='proj_name']").val(proj_name);

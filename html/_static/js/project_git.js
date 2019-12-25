@@ -6,7 +6,7 @@ $(function () {
         proj_id = id;
     }
     $("#proj_id").val(proj_id);
-    ajax_com({'cmd': 'project/proj_git-branch_list', 'proj_id': proj_id}, function (data) {
+    ajax_com({"c": 'project/proj_git-branch_list', 'proj_id': proj_id}, function (data) {
         if (data.errno === 0) {
             var data = data.data;
             var ht = '';
@@ -74,7 +74,7 @@ function show_list() {
 }
 
 function update_branch() {
-    ajax_com({'cmd': 'project/proj_git-update_branch', 'proj_id': proj_id}, function (data) {
+    ajax_com({"c": 'project/proj_git-update_branch', 'proj_id': proj_id}, function (data) {
         if (data.errno === 0) {
             layer.msg('ok', {icon: 1});
             setTimeout(function () {
@@ -90,7 +90,7 @@ function update_branch() {
 }
 
 function reset_commit(proj_id, log_id) {
-    ajax_com({'cmd': 'project/proj_git-reset', 'proj_id': proj_id, 'log_id': log_id}, function (data) {
+    ajax_com({"c": 'project/proj_git-reset', 'proj_id': proj_id, 'log_id': log_id}, function (data) {
         if (data.errno === 0) {
             layer.msg('ok', {icon: 1});
             setTimeout(function () {
@@ -117,7 +117,7 @@ function add() {
 
 function checkout() {
     var branch_id = $("#branch_list").val();
-    ajax_com({'cmd': 'project/proj_git-checkout', 'proj_id': proj_id, 'branch_id': branch_id}, function (data) {
+    ajax_com({"c": 'project/proj_git-checkout', 'proj_id': proj_id, 'branch_id': branch_id}, function (data) {
         if (data.errno === 0) {
             layer.msg('ok', {icon: 1});
             setTimeout(function () {

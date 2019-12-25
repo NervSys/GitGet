@@ -21,7 +21,7 @@
                 <div class="ibox-content">
                     <form method="post" class="form-horizontal" id="form-member-add">
                         <input type="hidden" name="proj_id" value="0">
-                        <input type="hidden" name="cmd" value="project/ctrl-add">
+                        <input type="hidden" name="c" value="project/ctrl-add">
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label"><span style="color:red">*</span>项目名称：</label>

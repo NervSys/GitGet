@@ -40,7 +40,7 @@ function login_out() {
     $.ajax({
         url: '/api.php',
         type: 'post',
-        data: {'cmd': 'adminApi/admin_acc-login_out'},
+        data: {"c": 'adminApi/admin_acc-login_out'},
         dataType: 'json',
         success: function (data) {
             parent.location.href = './login.php';
@@ -49,7 +49,7 @@ function login_out() {
 }
 
 function check_login() {
-    ajax_com({'cmd': "adminApi/admin_acc-check_login"}, function () {
+    ajax_com({"c": "adminApi/admin_acc-check_login"}, function () {
     })
 }
 

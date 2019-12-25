@@ -71,7 +71,7 @@ function git(title, url, w, h) {
 /*项目-删除*/
 function project_del(obj, id) {
     layer.confirm('确认要删除吗？', function (index) {
-        ajax_com({'cmd': 'project/ctrl-del', 'proj_id': id}, function (data) {
+        ajax_com({"c": 'project/ctrl-del', 'proj_id': id}, function (data) {
             if (data.errno === 0) {
                 $(obj).parents("tr").remove();
                 layer.msg('已删除!', {icon: 1, time: 1000});
@@ -83,7 +83,7 @@ function project_del(obj, id) {
 }
 
 function proj_update(obj, id) {
-    ajax_com({'cmd': 'project/proj_git-update', 'proj_id': id}, function (data) {
+    ajax_com({"c": 'project/proj_git-update', 'proj_id': id}, function (data) {
         if (data.errno === 0) {
             $(obj).addClass('btn-default disabled');
             $(obj).html('进行中');
@@ -96,7 +96,7 @@ function proj_update(obj, id) {
 }
 
 function update_btn(obj, id) {
-    ajax_com({'cmd': 'project/proj_git-lock_status', 'proj_id': id}, function (data) {
+    ajax_com({"c": 'project/proj_git-lock_status', 'proj_id': id}, function (data) {
         if (data.errno === 0) {
             if (data.data.status === 0) {
                 location.reload();

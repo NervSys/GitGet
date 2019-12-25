@@ -21,7 +21,7 @@
                 </div>
                 <form action="" onsubmit="return false" id="search_form" style="text-align: center">
                     <input type="hidden" name="page" value="1">
-                    <input type="hidden" name="cmd" value="user/show-user_list">
+                    <input type="hidden" name="c" value="user/show-user_list">
                     <div class="ibox-content">
                         ID：<input type="text" class="form-control m-b" name="user_id" style="width:10%;">
                         账户：<input type="text" class="form-control m-b" name="user_acc" style="width:10%;">

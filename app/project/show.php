@@ -29,11 +29,11 @@ class show extends base
      */
     public function list(int $page = 1, int $page_size = 10): array
     {
-        $res = project::new()->field('proj_id', 'proj_name', 'status', 'is_lock')->where([['status', '<>', 2]])->get_page($page, $page_size);
+        $res = project::new()->fields('proj_id', 'proj_name', 'status', 'is_lock')->where([['status', '<>', 2]])->get_page($page, $page_size);
         foreach ($res['list'] as &$item) {
-            $branch         = branch_list::new()->where([['proj_id', $item['proj_id']], ['active', 1]])->field('branch_id', 'branch_name')->get_one();
+            $branch         = branch_list::new()->where([['proj_id', $item['proj_id']], ['active', 1]])->fields('branch_id', 'branch_name')->get_one();
             $item['branch'] = $branch['branch_name'];
-            $item['commit'] = project_log::new()->where([['proj_id', $item['proj_id']], ['branch_id', $branch['branch_id']], ['active', 1]])->field('proj_log')->get_value();
+            $item['commit'] = project_log::new()->where([['proj_id', $item['proj_id']], ['branch_id', $branch['branch_id']], ['active', 1]])->fields('proj_log')->get_value();
             $key            = "proj_lock:" . $item['proj_id'];
             $is_lock        = $this->redis->exists($key);
             $btn_type       = $is_lock ? 'default disabled' : 'primary';

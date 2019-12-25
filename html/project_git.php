@@ -25,7 +25,7 @@
                         <input type="hidden" name="branch_id" id="branch_id" value="0">
                         <input type="hidden" name="page" id="page" value="1">
                         <input type="hidden" name="page_size" id="page_size" value="10">
-                        <input type="hidden" name="cmd" value="project/proj_git-log_list">
+                        <input type="hidden" name="c" value="project/proj_git-log_list">
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label"><span style="color:red">*</span>分支列表：</label>

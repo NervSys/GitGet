@@ -1,7 +1,7 @@
 <?php
 
 /**
- * API Entry
+ * API Entry script example
  *
  * Copyright 2016-2019 Jerry Shaw <jerry-shaw@live.com>
  *
@@ -18,17 +18,17 @@
  * limitations under the License.
  */
 
-//Declare strict types
-declare(strict_types=1);
+//Set error_reporting level
+error_reporting(E_ALL);
 
-//Define root path
-define('ROOT', realpath(__DIR__ . '/..') . '/');
+//Load main script
+require __DIR__ . '/../NervSys/core/ns.php';
 
-//Define entry path
-define('ENTRY_SCRIPT', __FILE__);
+//Register custom router if needed
+//\ext\core::register_router_function(['class/object', 'method']);
 
-//Load system script
-require ROOT . 'NervSys/core/system.php';
+//Set custom output handler if needed
+//\ext\core::set_output_handler(['class/object', 'method']);
 
-//Boot system
-\core\system::boot();
+//Boot NS
+new \core\ns();

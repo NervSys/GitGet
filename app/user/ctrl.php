@@ -33,7 +33,7 @@ class ctrl extends base
         if ($cnt == 0) {
             $this->make_user($acc, $pwd);
         }
-        $user = user::new()->where(['user_acc', $acc])->field('*')->get_one();
+        $user = user::new()->where(['user_acc', $acc])->fields('*')->get_one();
         if (empty($user)) {
             return $this->response(error_enum::NO_USER);
         }

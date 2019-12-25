@@ -2,7 +2,7 @@ var status = 'true';
 $(function () {
     var user_id = getQueryString('uid');
             if (user_id != '' && user_id != null) {
-                ajax_com({'cmd': 'user/show-user_detail', 'user_id': user_id}, function (data) {
+                ajax_com({"c": 'user/show-user_detail', 'user_id': user_id}, function (data) {
                     if (data.errno === 0) {
                         var data = data.data;
                         $("input[name='user_id']").val(user_id);
