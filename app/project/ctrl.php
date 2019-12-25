@@ -30,7 +30,7 @@ class ctrl extends base
      *
      * @return array
      */
-    public function add(string $proj_name, string $proj_desc, string $git_url, string $local_path, array $srv_ids, array $backup_files, int $proj_id = 0)
+    public function add(string $proj_name, string $proj_desc, string $git_url, string $local_path, array $srv_ids, array $backup_files = [], int $proj_id = 0)
     {
         foreach ($srv_ids as &$srv_id) {
             $srv_id = (int)$srv_id;
