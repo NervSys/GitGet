@@ -1,22 +1,22 @@
 var status = 'true';
 $(function () {
     var srv_id = getQueryString('uid');
-            if (srv_id != '' && srv_id != null) {
-                ajax_com({"c": 'server/show-serv_detail', 'srv_id': srv_id}, function (data) {
-                    if (data.errno === 0) {
-                        var data = data.data;
-                        $("input[name='srv_id']").val(srv_id);
-                        $("input[name='srv_ip']").val(data.ip);
-                        $("input[name='srv_port']").val(data.port);
-                        $("input[name='srv_name']").val(data.srv_name);
-                    } else {
-                        layer.msg(data.message, {icon: 2});
-                        setTimeout(function () {
-                            parent.location.reload();
-                        }, 1000)
-                    }
-                })
-            } 
+    if (srv_id != '' && srv_id != null) {
+        ajax_com({"c": 'server/show-serv_detail', 'srv_id': srv_id}, function (data) {
+            if (data.errno === 0) {
+                var data = data.data;
+                $("input[name='srv_id']").val(srv_id);
+                $("input[name='srv_ip']").val(data.ip);
+                $("input[name='srv_port']").val(data.port);
+                $("input[name='srv_name']").val(data.srv_name);
+            } else {
+                layer.msg(data.message, {icon: 2});
+                setTimeout(function () {
+                    parent.location.reload();
+                }, 1000)
+            }
+        })
+    }
 
 
     $("#form-member-add").submit(function () {
@@ -28,8 +28,8 @@ $(function () {
             layer.msg("请输入服务器名称", {icon: 2});
             return false;
         }
-        if($("input[name='srv_port']").val() == ''){
-            $("input[name='srv_port']").attr('disabled','disabled');
+        if ($("input[name='srv_port']").val() == '') {
+            $("input[name='srv_port']").attr('disabled', 'disabled');
         }
         if (status == 'true') {
             status = 'false';

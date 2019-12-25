@@ -16,7 +16,7 @@ $(function () {
             if (proj_id != 0) {
                 $("input[name='git_url']").attr('readonly', 'readonly');
                 $("input[name='local_path']").attr('readonly', 'readonly');
-                $("#operate").append('<button class="btn btn-danger" type="button" onclick="project_del(this,'+proj_id+')">删除</button>')
+                $("#operate").append('<button class="btn btn-danger" type="button" onclick="project_del(this,' + proj_id + ')">删除</button>')
             }
             $(".i-checks").iCheck({checkboxClass: "icheckbox_square-green", radioClass: "iradio_square-green",})
             var h = '';
@@ -85,14 +85,14 @@ $(function () {
 
 function project_del(obj, id) {
     layer.confirm('确认要删除吗？', function (index) {
-        ajax_com({"c":'project/ctrl-del','proj_id':id},function (data) {
+        ajax_com({"c": 'project/ctrl-del', 'proj_id': id}, function (data) {
             if (data.errno === 0) {
-                layer.msg('已删除!',{icon:1,time:1000});
+                layer.msg('已删除!', {icon: 1, time: 1000});
                 setTimeout(function () {
                     parent.location.reload();
                 }, 1000)
             } else {
-                layer.msg(data.message,{icon:2});
+                layer.msg(data.message, {icon: 2});
             }
         })
     });

@@ -2,6 +2,7 @@ var table;
 $(function () {
     table = show_list();
 })
+
 function show_list() {
     return $("#editable").dataTable({
         "serverSide": true,  //启用服务器端分页
@@ -22,7 +23,7 @@ function show_list() {
             $("input[name='page']").val(page);
             ajax_com($("form").serialize(), function (data) {
                 if (data.errno === 0) {
-                    var data=data.data;
+                    var data = data.data;
                     var returnData = {};
                     returnData.draw = data.draw;//这里直接自行返回了draw计数器,应该由后台返回
                     returnData.recordsTotal = data.cnt_data;//返回数据全部记录
@@ -50,14 +51,14 @@ function show_list() {
 /*用户-删除*/
 function info_del(obj, id) {
     layer.confirm('确认要删除吗？', function (index) {
-            ajax_com({"c":'server/ctrl-delete_serv','srv_id':id},function (data) {
-                if (data.errno === 0) {
-                    $(obj).parents("tr").remove();
-                    layer.msg('已删除!',{icon:1,time:1000});
-                } else {
-                    layer.msg(data.message,{icon:2});
-                }
-            })
+        ajax_com({"c": 'server/ctrl-delete_serv', 'srv_id': id}, function (data) {
+            if (data.errno === 0) {
+                $(obj).parents("tr").remove();
+                layer.msg('已删除!', {icon: 1, time: 1000});
+            } else {
+                layer.msg(data.message, {icon: 2});
+            }
+        })
     });
 }
 

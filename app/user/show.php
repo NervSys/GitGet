@@ -17,9 +17,9 @@ class show extends base
     public $tz = '*';
 
     /**
-     * @api 菜单列表
      * @return array
      * @throws \Exception
+     * @api 菜单列表
      */
     public function user_menu()
     {
@@ -68,6 +68,7 @@ class show extends base
 
     /**
      * 用户信息
+     *
      * @return array
      */
     public function user_info()

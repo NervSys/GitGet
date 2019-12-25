@@ -1,14 +1,14 @@
 function ajax_com(post_data, callback) {
-    var token=sessionStorage.getItem('token');
-    if(!token){
+    var token = sessionStorage.getItem('token');
+    if (!token) {
         layer.msg("登录超时，请重新登录");
         setTimeout(function () {
             parent.location.href = './login.php';
         }, 600);
     }
-    if(typeof post_data=='object'){
-        post_data['token']=token;
-    }else{
+    if (typeof post_data == 'object') {
+        post_data['token'] = token;
+    } else {
         /*post_data=decodeURIComponent(post_data,true);
         var post_arr=post_data.split('&');
         var post_data={};
@@ -120,11 +120,11 @@ function funcUrlDel(paramUrl, delKey) {
     var newUrl = '';
     for (var i = 0; i < arr.length; i++) {
         var kv = arr[i].split("=");
-        if(kv[0] == delKey) {
+        if (kv[0] == delKey) {
             continue;
         }
 
-        if(newUrl == ''){
+        if (newUrl == '') {
             newUrl = kv[0] + "=" + kv[1];
         } else {
             newUrl += "&" + kv[0] + "=" + kv[1];

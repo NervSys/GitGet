@@ -50,10 +50,10 @@ class show extends base
 
     public function system_setting()
     {
-        $setting = system_setting::new()->get();
-        $key = array_column($setting,'key');
-        $value = array_column($setting,'value');
-        $settings = array_combine($key,$value);
+        $setting  = system_setting::new()->get();
+        $key      = array_column($setting, 'key');
+        $value    = array_column($setting, 'value');
+        $settings = array_combine($key, $value);
         return $this->succeed($settings);
     }
 }

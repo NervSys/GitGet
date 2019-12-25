@@ -2,12 +2,9 @@
 
 namespace app\library;
 
-use app\enum\error_enum;
 use app\model\project;
-use core\handler\factory;
-
+use ext\factory;
 use ext\conf;
-use ext\errno;
 use ext\redis;
 
 class git extends factory

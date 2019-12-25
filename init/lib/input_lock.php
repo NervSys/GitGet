@@ -10,13 +10,11 @@
 namespace init\lib;
 
 use core\lib\std\pool;
-use core\lib\std\router;
 use ext\conf;
 use ext\core;
 use ext\errno;
 use ext\factory;
 use ext\lock;
-use ext\log;
 
 class input_lock extends factory
 {

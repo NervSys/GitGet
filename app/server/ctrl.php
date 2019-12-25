@@ -12,10 +12,8 @@ namespace app\server;
 use app\enum\error_enum;
 use app\library\base;
 use app\library\model;
-use app\model\project;
 use app\model\server;
 use app\model\system_setting;
-use app\project\proj_git;
 use ext\http;
 
 class ctrl extends base
@@ -87,8 +85,8 @@ class ctrl extends base
         foreach ($servers as $server) {
             $ip   = $server['ip'];
             $port = $server['port'];
-            $url  = "http://".$ip . ":" . $port . "/api.php";
-            http::new()->add(['url'=>$url,'data'=>$data])->fetch();
+            $url  = "http://" . $ip . ":" . $port . "/api.php";
+            http::new()->add(['url' => $url, 'data' => $data])->fetch();
         }
         return $this->succeed();
     }

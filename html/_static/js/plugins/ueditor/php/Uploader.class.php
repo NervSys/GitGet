@@ -12,18 +12,18 @@ use app\start;
 class Uploader
 {
     private $fileField; //文件域名
-    private $file; //文件上传对象
-    private $base64; //文件上传对象
-    private $config; //配置信息
-    private $oriName; //原始文件名
-    private $fileName; //新文件名
-    private $fullName; //完整文件名,即从当前配置目录开始的URL
-    private $filePath; //完整文件名,即从当前配置目录开始的URL
-    private $fileSize; //文件大小
-    private $fileType; //文件类型
+    private $file;      //文件上传对象
+    private $base64;    //文件上传对象
+    private $config;    //配置信息
+    private $oriName;   //原始文件名
+    private $fileName;  //新文件名
+    private $fullName;  //完整文件名,即从当前配置目录开始的URL
+    private $filePath;  //完整文件名,即从当前配置目录开始的URL
+    private $fileSize;  //文件大小
+    private $fileType;  //文件类型
     private $stateInfo; //上传状态信息,
     private $stateMap = [ //上传状态映射表，国际化用户需考虑此处数据的国际化
-        "SUCCESS", //上传成功标记，在UEditor中内不可改变，否则flash判断会出错
+        "SUCCESS",        //上传成功标记，在UEditor中内不可改变，否则flash判断会出错
         "文件大小超出 upload_max_filesize 限制",
         "文件大小超出 MAX_FILE_SIZE 限制",
         "文件未被完整上传",
@@ -127,9 +127,9 @@ class Uploader
             /** @var \OSS\OssClient $ossClient */
             $ossClient = \thirds\package::new()->OSS;
 
-            $bucket = start::$conf['OSS']['bucket'];//oss中的文件上传空间
+            $bucket = start::$conf['OSS']['bucket'];                              //oss中的文件上传空间
             $object = 'upload/' . date("Y-m-d") . '/' . md5(microtime()) . ".jpg";//想要保存文件的名称
-            $file   = $_SERVER['DOCUMENT_ROOT'] . "/" . $this->fullName;//文件路径，必须是本地的。
+            $file   = $_SERVER['DOCUMENT_ROOT'] . "/" . $this->fullName;          //文件路径，必须是本地的。
             try {
                 $ossClient->uploadFile($bucket, $object, $file);
 

@@ -22,14 +22,14 @@
                             <label class="col-sm-2 control-label">项目名称：</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="proj_name" name="proj_name"
-                                      readonly>
+                                       readonly>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">当前分支：</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control"  name="active_branch"
+                                <input type="text" class="form-control" name="active_branch"
                                        readonly>
                             </div>
                         </div>
@@ -37,7 +37,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">切换到：</label>
                             <div class="col-sm-10" id="branchlist">
-                               <select></select>
+                                <select></select>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>

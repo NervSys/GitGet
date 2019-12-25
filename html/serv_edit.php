@@ -18,7 +18,8 @@
                         <input type="hidden" name="c" value="server/ctrl-addOrEdit">
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label"><span style="color:red;margin-right:5px;font-size:18px;">*</span>服务器IP：</label>
+                            <label class="col-sm-2 control-label"><span
+                                        style="color:red;margin-right:5px;font-size:18px;">*</span>服务器IP：</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" name="srv_ip" id="srv_ip">
                             </div>
@@ -27,7 +28,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">服务器端口：</label>
                             <div class="col-sm-10">
-                                <input type="number" class="form-control" name="srv_port" id="srv_port" >
+                                <input type="number" class="form-control" name="srv_port" id="srv_port">
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>

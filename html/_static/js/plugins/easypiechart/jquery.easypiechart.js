@@ -7,30 +7,28 @@
  * @version 2.1.5
  **/
 
-(function(root, factory) {
-    if(typeof exports === 'object') {
+(function (root, factory) {
+    if (typeof exports === 'object') {
         module.exports = factory(require('jquery'));
-    }
-    else if(typeof define === 'function' && define.amd) {
+    } else if (typeof define === 'function' && define.amd) {
         define(['jquery'], factory);
-    }
-    else {
+    } else {
         factory(root.jQuery);
     }
-}(this, function($) {
+}(this, function ($) {
 
     /**
      * Renderer to render the chart on a canvas object
      * @param {DOMElement} el      DOM element to host the canvas (root of the plugin)
      * @param {object}     options options object of the plugin
      */
-    var CanvasRenderer = function(el, options) {
+    var CanvasRenderer = function (el, options) {
         var cachedBackground;
         var canvas = document.createElement('canvas');
 
         el.appendChild(canvas);
 
-        if (typeof(G_vmlCanvasManager) !== 'undefined') {
+        if (typeof (G_vmlCanvasManager) !== 'undefined') {
             G_vmlCanvasManager.initElement(canvas);
         }
 
@@ -59,7 +57,7 @@
         }
 
         // IE polyfill for Date
-        Date.now = Date.now || function() {
+        Date.now = Date.now || function () {
             return +(new Date());
         };
 
@@ -69,7 +67,7 @@
          * @param {number} lineWidth Width of the line in px
          * @param {number} percent   Percentage to draw (float between -1 and 1)
          */
-        var drawCircle = function(color, lineWidth, percent) {
+        var drawCircle = function (color, lineWidth, percent) {
             percent = Math.min(Math.max(-1, percent || 0), 1);
             var isNegative = percent <= 0 ? true : false;
 
@@ -85,7 +83,7 @@
         /**
          * Draw the scale of the chart
          */
-        var drawScale = function() {
+        var drawScale = function () {
             var offset;
             var length;
 
@@ -101,7 +99,7 @@
                     length = options.scaleLength * 0.6;
                     offset = options.scaleLength - length;
                 }
-                ctx.fillRect(-options.size/2 + offset, 0, length, 1);
+                ctx.fillRect(-options.size / 2 + offset, 0, length, 1);
                 ctx.rotate(Math.PI / 12);
             }
             ctx.restore();
@@ -111,11 +109,11 @@
          * Request animation frame wrapper with polyfill
          * @return {function} Request animation frame method or timeout fallback
          */
-        var reqAnimationFrame = (function() {
-            return  window.requestAnimationFrame ||
+        var reqAnimationFrame = (function () {
+            return window.requestAnimationFrame ||
                 window.webkitRequestAnimationFrame ||
                 window.mozRequestAnimationFrame ||
-                function(callback) {
+                function (callback) {
                     window.setTimeout(callback, 1000 / 60);
                 };
         }());
@@ -123,29 +121,29 @@
         /**
          * Draw the background of the plugin including the scale and the track
          */
-        var drawBackground = function() {
-            if(options.scaleColor) drawScale();
-            if(options.trackColor) drawCircle(options.trackColor, options.lineWidth, 1);
+        var drawBackground = function () {
+            if (options.scaleColor) drawScale();
+            if (options.trackColor) drawCircle(options.trackColor, options.lineWidth, 1);
         };
 
         /**
          * Canvas accessor
          */
-        this.getCanvas = function() {
+        this.getCanvas = function () {
             return canvas;
         };
 
         /**
          * Canvas 2D context 'ctx' accessor
          */
-        this.getCtx = function() {
+        this.getCtx = function () {
             return ctx;
         };
 
         /**
          * Clear the complete canvas
          */
-        this.clear = function() {
+        this.clear = function () {
             ctx.clearRect(options.size / -2, options.size / -2, options.size, options.size);
         };
 
@@ -153,7 +151,7 @@
          * Draw the complete chart
          * @param {number} percent Percent shown by the chart between -100 and 100
          */
-        this.draw = function(percent) {
+        this.draw = function (percent) {
             // do we need to render a background
             if (!!options.scaleColor || !!options.trackColor) {
                 // getImageData and putImageData are supported
@@ -176,7 +174,7 @@
 
             // if barcolor is a function execute it and pass the percent as a value
             var color;
-            if (typeof(options.barColor) === 'function') {
+            if (typeof (options.barColor) === 'function') {
                 color = options.barColor(percent);
             } else {
                 color = options.barColor;
@@ -191,10 +189,10 @@
          * @param {number} from Starting percentage
          * @param {number} to   Final percentage
          */
-        this.animate = function(from, to) {
+        this.animate = function (from, to) {
             var startTime = Date.now();
             options.onStart(from, to);
-            var animation = function() {
+            var animation = function () {
                 var process = Math.min(Date.now() - startTime, options.animate.duration);
                 var currentValue = options.easing(this, process, from, to - from, options.animate.duration);
                 this.draw(currentValue);
@@ -210,7 +208,7 @@
         }.bind(this);
     };
 
-    var EasyPieChart = function(el, opts) {
+    var EasyPieChart = function (el, opts) {
         var defaultOptions = {
             barColor: '#ef1e25',
             trackColor: '#f9f9f9',
@@ -225,27 +223,27 @@
                 enabled: true
             },
             easing: function (x, t, b, c, d) { // more can be found here: http://gsgd.co.uk/sandbox/jquery/easing/
-                t = t / (d/2);
+                t = t / (d / 2);
                 if (t < 1) {
                     return c / 2 * t * t + b;
                 }
-                return -c/2 * ((--t)*(t-2) - 1) + b;
+                return -c / 2 * ((--t) * (t - 2) - 1) + b;
             },
-            onStart: function(from, to) {
+            onStart: function (from, to) {
                 return;
             },
-            onStep: function(from, to, currentValue) {
+            onStep: function (from, to, currentValue) {
                 return;
             },
-            onStop: function(from, to) {
+            onStop: function (from, to) {
                 return;
             }
         };
 
         // detect present renderer
-        if (typeof(CanvasRenderer) !== 'undefined') {
+        if (typeof (CanvasRenderer) !== 'undefined') {
             defaultOptions.renderer = CanvasRenderer;
-        } else if (typeof(SVGRenderer) !== 'undefined') {
+        } else if (typeof (SVGRenderer) !== 'undefined') {
             defaultOptions.renderer = SVGRenderer;
         } else {
             throw new Error('Please load either the SVG- or the CanvasRenderer');
@@ -257,36 +255,36 @@
         /**
          * Initialize the plugin by creating the options object and initialize rendering
          */
-        var init = function() {
+        var init = function () {
             this.el = el;
             this.options = options;
 
             // merge user options into default options
             for (var i in defaultOptions) {
                 if (defaultOptions.hasOwnProperty(i)) {
-                    options[i] = opts && typeof(opts[i]) !== 'undefined' ? opts[i] : defaultOptions[i];
-                    if (typeof(options[i]) === 'function') {
+                    options[i] = opts && typeof (opts[i]) !== 'undefined' ? opts[i] : defaultOptions[i];
+                    if (typeof (options[i]) === 'function') {
                         options[i] = options[i].bind(this);
                     }
                 }
             }
 
             // check for jQuery easing
-            if (typeof(options.easing) === 'string' && typeof(jQuery) !== 'undefined' && jQuery.isFunction(jQuery.easing[options.easing])) {
+            if (typeof (options.easing) === 'string' && typeof (jQuery) !== 'undefined' && jQuery.isFunction(jQuery.easing[options.easing])) {
                 options.easing = jQuery.easing[options.easing];
             } else {
                 options.easing = defaultOptions.easing;
             }
 
             // process earlier animate option to avoid bc breaks
-            if (typeof(options.animate) === 'number') {
+            if (typeof (options.animate) === 'number') {
                 options.animate = {
                     duration: options.animate,
                     enabled: true
                 };
             }
 
-            if (typeof(options.animate) === 'boolean' && !options.animate) {
+            if (typeof (options.animate) === 'boolean' && !options.animate) {
                 options.animate = {
                     duration: 1000,
                     enabled: options.animate
@@ -312,7 +310,7 @@
          * @param  {number} newValue Number between 0 and 100
          * @return {object}          Instance of the plugin for method chaining
          */
-        this.update = function(newValue) {
+        this.update = function (newValue) {
             newValue = parseFloat(newValue);
             if (options.animate.enabled) {
                 this.renderer.animate(currentValue, newValue);
@@ -327,7 +325,7 @@
          * Disable animation
          * @return {object} Instance of the plugin for method chaining
          */
-        this.disableAnimation = function() {
+        this.disableAnimation = function () {
             options.animate.enabled = false;
             return this;
         };
@@ -336,7 +334,7 @@
          * Enable animation
          * @return {object} Instance of the plugin for method chaining
          */
-        this.enableAnimation = function() {
+        this.enableAnimation = function () {
             options.animate.enabled = true;
             return this;
         };
@@ -344,8 +342,8 @@
         init();
     };
 
-    $.fn.easyPieChart = function(options) {
-        return this.each(function() {
+    $.fn.easyPieChart = function (options) {
+        return this.each(function () {
             var instanceOptions;
 
             if (!$.data(this, 'easyPieChart')) {

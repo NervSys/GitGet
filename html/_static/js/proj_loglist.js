@@ -1,6 +1,6 @@
 var table;
 var status = 'true';
-var token=sessionStorage.getItem('token');
+var token = sessionStorage.getItem('token');
 $(function () {
     table = show_list();
 
@@ -27,6 +27,7 @@ $(function () {
         return false;
     })
 })
+
 function show_list() {
     return $("#editable").dataTable({
         "serverSide": true,  //启用服务器端分页
@@ -49,7 +50,7 @@ function show_list() {
             $('.proj_id').val(proj_id);
             ajax_com($("#search_form").serialize(), function (data) {
                 if (data.errno === 0) {
-                    var data=data.data;
+                    var data = data.data;
                     $("#user_num").text(data.cnt_data);
                     var returnData = {};
                     returnData.draw = data.draw;//这里直接自行返回了draw计数器,应该由后台返回

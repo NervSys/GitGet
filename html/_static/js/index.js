@@ -1,7 +1,7 @@
 $(function () {
     ajax_com({"c": 'user/show-user_info'}, function (data) {
         if (data.errno === 0) {
-            var user_acc=data.data.user_acc;
+            var user_acc = data.data.user_acc;
             //$(".text-xs").html(data.data.role_name + '<b class="caret"></b>');
             $(".font-bold").text(user_acc);
         }

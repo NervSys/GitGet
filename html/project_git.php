@@ -4,7 +4,7 @@
     <?php require __DIR__ . '/header.php'; ?>
     <title>编辑项目</title>
     <link href="./_static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
-<!--    <link href="./_static/css/plugins/iCheck/custom.css" rel="stylesheet">-->
+    <!--    <link href="./_static/css/plugins/iCheck/custom.css" rel="stylesheet">-->
     <style type="text/css">
         .radio {
             display: inline
@@ -50,13 +50,13 @@
                             <tbody>
                             </tbody>
                         </table>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-                    </form>
                 </div>
+                <div class="hr-line-dashed"></div>
+                </form>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <?php require __DIR__ . '/footer.php'; ?>
@@ -65,7 +65,7 @@
 <script type="text/javascript" src="./_static/js/plugins/My97DatePicker/WdatePicker.js"></script>
 <script src="./_static/js/plugins/dataTables/jquery.dataTables.js"></script>
 <script src="./_static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
-<script src="./_static/js/content.min.js?v=<?php echo date('Ymd')?>"></script>
+<script src="./_static/js/content.min.js?v=<?php echo date('Ymd') ?>"></script>
 <script type="text/javascript" src="./_static/js/project_git.js"></script>
 <!--/请在上方写此页面业务相关的脚本-->
 </body>

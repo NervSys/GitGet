@@ -15,7 +15,7 @@ use app\model\user;
 
 class ctrl extends base
 {
-    public $tz = '*';
+    public $tz          = '*';
     public $check_token = false;
 
     /**

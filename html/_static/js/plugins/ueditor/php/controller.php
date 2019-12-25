@@ -12,16 +12,16 @@ $action = $_GET['action'];
 
 switch ($action) {
     case 'config':
-        $result =  json_encode($CONFIG);
+        $result = json_encode($CONFIG);
         break;
 
     /* 上传图片 */
     case 'uploadimage':
-    /* 上传涂鸦 */
+        /* 上传涂鸦 */
     case 'uploadscrawl':
-    /* 上传视频 */
+        /* 上传视频 */
     case 'uploadvideo':
-    /* 上传文件 */
+        /* 上传文件 */
     case 'uploadfile':
         $result = include("action_upload.php");
         break;
@@ -41,9 +41,9 @@ switch ($action) {
         break;
 
     default:
-        $result = json_encode(array(
-            'state'=> '请求地址出错'
-        ));
+        $result = json_encode([
+            'state' => '请求地址出错'
+        ]);
         break;
 }
 
@@ -52,9 +52,9 @@ if (isset($_GET["callback"])) {
     if (preg_match("/^[\w_]+$/", $_GET["callback"])) {
         echo htmlspecialchars($_GET["callback"]) . '(' . $result . ')';
     } else {
-        echo json_encode(array(
-            'state'=> 'callback参数不合法'
-        ));
+        echo json_encode([
+            'state' => 'callback参数不合法'
+        ]);
     }
 } else {
     echo $result;

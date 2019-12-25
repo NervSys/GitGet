@@ -14,8 +14,8 @@ $(function () {
                 layer.msg('登录成功', {icon: 1});
                 setTimeout(function () {
                     console.log(data);
-                    sessionStorage.setItem('token',data.data.token);
-                    sessionStorage.setItem('user_acc',data.data.name);
+                    sessionStorage.setItem('token', data.data.token);
+                    sessionStorage.setItem('user_acc', data.data.name);
                     window.location.href = './index.php';
                 }, 1000);
             } else {

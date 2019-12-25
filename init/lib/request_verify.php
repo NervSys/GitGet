@@ -33,10 +33,10 @@ class request_verify extends factory
         if (class_exists($target_class)) {
             $tar_class = new $target_class;
             if (method_exists($tar_class, $method)) {
-                $rule    = forward_static_call([$tar_class, $method]);
+                $rule     = forward_static_call([$tar_class, $method]);
                 $validate = validator::new();
 
-                $res     = $validate->check(core::get_data(), $rule);
+                $res = $validate->check(core::get_data(), $rule);
                 if (!$res) {
                     response::new()->failMsg(error_code::INVALID_PARAMS, $validate->getError());
                     core::stop();

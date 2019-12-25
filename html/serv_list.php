@@ -51,6 +51,6 @@
 <script type="text/javascript" src="./_static/js/plugins/My97DatePicker/WdatePicker.js"></script>
 <script src="./_static/js/plugins/dataTables/jquery.dataTables.js"></script>
 <script src="./_static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
-<script src="./_static/js/content.min.js?v=<?php echo date('Ymd')?>"></script>
-<script src="./_static/js/serv_list.js?v=<?php echo date('Ymd')?>"></script>
+<script src="./_static/js/content.min.js?v=<?php echo date('Ymd') ?>"></script>
+<script src="./_static/js/serv_list.js?v=<?php echo date('Ymd') ?>"></script>
 </html>

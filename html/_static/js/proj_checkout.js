@@ -1,5 +1,5 @@
 var status = 'true';
-var token=sessionStorage.getItem('token');
+var token = sessionStorage.getItem('token');
 $(function () {
     var proj_id = getQueryString('proj_id');
     var proj_name = getQueryString('proj_name');
@@ -10,15 +10,15 @@ $(function () {
                 $("input[name='proj_name']").val(proj_name);
                 $("input[name='active_branch']").val(data.active_branch);
                 $("input[name='proj_id']").val(proj_id);
-                var h='<select name="branch" class="form-control">';
-                $(data.branch_names).each(function (i,v) {
-                    var s='';
-                    if(v==data.active_branch){
-                        s='selected';
+                var h = '<select name="branch" class="form-control">';
+                $(data.branch_names).each(function (i, v) {
+                    var s = '';
+                    if (v == data.active_branch) {
+                        s = 'selected';
                     }
-                    h+='<option value="'+v+'" '+s+'>'+v+'</option>';
+                    h += '<option value="' + v + '" ' + s + '>' + v + '</option>';
                 })
-                h+='</select>';
+                h += '</select>';
                 $('#branchlist').html(h);
             } else {
                 layer.msg(data.message, {icon: 2});
@@ -31,7 +31,7 @@ $(function () {
 
 
     $("#form-member-add").submit(function () {
-        if($("select[name='branch']").val()==$("input[name='active_branch']").val()){
+        if ($("select[name='branch']").val() == $("input[name='active_branch']").val()) {
             layer.msg("该项目已经在需要切换的分支上", {icon: 2});
             return false;
         }

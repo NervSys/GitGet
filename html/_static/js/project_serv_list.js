@@ -6,7 +6,8 @@ $(function () {
         return false;
     })
 })
-var token=sessionStorage.getItem('token');
+var token = sessionStorage.getItem('token');
+
 function show_list() {
     return $("#editable").dataTable({
         "serverSide": true,  //启用服务器端分页
@@ -29,7 +30,7 @@ function show_list() {
             $('.proj_id').val(proj_id);
             ajax_com($("form").serialize(), function (data) {
                 if (data.errno === 0) {
-                    var data=data.data;
+                    var data = data.data;
                     $("#user_num").text(data.cnt_data);
                     var returnData = {};
                     returnData.draw = data.draw;//这里直接自行返回了draw计数器,应该由后台返回
@@ -67,23 +68,23 @@ function proj_edit(title, url, w, h) {
 /*项目-删除*/
 function project_del(obj, id) {
     layer.confirm('确认要删除吗？', function (index) {
-        ajax_com({"c":'project/ctrl-del','proj_id':id},function (data) {
+        ajax_com({"c": 'project/ctrl-del', 'proj_id': id}, function (data) {
             if (data.errno === 0) {
                 $(obj).parents("tr").remove();
-                layer.msg('已删除!',{icon:1,time:1000});
+                layer.msg('已删除!', {icon: 1, time: 1000});
             } else {
-                layer.msg(data.message,{icon:2});
+                layer.msg(data.message, {icon: 2});
             }
         })
     });
 }
 
 function proj_update(id) {
-    ajax_com({"c":'project/ctrl-pull','proj_id':id},function (data) {
+    ajax_com({"c": 'project/ctrl-pull', 'proj_id': id}, function (data) {
         if (data.errno === 0) {
-            layer.msg('已更新',{icon:1,time:1000});
+            layer.msg('已更新', {icon: 1, time: 1000});
         } else {
-            layer.msg(data.message,{icon:2});
+            layer.msg(data.message, {icon: 2});
         }
     })
 }

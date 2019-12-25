@@ -55,11 +55,11 @@ class token_parser extends factory
             core::stop();
         }
 
-        $redis      = redis::create(conf::get('redis'))->connect();
+        $redis = redis::create(conf::get('redis'))->connect();
         if (!empty($unit_pool->data['deal'])) {
-            $token_key  = cache_key::DEAL_TOKEN . $user_data['user_id'];
-        }else{
-            $token_key  = cache_key::TOKEN . $user_data['user_id'];
+            $token_key = cache_key::DEAL_TOKEN . $user_data['user_id'];
+        } else {
+            $token_key = cache_key::TOKEN . $user_data['user_id'];
         }
         $token_hash = $redis->get($token_key);
         //fake token or expired

@@ -26,23 +26,23 @@
                     <input type="hidden" name="c" value="project/show-pull_logs">
                 </form>
                 <form method="post" class="form-horizontal" id="form-member-add">
-                <div class="ibox-content">
-                    <table class="table table-striped table-bordered table-hover table-sort" id="editable">
-                        <thead>
-                        <tr>
-                            <th style="width:8%;"></th>
-                            <th style="width:8%;">项目ID</th>
-                            <th style="width:8%;">用户账户</th>
-                            <th style="width:8%;">版本id</th>
-                            <th style="width:8%;">操作描述</th>
-                            <th style="width:8%;">操作时间</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                    <div class="ibox-content">
+                        <table class="table table-striped table-bordered table-hover table-sort" id="editable">
+                            <thead>
+                            <tr>
+                                <th style="width:8%;"></th>
+                                <th style="width:8%;">项目ID</th>
+                                <th style="width:8%;">用户账户</th>
+                                <th style="width:8%;">版本id</th>
+                                <th style="width:8%;">操作描述</th>
+                                <th style="width:8%;">操作时间</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
 
-                </div>
+                    </div>
                     <input type="hidden" name="token" value="">
                     <input type="hidden" name="proj_id" class="proj_id">
                     <input type="hidden" name="c" value="project/ctrl-reset">
@@ -62,6 +62,6 @@
 <script type="text/javascript" src="./_static/js/plugins/My97DatePicker/WdatePicker.js"></script>
 <script src="./_static/js/plugins/dataTables/jquery.dataTables.js"></script>
 <script src="./_static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
-<script src="./_static/js/content.min.js?v=<?php echo date('Ymd')?>"></script>
-<script src="./_static/js/proj_loglist.js?v=<?php echo date('Ymd')?>"></script>
+<script src="./_static/js/content.min.js?v=<?php echo date('Ymd') ?>"></script>
+<script src="./_static/js/proj_loglist.js?v=<?php echo date('Ymd') ?>"></script>
 </html>

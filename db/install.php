@@ -9,8 +9,8 @@
 
 namespace db;
 
-use ext\file;
 use app\library\model;
+use ext\file;
 
 class install extends model
 {

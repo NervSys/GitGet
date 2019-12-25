@@ -74,19 +74,19 @@ class model extends mysql
 
     public function get_page(int $page, int $page_size): array
     {
-        $data = [
+        $data      = [
             'curr_page' => $page,
-            'cnt_data' => 0,
-            'cnt_page' => 0,
-            'list' => []
+            'cnt_data'  => 0,
+            'cnt_page'  => 0,
+            'list'      => []
         ];
         $count_obj = clone $this;
         unset($count_obj->runtime['field']);
         $data['cnt_data'] = $count_obj->select()->fields('COUNT(*) AS C')->fetch_all(\PDO::FETCH_COLUMN)[0];
         $data['cnt_page'] = ceil($data['cnt_data'] / $page_size);
 
-        $page = $page < 1 ? 1 : $page;
-        $page_size = $page_size < 1 ? 1 : $page_size;
+        $page         = $page < 1 ? 1 : $page;
+        $page_size    = $page_size < 1 ? 1 : $page_size;
         $data['list'] = $this->limit(($page - 1) * $page_size, $page_size)->select()->fetch_all();
         return $data;
     }

@@ -9,14 +9,8 @@
 
 namespace init;
 
-use core\lib\std\pool;
 use ext\conf;
-use ext\core;
 use init\lib\input_escape;
-use init\lib\input_lock;
-use init\lib\request_verify;
-use init\lib\token_parser;
-use init\lib\verify_data;
 
 /**
  * Class boot

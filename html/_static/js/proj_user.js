@@ -1,5 +1,5 @@
 var status = 'true';
-var token=sessionStorage.getItem('token');
+var token = sessionStorage.getItem('token');
 $(function () {
     var proj_id = getQueryString('proj_id');
     var proj_name = getQueryString('proj_name');
@@ -9,13 +9,13 @@ $(function () {
                 var data = data.data;
                 $("input[name='proj_name']").val(proj_name);
                 $("input[name='proj_id']").val(proj_id);
-                var h='';
-                $(data).each(function (i,v) {
-                    var s='';
-                    if(v.selected){
-                        s='checked';
+                var h = '';
+                $(data).each(function (i, v) {
+                    var s = '';
+                    if (v.selected) {
+                        s = 'checked';
                     }
-                    h+='<input type="checkbox" name="user_ids[]" value="'+v.user_id+'" '+s+' style="margin-left:10px;"/>'+v.user_acc;
+                    h += '<input type="checkbox" name="user_ids[]" value="' + v.user_id + '" ' + s + ' style="margin-left:10px;"/>' + v.user_acc;
                 })
                 $('#teamlist').html(h);
             } else {
@@ -29,7 +29,7 @@ $(function () {
 
 
     $("#form-member-add").submit(function () {
-        if ($("input[name^='user_ids']:checked").length==0) {
+        if ($("input[name^='user_ids']:checked").length == 0) {
             layer.msg("请勾选项目管理人员", {icon: 2});
             return false;
         }

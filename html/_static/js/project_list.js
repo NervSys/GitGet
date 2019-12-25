@@ -44,7 +44,7 @@ function show_list() {
                     $.each($(".deploy.disabled"), function (i, item) {
                         console.log(item);
                         var proj_id = $(item).attr('id');
-                        update_btn(item,proj_id);
+                        update_btn(item, proj_id);
                     })
                 } else layer.msg(data.msg, {icon: 2});
             })
@@ -101,7 +101,7 @@ function update_btn(obj, id) {
             if (data.data.status === 0) {
                 location.reload();
             } else {
-                if (data.data.msg !== ''){
+                if (data.data.msg !== '') {
                     layer.msg(data.data.msg, {icon: 2});
                 }
                 var setTime = setTimeout(function () {

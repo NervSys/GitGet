@@ -1,17 +1,41 @@
 ﻿<!doctype html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>layDate Demo</title>
-<script src="laydate/laydate.js"></script>
-<style>
-html{background-color:#E3E3E3; font-size:14px; color:#000; font-family:'微软雅黑'}
-h2{line-height:30px; font-size:20px;}
-a,a:hover{ text-decoration:none;}
-pre{font-family:'微软雅黑'}
-.box{width:970px; padding:10px 20px; background-color:#fff; margin:10px auto;}
-.box a{padding-right:20px;}
-</style>
+    <meta charset="utf-8">
+    <title>layDate Demo</title>
+    <script src="laydate/laydate.js"></script>
+    <style>
+        html {
+            background-color: #E3E3E3;
+            font-size: 14px;
+            color: #000;
+            font-family: '微软雅黑'
+        }
+
+        h2 {
+            line-height: 30px;
+            font-size: 20px;
+        }
+
+        a, a:hover {
+            text-decoration: none;
+        }
+
+        pre {
+            font-family: '微软雅黑'
+        }
+
+        .box {
+            width: 970px;
+            padding: 10px 20px;
+            background-color: #fff;
+            margin: 10px auto;
+        }
+
+        .box a {
+            padding-right: 20px;
+        }
+    </style>
 </head>
 <body>
 <div style="width:970px; margin:10px auto;">
@@ -22,8 +46,8 @@ pre{font-family:'微软雅黑'}
  @Name：laydate-v<script>document.write(laydate.v)</script> 日期控件说明
  @Author：贤心
  @Blog：<a href="http://sentsin.com" target="_blank">http://sentsin.com</a>
- @官网：<a href="http://sentsin.com/layui/laydate"  target="_blank">http://sentsin.com/layui/laydate</a>
- @开发版源码：<a href="http://sentsin.com/lily/lib/laydate/laydate.dev.js"  target="_blank">http://sentsin.com/lily/lib/laydate/laydate.dev.js</a>
+ @官网：<a href="http://sentsin.com/layui/laydate" target="_blank">http://sentsin.com/layui/laydate</a>
+ @开发版源码：<a href="http://sentsin.com/lily/lib/laydate/laydate.dev.js" target="_blank">http://sentsin.com/lily/lib/laydate/laydate.dev.js</a>
 
 <strong>【注意事项】</strong>
 一、请千万勿移动laydate中的目录结构，它们具有完整的依赖体系。使用时，只需引入laydate/laydate.js即可。
@@ -31,7 +55,7 @@ pre{font-family:'微软雅黑'}
 三、laydate遵循LGPL开源协议，永不收费！
 四、版权最终解释权：贤心。
 </pre>
-演示二：<input class="laydate-icon" id="demo" value="2014-6-25更新">
+    演示二：<input class="laydate-icon" id="demo" value="2014-6-25更新">
 </div>
 <div class="box" style="text-align:center">
     <p>现在，您已经看到了layDate的第一个版本了，路漫漫其修远兮，不管您的网站是否存有别的日期控件，但我相信总有一日您会对layDate情有独钟。</p>
@@ -42,15 +66,15 @@ pre{font-family:'微软雅黑'}
 </div>
 
 <script>
-;!function(){
+    ;!function () {
 
 //laydate.skin('molv');
 
-laydate({
-   elem: '#demo'
-})
+        laydate({
+            elem: '#demo'
+        })
 
-}();
+    }();
 </script>
 </body>
 </html>
