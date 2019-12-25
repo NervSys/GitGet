@@ -92,7 +92,6 @@ class proj_git extends base
      */
     public function local_update(int $proj_id)
     {
-        log::new()->add(['local_update',$proj_id])->save();
         mpc::new()->add([
             'c' => 'project/proj_git-update_cli',
             'd' => [
@@ -109,7 +108,6 @@ class proj_git extends base
      */
     public function update_cli(int $proj_id)
     {
-        log::new()->add(['update_cli',$proj_id])->save();
         git::new($proj_id)->pull();
         $this->update_branch($proj_id);
         $this->add_log($proj_id, self::GIT_CMD_TYPE_PULL);
