@@ -75,7 +75,7 @@ class proj_git extends base
     public function update(int $proj_id)
     {
         $data = [
-            'cmd'     => 'project/proj_git-local_update',
+            'c'       => 'project/proj_git-local_update',
             'proj_id' => $proj_id
         ];
         $this->lock($proj_id, $data);
@@ -93,8 +93,8 @@ class proj_git extends base
     public function local_update(int $proj_id)
     {
         mpc::new()->add([
-            'cmd'  => 'project/proj_git-update_cli',
-            'data' => [
+            'c' => 'project/proj_git-update_cli',
+            'd' => [
                 'proj_id' => $proj_id
             ]
         ])->go(false);
@@ -200,7 +200,7 @@ class proj_git extends base
             return $this->response(error_enum::BRANCH_NO_CHECK);
         }
         $data = [
-            'cmd'         => 'project/proj_git-local_checkout',
+            'c'           => 'project/proj_git-local_checkout',
             'proj_id'     => $proj_id,
             'branch_name' => $branch_info['branch_name']
         ];
@@ -220,8 +220,8 @@ class proj_git extends base
     public function local_checkout(int $proj_id, string $branch_name)
     {
         mpc::new()->add([
-            'cmd'  => 'project/proj_git-checkout_cli',
-            'data' => [
+            'c' => 'project/proj_git-checkout_cli',
+            'd' => [
                 'proj_id'     => $proj_id,
                 'branch_name' => $branch_name
             ]
@@ -275,7 +275,7 @@ class proj_git extends base
     public function reset(int $proj_id, int $log_id)
     {
         $data = [
-            'cmd'     => 'project/proj_git-local_reset',
+            'c'       => 'project/proj_git-local_reset',
             'proj_id' => $proj_id,
             'log_id'  => $log_id
         ];
@@ -295,8 +295,8 @@ class proj_git extends base
     public function local_reset(int $proj_id, int $log_id)
     {
         mpc::new()->add([
-            'cmd'  => 'project/proj_git-reset_cli',
-            'data' => [
+            'c' => 'project/proj_git-reset_cli',
+            'd' => [
                 'proj_id' => $proj_id,
                 'log_id'  => $log_id
             ]
@@ -366,7 +366,7 @@ class proj_git extends base
             return false;
         }
         $this->redis->incrBy($key, $count);
-        $this->redis->expire($key, 3600);
+        $this->redis->expire($key, 60);
         $servers = server::new()->where([['srv_id', 'IN', $srv_list]])->get();
         foreach ($servers as $server) {
             $ip   = $server['ip'];
