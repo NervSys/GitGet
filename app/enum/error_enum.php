@@ -16,6 +16,7 @@ class error_enum
     const BRANCH_NO_CHECK  = 1004;
     const BRANCH_NOT_EXIST = 1005;
     const SETTING_PATH     = 1006;
+    const CLONE_SELF_ERROR = 1007;
 
     public static $table = [
         self::OK             => 'ok',
@@ -30,6 +31,7 @@ class error_enum
         self::BRANCH_NO_CHECK  => '已在当前分支',
         self::BRANCH_NOT_EXIST => '该分支已经不存在',
         self::SETTING_PATH     => '请先设置项目根目录',
+        self::CLONE_SELF_ERROR => 'GITGET项目无法设置保护文件',
     ];
 }
 
