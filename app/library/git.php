@@ -67,7 +67,7 @@ class git extends factory
      */
     public function clean(): array
     {
-        $this->execute($this->build_cmd('git clean -dfx'), $output);
+        $this->execute($this->build_cmd('git clean -df'), $output);
         return $output;
     }
 
