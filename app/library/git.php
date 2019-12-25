@@ -13,7 +13,7 @@ class git extends factory
     public $copy_files;
     public $local_path;
     public $stash_files;
-    const TEMP_PATH = DIRECTORY_SEPARATOR . ".git" . DIRECTORY_SEPARATOR . 'temp';
+    const TEMP_PATH = ".git" . DIRECTORY_SEPARATOR . 'temp';
 
     public function __construct(int $proj_id)
     {
