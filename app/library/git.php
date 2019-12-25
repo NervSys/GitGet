@@ -37,7 +37,7 @@ class git extends factory
     /**
      * @return array
      */
-    public function pull(): array
+    public function pull()
     {
         $this->stash_file();
         $this->clean();
@@ -195,7 +195,6 @@ class git extends factory
     {
         exec($cmd . " 2>&1", $output, $res);
         if ($res != 0) {
-            log::error('exec', [$cmd, $output]);
             $output = is_array($output) ? json_encode($output) : $output;
             $this->gg_error($output);
         }
@@ -203,7 +202,7 @@ class git extends factory
 
     private function gg_error(string $error_msg)
     {
-        $redis = redis::new()->config(conf::get('redis'))->as('main')->get_redis();
+        $redis = redis::create(conf::get('redis'))->connect();
         $key   = 'gg_error:' . $this->proj_id;
         $redis->setex($key, 3600, $error_msg);
     }
