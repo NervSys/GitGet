@@ -9,12 +9,13 @@
 
 namespace app\queue\lib;
 
-use app\library\git;
 use app\model\project;
 use app\model\server;
 use app\model\update_timing;
+use ext\conf;
 use ext\http;
 use ext\log;
+use ext\redis;
 
 class update
 {
@@ -29,7 +30,7 @@ class update
             ['status', 0],
             ['time', '<=', $update_info['time']]
         ];
-        $data = [
+        $data        = [
             'c'       => 'project/proj_git-local_update',
             'proj_id' => $proj_id
         ];
@@ -52,14 +53,15 @@ class update
         $srv_list = json_decode($srv_list, true);
         $count    = count($srv_list);
         if ($count <= 0) {
+            return;
+        }
+        $redis = redis::create(conf::get('redis'))->connect();
+        $key   = "proj_lock:" . $proj_id;
+        if ($redis->exists($key)) {
             return false;
         }
-        $key = "proj_lock:" . $proj_id;
-        if ($this->redis->exists($key)) {
-            return false;
-        }
-        $this->redis->incrBy($key, $count);
-        $this->redis->expire($key, 60);
+        $redis->incrBy($key, $count);
+        $redis->expire($key, 60);
         $servers = server::new()->where([['srv_id', 'IN', $srv_list]])->get();
         foreach ($servers as $server) {
             $ip   = $server['ip'];
@@ -67,7 +69,8 @@ class update
             $url  = "http://" . $ip . ":" . $port . "/api.php";
             $res  = http::new()->add(['url' => $url, 'data' => $data, 'with_header' => true])->fetch();
             if (!$res) {
-                $this->gg_error($proj_id, '服务器请求出错');
+                $key = 'gg_error:' . $this->proj_id;
+                $redis->setex($key, 3600, '服务器请求出错');
             }
         }
         return true;
