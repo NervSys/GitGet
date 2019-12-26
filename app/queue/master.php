@@ -12,6 +12,7 @@ namespace app\queue;
 use app\lib\base;
 use ext\conf;
 use ext\queue;
+use ext\redis;
 
 class master extends queue
 {
@@ -22,7 +23,7 @@ class master extends queue
      */
     public function __construct()
     {
-        parent::__construct(conf::get('redis'));
+        parent::__construct(redis::create(conf::get('redis'))->connect());
     }
 
     /**
