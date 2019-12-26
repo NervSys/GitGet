@@ -35,7 +35,7 @@ class update
             'proj_id' => $proj_id
         ];
         $this->lock($proj_id, $data);
-        update_timing::new()->where($where)->value(['status', 1])->update_data();
+        update_timing::new()->where($where)->value(['status'=> 1])->update_data();
     }
 
     /**
