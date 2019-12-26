@@ -17,6 +17,7 @@ class error_enum
     const BRANCH_NOT_EXIST = 1005;
     const SETTING_PATH     = 1006;
     const CLONE_SELF_ERROR = 1007;
+    const TIMING_ERROR     = 1008;
 
     public static $table = [
         self::OK             => 'ok',
@@ -32,6 +33,7 @@ class error_enum
         self::BRANCH_NOT_EXIST => '该分支已经不存在',
         self::SETTING_PATH     => '请先设置项目根目录',
         self::CLONE_SELF_ERROR => 'GITGET项目无法设置保护文件',
+        self::TIMING_ERROR     => '请选择一个未来的时间',
     ];
 }
 

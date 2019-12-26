@@ -39,9 +39,11 @@ class show extends base
             $btn_type       = $is_lock ? 'default disabled' : 'primary';
             $html           = $is_lock ? '进行中' : '更新';
             $git_type       = $is_lock ? 'default disabled' : 'warning';
-            $option         = '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-success" onClick="proj_edit(\'编辑\', \'./project_edit.php?proj_id=' . $item['proj_id'] . '\', 1300)" href="javascript:;" title="编辑">编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;';
+            $up_type        = $is_lock ? 'default disabled' : 'danger';
+            $option         = '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-success" onClick="proj_edit(\'编辑\', \'./project_edit.php?proj_id=' . $item['proj_id'] . '\')" href="javascript:;" title="编辑">编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;';
             $option         .= '<a style="text-decoration:none" id="' . $item['proj_id'] . '" class="ml-5 deploy btn btn-xs btn-' . $btn_type . '" onClick="proj_update(this,' . $item['proj_id'] . ')">' . $html . '</a>&nbsp;&nbsp;&nbsp;&nbsp;';
             $option         .= '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-' . $git_type . '" onClick="git(\'编辑\', \'./project_git.php?proj_id=' . $item['proj_id'] . '\')" href="javascript:;" title="编辑">git</a>&nbsp;&nbsp;&nbsp;&nbsp;';
+            $option         .= '<a style="text-decoration:none" class="ml-5 btn btn-xs btn-' . $up_type . '" onClick="up_time(\'编辑\', \'./project_up_time.php?proj_id=' . $item['proj_id'] . '\')" href="javascript:;" title="编辑">定时更新</a>&nbsp;&nbsp;&nbsp;&nbsp;';
             $item['option'] = $option;
         }
         return $this->succeed($res);

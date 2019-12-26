@@ -23,6 +23,12 @@ class model extends mysql
         parent::__construct(pdo::create(conf::get('mysql'))->connect());
     }
 
+    public function alias(string $table_name)
+    {
+        $this->set_table(get_class($this). " as ".$table_name);
+        return $this;
+    }
+
     public function incre(array $where, array $incr, array $value = [])
     {
         return $this->where($where)->update()->incr($incr)->value($value)->execute();

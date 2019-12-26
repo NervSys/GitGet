@@ -67,6 +67,10 @@ function git(title, url, w, h) {
     layer_show(title, url, w, h);
 }
 
+function up_time(title, url, w, h) {
+    layer_show(title, url, w, h);
+}
+
 
 /*项目-删除*/
 function project_del(obj, id) {

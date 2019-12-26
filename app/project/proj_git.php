@@ -17,6 +17,7 @@ use app\model\project;
 use app\model\project_log;
 use app\model\server;
 use app\model\system_setting;
+use app\model\update_timing;
 use ext\http;
 use ext\mpc;
 
@@ -341,6 +342,67 @@ class proj_git extends base
             chmod($home_path . "/.ssh/id_rsa.pub", 0600);
             exec("ssh -T git@gitee.com");
         }
+    }
+
+    /**
+     * 定时列表
+     *
+     * @param int $proj_id
+     * @param int $page
+     * @param int $page_size
+     *
+     * @return array
+     */
+    public function up_time_list(int $proj_id, int $page = 1, int $page_size = 10)
+    {
+        $logs = update_timing::new()
+            ->alias('a')
+            ->join('branch_list as b', [['a.proj_id', 'b.proj_id'], ['a.branch_id', 'b.branch_id']], 'LEFT')
+            ->where([['a.proj_id', $proj_id], ['a.status', 0]])
+            ->order(['a.time' => 'desc'])
+            ->fields('a.id', 'a.time', 'a.remaking', 'b.branch_name')
+            ->get_page($page, $page_size);
+        foreach ($logs['list'] as &$log) {
+            $log['time']   = date("Y-m-d H:i:s", $log['time']);
+            $log['option'] = '<button class="btn btn-success" type="button" onclick="del(' . $log['id'] . ')">删除</button>';
+        }
+        return $this->succeed($logs);
+    }
+
+    /**
+     * 新增延时更新
+     *
+     * @param int    $proj_id
+     * @param int    $branch_id
+     * @param string $time
+     * @param string $remaking
+     *
+     * @return array
+     */
+    public function update_timing_add(int $proj_id, int $branch_id, string $time, string $remaking = '')
+    {
+        $time = strtotime($time);
+        if ($time <= time()) {
+            $this->response(error_enum::TIMING_ERROR);
+        }
+        $value = [
+            'proj_id'   => $proj_id,
+            'time'      => $time,
+            'branch_id' => $branch_id,
+            'remaking'  => $remaking,
+        ];
+        $res   = update_timing::new()->value($value)->insert_data();
+        if (!$res) {
+            $this->response(error_enum::SQL_ERROR);
+        }
+        $this->queue->add(\app\queue\lib\update_timing::class.'-update');
+        return $this->succeed();
+    }
+
+    public function update_timing_del(int $id)
+    {
+        update_timing::new()->where(['id', $id])->value(['status' => 2])->update_data();
+        return $this->succeed();
     }
 
     /**

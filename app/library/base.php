@@ -11,6 +11,7 @@ use ext\errno;
 use ext\factory;
 use ext\mysql;
 use ext\pdo;
+use ext\queue;
 use ext\redis;
 
 class base extends factory
@@ -20,12 +21,14 @@ class base extends factory
     protected $redis       = null;
     protected $crypt       = null;
     protected $mysql       = null;
+    protected $queue       = null;
 
     public function __construct()
     {
         is_null($this->mysql) && $this->mysql = mysql::new(pdo::create(conf::get('mysql'))->connect());
         is_null($this->redis) && $this->redis = redis::create(conf::get('redis'))->connect();
         is_null($this->crypt) && $this->crypt = crypt::new();
+        is_null($this->queue) && $this->queue = queue::new($this->redis)->set_name('gitget');
         if ($this->check_token) {
             if (empty($_COOKIE['gg_token'])) {
                 return $this->response(error_enum::TOKEN_MUST_EXIST);
