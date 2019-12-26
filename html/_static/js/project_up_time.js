@@ -67,8 +67,8 @@ function show_list() {
         },
         "columns": [
             {data: 'id'},
-            {data: 'time'},
             {data: 'branch_name'},
+            {data: 'time'},
             {data: 'remaking'},
             {data: 'option'},
         ]
