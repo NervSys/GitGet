@@ -9,6 +9,7 @@
 
 namespace app\queue\lib;
 
+use app\model\branch_list;
 use app\model\project;
 use app\model\server;
 use app\model\update_timing;
@@ -24,18 +25,33 @@ class update
         log::new()->add(['update', $id])->save();
         $update_info = update_timing::new()->where(['id', $id])->get_one();
         $proj_id     = $update_info['proj_id'];
-        $where       = [
+        $branch_id   = $update_info['branch_id'];
+        $branch_info = branch_list::new()->where([['proj_id', $proj_id], ['branch_id', $branch_id]])->get_one();
+        if (empty($branch_info)) {
+            return false;
+        }
+        if (!$branch_info['active']) {
+            $data = [
+                'c'           => 'project/proj_git-local_checkout',
+                'proj_id'     => $proj_id,
+                'branch_name' => $branch_info['branch_name']
+            ];
+            $this->lock($proj_id, $data);
+        }
+
+
+        $where = [
             ['proj_id', $proj_id],
-            ['branch_id', $update_info['branch_id']],
+            ['branch_id', $branch_id],
             ['status', 0],
             ['time', '<=', $update_info['time']]
         ];
-        $data        = [
+        $data  = [
             'c'       => 'project/proj_git-local_update',
             'proj_id' => $proj_id
         ];
         $this->lock($proj_id, $data);
-        update_timing::new()->where($where)->value(['status'=> 1])->update_data();
+        update_timing::new()->where($where)->value(['status' => 1])->update_data();
     }
 
     /**
