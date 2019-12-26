@@ -18,7 +18,6 @@ use app\model\project_log;
 use app\model\server;
 use app\model\system_setting;
 use ext\http;
-use ext\log;
 use ext\mpc;
 
 class proj_git extends base

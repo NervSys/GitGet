@@ -9,7 +9,6 @@
 
 namespace app\project;
 
-use app\enum\error_enum;
 use app\library\base;
 use app\model\branch_list;
 use app\model\project;
@@ -36,9 +35,6 @@ class ctrl extends base
         foreach ($srv_ids as &$srv_id) {
             $srv_id = (int)$srv_id;
         }
-        //if ($git_url == 'https://github.com/NervSys/GitGet.git' && !empty($backup_files)) {
-        //    $this->response(error_enum::CLONE_SELF_ERROR);
-        //}
         $data = [
             'proj_name'         => $proj_name,
             'proj_desc'         => $proj_desc,

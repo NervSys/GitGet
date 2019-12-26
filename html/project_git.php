@@ -29,12 +29,14 @@
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label"><span style="color:red">*</span>分支列表：</label>
-                            <div class="col-sm-8">
+                            <div class="col-sm-6">
                                 <select class="form-control" name="branch_id" id="branch_list">
                                 </select>
                             </div>
                             <div class="col-sm-2">
                                 <button class="btn btn-success" type="button" onclick="update_branch()">更新远程</button>
+                            </div>
+                            <div class="col-sm-1">
                                 <button class="btn btn-success" type="button" onclick="checkout()">切换</button>
                             </div>
                         </div>
