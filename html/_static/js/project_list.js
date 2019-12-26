@@ -92,6 +92,7 @@ function proj_update(obj, id) {
             $(obj).addClass('btn-default disabled');
             $(obj).html('进行中');
             $(obj).next().addClass('btn-default disabled');
+            $(obj).next().next().addClass('btn-default disabled');
             update_btn(obj, id);
         } else {
             layer.msg(data.message, {icon: 2});

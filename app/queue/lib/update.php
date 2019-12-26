@@ -1,0 +1,75 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: liu
+ * Date: 2019/12/26
+ * Time: 15:34
+ * Note: update_timing.php
+ */
+
+namespace app\queue\lib;
+
+use app\library\git;
+use app\model\project;
+use app\model\server;
+use app\model\update_timing;
+use ext\http;
+use ext\log;
+
+class update
+{
+    public function start($id)
+    {
+        log::new()->add(['update', $id])->save();
+        $update_info = update_timing::new()->where(['id', $id])->get_one();
+        $proj_id     = $update_info['proj_id'];
+        $where       = [
+            ['proj_id', $proj_id],
+            ['branch_id', $update_info['branch_id']],
+            ['status', 0],
+            ['time', '<=', $update_info['time']]
+        ];
+        $data = [
+            'c'       => 'project/proj_git-local_update',
+            'proj_id' => $proj_id
+        ];
+        $this->lock($proj_id, $data);
+        update_timing::new()->where($where)->value(['status', 1])->update_data();
+    }
+
+    /**
+     * 加锁
+     *
+     * @param int   $proj_id
+     * @param array $data
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    private function lock(int $proj_id, array $data)
+    {
+        $srv_list = project::new()->fields('srv_list')->where(['proj_id', $proj_id])->get_value();
+        $srv_list = json_decode($srv_list, true);
+        $count    = count($srv_list);
+        if ($count <= 0) {
+            return false;
+        }
+        $key = "proj_lock:" . $proj_id;
+        if ($this->redis->exists($key)) {
+            return false;
+        }
+        $this->redis->incrBy($key, $count);
+        $this->redis->expire($key, 60);
+        $servers = server::new()->where([['srv_id', 'IN', $srv_list]])->get();
+        foreach ($servers as $server) {
+            $ip   = $server['ip'];
+            $port = $server['port'];
+            $url  = "http://" . $ip . ":" . $port . "/api.php";
+            $res  = http::new()->add(['url' => $url, 'data' => $data, 'with_header' => true])->fetch();
+            if (!$res) {
+                $this->gg_error($proj_id, '服务器请求出错');
+            }
+        }
+        return true;
+    }
+}

@@ -18,8 +18,10 @@ use app\model\project_log;
 use app\model\server;
 use app\model\system_setting;
 use app\model\update_timing;
+use app\queue\lib\update;
 use ext\http;
 use ext\mpc;
+use ext\queue;
 
 class proj_git extends base
 {
@@ -395,7 +397,14 @@ class proj_git extends base
         if (!$res) {
             $this->response(error_enum::SQL_ERROR);
         }
-        $this->queue->add(\app\queue\lib\update_timing::class.'-update');
+        $id = update_timing::new()->lastInsertId();
+        $this->queue->add(
+            update::class . '-start',
+            ['id' => $id, 'time', $time],
+            'main',
+            queue::TYPE_DELAY,
+            $time - time()
+        );
         return $this->succeed();
     }
 
