@@ -22,6 +22,9 @@ class dir_handle extends factory
      */
     public function copy_file($from_file, $to_file)
     {
+        if (!is_dir($from_file)) {
+            copy($from_file, $to_file);
+        }
         $folder1 = opendir($from_file);
         while ($f1 = readdir($folder1)) {
             if ($f1 != "." && $f1 != "..") {
