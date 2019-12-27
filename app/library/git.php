@@ -5,6 +5,7 @@ namespace app\library;
 use app\model\project;
 use ext\conf;
 use ext\factory;
+use ext\file;
 use ext\redis;
 
 class git extends factory
@@ -144,24 +145,17 @@ class git extends factory
             return;
         }
         foreach ($this->copy_files as $item) {
-            $file_path = $this->local_path . DIRECTORY_SEPARATOR . trim($item, " /\\\t\n\r\0\x0B");
+            $path_from  = $this->local_path . DIRECTORY_SEPARATOR . trim($item, " /\\\t\n\r\0\x0B");
+            $path_temp  = self::TEMP_PATH . DIRECTORY_SEPARATOR . $this->proj_id;
+            $path_local = $path_temp . DIRECTORY_SEPARATOR . $item;
+            $path_to    = $this->local_path . DIRECTORY_SEPARATOR . file::get_path($path_local, $this->local_path);
+            $this->copy_file($path_to, $path_from);
 
-            if (!is_file($file_path)) {
-                continue;
-            }
-            $copy_path = self::TEMP_PATH . DIRECTORY_SEPARATOR;
-            if (!is_dir($copy_path)) {
-                mkdir($copy_path, 0777, true);
-                chmod($copy_path, 0777);
-            }
-            $temp_name = hash('sha1', uniqid(mt_rand(), true));
-            $copy_path .= $temp_name;
-            copy($file_path, $copy_path);
-
-            $this->stash_files[] = [
-                'source' => $file_path,
-                'dest'   => $copy_path
+            $this->stash_files[]            = [
+                'source' => $path_from,
+                'dest'   => $path_to
             ];
+            $this->stash_files['path_temp'] = $this->local_path . DIRECTORY_SEPARATOR . $path_temp;
         }
     }
 
@@ -172,7 +166,12 @@ class git extends factory
         }
         //copy files
         foreach ($this->stash_files as $item) {
-            rename($item['dest'], $item['source']);
+            $this->copy_file($item['dest'], $item['source']);
+        }
+        $path_temp = $this->stash_files['path_temp'] ?? '';
+        $this->del_dir($path_temp);
+        if (is_dir($path_temp)) {
+            @rmdir($local_path);
         }
     }
 
@@ -205,5 +204,56 @@ class git extends factory
         $redis = redis::create(conf::get('redis'))->connect();
         $key   = 'gg_error:' . $this->proj_id;
         $redis->setex($key, 3600, $error_msg);
+    }
+
+    /**
+     * 复制文件
+     *
+     * @param $from_file
+     * @param $to_file
+     */
+    private function copy_file($from_file, $to_file)
+    {
+        $folder1 = opendir($from_file);
+        while ($f1 = readdir($folder1)) {
+            if ($f1 != "." && $f1 != "..") {
+                $path2 = $from_file . DIRECTORY_SEPARATOR . $f1;
+                if (is_file($path2)) {
+                    $file     = $path2;
+                    $new_file = $to_file . DIRECTORY_SEPARATOR . $f1;
+                    copy($file, $new_file);
+                } elseif (is_dir($path2)) {
+                    $to_files = $to_file . DIRECTORY_SEPARATOR . $f1;
+                    $this->copy_file($path2, $to_files);
+                }
+            }
+        }
+    }
+
+    /**
+     * 删除文件夹
+     *
+     * @param $path
+     */
+    private function del_dir($path)
+    {
+        $last = substr($path, -1);
+        if ($last !== '/') {
+            $path .= '/';
+        }
+        if (is_dir($path)) {
+            $p = scandir($path);
+            foreach ($p as $val) {
+                if ($val != "." && $val != "..") {
+                    if (is_dir($path . $val)) {
+                        $this->del_dir($path . $val . '/');
+                        @rmdir($path . $val);
+                    } else {
+                        chmod($path . $val, 0777);
+                        unlink($path . $val);
+                    }
+                }
+            }
+        }
     }
 }
