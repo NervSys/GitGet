@@ -11,7 +11,6 @@ namespace app\library;
 
 
 use ext\factory;
-use ext\log;
 
 class dir_handle extends factory
 {
@@ -32,9 +31,11 @@ class dir_handle extends factory
             return false;
         }
         if (!is_file($file_to)) {
+            if (!file_exists($file_to)) {
+                mkdir($file_to, 0777, true);
+            }
             $file_to .= DIRECTORY_SEPARATOR . basename($file_from);
         }
-        log::new()->add(['copy_to', $file_from, $file_to])->save();
         return copy($file_from, $file_to);
     }
 

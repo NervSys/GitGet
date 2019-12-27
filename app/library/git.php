@@ -5,6 +5,7 @@ namespace app\library;
 use app\model\project;
 use ext\conf;
 use ext\factory;
+use ext\log;
 use ext\redis;
 
 class git extends factory
@@ -165,6 +166,7 @@ class git extends factory
                 'dest'   => $path_to . DIRECTORY_SEPARATOR . $item
             ];
             $this->path_temp[$this->proj_id] = $this->local_path . DIRECTORY_SEPARATOR . $path;
+            log::new()->add([$this->stash_files,$this->path_temp])->save();
         }
     }
 
