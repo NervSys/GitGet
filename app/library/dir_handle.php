@@ -27,6 +27,9 @@ class dir_handle extends factory
 
     public function file_copy(string $file_from, string $file_to): bool
     {
+        if (!file_exists($file_from)) {
+            return false;
+        }
         $file_name = basename($file_from);
         if (is_dir($file_to)) {
             $file_to .= DIRECTORY_SEPARATOR . $file_name;
@@ -40,6 +43,9 @@ class dir_handle extends factory
 
     public function dir_copy(string $dir_from, string $dir_to): bool
     {
+        if (!file_exists($dir_from)) {
+            return false;
+        }
         $dir_name = basename($dir_from);
         if (is_dir($dir_to)) {
             $dir_to .= DIRECTORY_SEPARATOR . $dir_name;
@@ -96,6 +102,9 @@ class dir_handle extends factory
                     unlink($path . $val);
                 }
             }
+        }
+        if (!file_exists($path)) {
+            return false;
         }
         if (rmdir($path)) {
             return true;

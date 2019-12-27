@@ -68,7 +68,7 @@ class git extends factory
      */
     public function clean(): array
     {
-        $this->execute($this->build_cmd('git clean -df'), $output);
+        $this->execute($this->build_cmd('git clean -dfx'), $output);
         return $output;
     }
 
@@ -162,7 +162,7 @@ class git extends factory
 
             $this->stash_files[]             = [
                 'source' => $path_from,
-                'dest'   => $path_to
+                'dest'   => $path_to . DIRECTORY_SEPARATOR . $item
             ];
             $this->path_temp[$this->proj_id] = $this->local_path . DIRECTORY_SEPARATOR . $path;
         }
