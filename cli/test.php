@@ -10,6 +10,8 @@
 namespace cli;
 
 
+use app\library\dir_handle;
+
 class test
 {
     public $tz         = '*';
@@ -17,7 +19,8 @@ class test
 
     public function go()
     {
-        $str = '/data/wwwroot/admin.izhjapp.cn/.git/temp/3/app/library/base_sms.php';
-        echo substr($str,0,strpos($str,basename($str)));
+        $a = $this->local_path.DIRECTORY_SEPARATOR."conf";
+        $b = $this->local_path.DIRECTORY_SEPARATOR."logs";
+        dir_handle::new()->copy_to($a,$b);
     }
 }

@@ -17,7 +17,6 @@ class dir_handle extends factory
 {
     public function copy_to(string $path_from, string $path_to): bool
     {
-        log::new()->add([$path_from, $path_to])->save();
         if (is_dir($path_from)) {
             return $this->dir_copy($path_from, $path_to);
         }
@@ -33,11 +32,15 @@ class dir_handle extends factory
             return false;
         }
         $file_name = basename($file_from);
-        $file      = substr($file_to, 0, strpos($file_to, $file_name));
+        if (strpos($file_to, $file_name) !== false) {
+            $file = trim(substr($file_to, 0, strpos($file_to, $file_name)), " /\\\t\n\r\0\x0B");
+        } else {
+            $file = $file_to;
+        }
         if (!file_exists($file)) {
             mkdir($file, 0777, true);
         }
-        $file_to = $file . $file_name;
+        $file_to = $file . DIRECTORY_SEPARATOR . $file_name;
         return copy($file_from, $file_to);
     }
 
@@ -48,7 +51,9 @@ class dir_handle extends factory
             return false;
         }
         $dir_name = basename($dir_from);
-        $dir_to   .= DIRECTORY_SEPARATOR . $dir_name;
+        if (strpos($dir_to, $dir_name) === false) {
+            $dir_to = trim($dir_to, " /\\\t\n\r\0\x0B") . DIRECTORY_SEPARATOR . $dir_name;
+        }
         if (!file_exists($dir_to)) {
             mkdir($dir_to, 0777, true);
         }
@@ -74,6 +79,7 @@ class dir_handle extends factory
      */
     public function del_dir($path): bool
     {
+        return true;
         $last = substr($path, -1);
         if ($last !== '/') {
             $path .= '/';
