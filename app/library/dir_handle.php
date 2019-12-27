@@ -33,7 +33,7 @@ class dir_handle extends factory
         }
         $file_name = basename($file_from);
         if (strpos($file_to, $file_name) !== false) {
-            $file = trim(substr($file_to, 0, strpos($file_to, $file_name)), " /\\\t\n\r\0\x0B");
+            $file = rtrim(substr($file_to, 0, strpos($file_to, $file_name)), " /\\\t\n\r\0\x0B");
         } else {
             $file = $file_to;
         }
@@ -64,7 +64,6 @@ class dir_handle extends factory
             }
             $path_from_1 = $dir_from . DIRECTORY_SEPARATOR . $item;
             $path_to_1   = $dir_to . DIRECTORY_SEPARATOR . $item;
-            log::new()->add($path_from_1,$path_to_1)->save();
             $this->copy_to($path_from_1, $path_to_1);
         }
         closedir($handle);
