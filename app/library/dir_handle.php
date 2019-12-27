@@ -55,16 +55,16 @@ class dir_handle extends factory
                 if ($val != "." && $val != "..") {
                     if (is_dir($path . $val)) {
                         $this->del_dir($path . $val . '/');
-                        @rmdir($path . $val);
                     } else {
                         chmod($path . $val, 0777);
                         unlink($path . $val);
                     }
                 }
             }
-            if (is_dir($path)){
-                @rmdir($path);
-            }
         }
+        if (rmdir($path)) {
+            return true;
+        }
+        return false;
     }
 }
