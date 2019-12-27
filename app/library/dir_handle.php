@@ -42,6 +42,8 @@ class dir_handle extends factory
      * 删除文件夹
      *
      * @param $path
+     *
+     * @return bool
      */
     public function del_dir($path)
     {
