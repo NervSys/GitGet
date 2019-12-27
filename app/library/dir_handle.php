@@ -24,6 +24,7 @@ class dir_handle extends factory
     {
         if (!is_dir($from_file)) {
             copy($from_file, $to_file);
+            return;
         }
         $folder1 = opendir($from_file);
         while ($f1 = readdir($folder1)) {
