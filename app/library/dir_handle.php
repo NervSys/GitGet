@@ -11,7 +11,6 @@ namespace app\library;
 
 
 use ext\factory;
-use ext\log;
 
 class dir_handle extends factory
 {
@@ -48,14 +47,9 @@ class dir_handle extends factory
             return false;
         }
         $dir_name = basename($dir_from);
-        if (is_dir($dir_to)) {
-            if (!file_exists($dir_to)) {
-                mkdir($dir_to);
-            }
-            $dir_to .= DIRECTORY_SEPARATOR . $dir_name;
-            if (!file_exists($dir_to)) {
-                mkdir($dir_to);
-            }
+        $dir_to   .= DIRECTORY_SEPARATOR . $dir_name;
+        if (!file_exists($dir_to)) {
+            mkdir($dir_to, 0777, true);
         }
         $handle = opendir($dir_from);
         while (($item = readdir($handle)) !== false) {
