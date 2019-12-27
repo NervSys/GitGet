@@ -31,10 +31,10 @@ class dir_handle extends factory
             return false;
         }
         $file_name = basename($file_from);
-        $file_to   .= DIRECTORY_SEPARATOR . $file_name;
         if (!file_exists($file_to)) {
             mkdir($file_to, 0777, true);
         }
+        $file_to   .= DIRECTORY_SEPARATOR . $file_name;
         return copy($file_from, $file_to);
     }
 
