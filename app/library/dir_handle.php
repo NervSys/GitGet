@@ -11,6 +11,7 @@ namespace app\library;
 
 
 use ext\factory;
+use ext\log;
 
 class dir_handle extends factory
 {
@@ -63,6 +64,7 @@ class dir_handle extends factory
             }
             $path_from_1 = $dir_from . DIRECTORY_SEPARATOR . $item;
             $path_to_1   = $dir_to . DIRECTORY_SEPARATOR . $item;
+            log::new()->add($path_from_1,$path_to_1)->save();
             $this->copy_to($path_from_1, $path_to_1);
         }
         closedir($handle);
