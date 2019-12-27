@@ -149,7 +149,7 @@ class git extends factory
             $path_temp  = self::TEMP_PATH . DIRECTORY_SEPARATOR . $this->proj_id;
             $path_local = $path_temp . DIRECTORY_SEPARATOR . $item;
             $path_to    = $this->local_path . DIRECTORY_SEPARATOR . file::get_path($path_local, $this->local_path);
-            $this->copy_file($path_to, $path_from);
+            dir_handle::new()->copy_file($path_from, $path_to);
 
             $this->stash_files[]            = [
                 'source' => $path_from,
@@ -167,11 +167,11 @@ class git extends factory
         //copy files
         foreach ($this->stash_files as $item) {
             if (isset($item['dest']) && isset($item['source'])) {
-                $this->copy_file($item['dest'], $item['source']);
+                dir_handle::new()->copy_file($item['dest'], $item['source']);
             }
         }
         $path_temp = $this->stash_files['path_temp'] ?? '';
-        $this->del_dir($path_temp);
+        dir_handle::new()->del_dir($path_temp);
         if (is_dir($path_temp)) {
             @rmdir($path_temp);
         }
@@ -206,56 +206,5 @@ class git extends factory
         $redis = redis::create(conf::get('redis'))->connect();
         $key   = 'gg_error:' . $this->proj_id;
         $redis->setex($key, 3600, $error_msg);
-    }
-
-    /**
-     * 复制文件
-     *
-     * @param $from_file
-     * @param $to_file
-     */
-    private function copy_file($from_file, $to_file)
-    {
-        $folder1 = opendir($from_file);
-        while ($f1 = readdir($folder1)) {
-            if ($f1 != "." && $f1 != "..") {
-                $path2 = $from_file . DIRECTORY_SEPARATOR . $f1;
-                if (is_file($path2)) {
-                    $file     = $path2;
-                    $new_file = $to_file . DIRECTORY_SEPARATOR . $f1;
-                    copy($file, $new_file);
-                } elseif (is_dir($path2)) {
-                    $to_files = $to_file . DIRECTORY_SEPARATOR . $f1;
-                    $this->copy_file($path2, $to_files);
-                }
-            }
-        }
-    }
-
-    /**
-     * 删除文件夹
-     *
-     * @param $path
-     */
-    private function del_dir($path)
-    {
-        $last = substr($path, -1);
-        if ($last !== '/') {
-            $path .= '/';
-        }
-        if (is_dir($path)) {
-            $p = scandir($path);
-            foreach ($p as $val) {
-                if ($val != "." && $val != "..") {
-                    if (is_dir($path . $val)) {
-                        $this->del_dir($path . $val . '/');
-                        @rmdir($path . $val);
-                    } else {
-                        chmod($path . $val, 0777);
-                        unlink($path . $val);
-                    }
-                }
-            }
-        }
     }
 }
