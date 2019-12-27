@@ -14,32 +14,58 @@ use ext\factory;
 
 class dir_handle extends factory
 {
-    /**
-     * 复制文件
-     *
-     * @param $from_file
-     * @param $to_file
-     */
-    public function copy_file($from_file, $to_file)
+    public function copy_to(string $path_from, string $path_to): bool
     {
-        if (!is_dir($from_file)) {
-            copy($from_file, $to_file);
-            return;
+        if (is_dir($path_from)) {
+            return $this->dir_copy($path_from, $path_to);
         }
-        $folder1 = opendir($from_file);
-        while ($f1 = readdir($folder1)) {
-            if ($f1 != "." && $f1 != "..") {
-                $path2 = $from_file . DIRECTORY_SEPARATOR . $f1;
-                if (is_file($path2)) {
-                    $file     = $path2;
-                    $new_file = $to_file . DIRECTORY_SEPARATOR . $f1;
-                    copy($file, $new_file);
-                } elseif (is_dir($path2)) {
-                    $to_files = $to_file . DIRECTORY_SEPARATOR . $f1;
-                    $this->copy_file($path2, $to_files);
+        if (is_file($path_from)) {
+            return $this->file_copy($path_from, $path_to);
+        }
+        return false;
+    }
+
+    public function file_copy(string $file_from, string $file_to): bool
+    {
+        $file_name = basename($file_from);
+        if (is_dir($file_to)) {
+            if (!file_exists($file_to)) {
+                mkdir($file_to);
+            }
+            $file_to .= DIRECTORY_SEPARATOR . $file_name;
+        }
+        return copy($file_from, $file_to);
+    }
+
+
+    public function dir_copy(string $dir_from, string $dir_to): bool
+    {
+        $dir_name = basename($dir_from);
+        if (is_dir($dir_to)) {
+            $dir_to .= DIRECTORY_SEPARATOR . $dir_name;
+            if (!file_exists($dir_to)) {
+                mkdir($dir_to);
+            }
+        }
+        $handle = opendir($dir_from);
+        while (($item = readdir($handle)) !== false) {
+            if ($item == '.' || $item == '..') {
+                continue;
+            }
+            $path_from_1 = $dir_from . DIRECTORY_SEPARATOR . $item;
+            if (is_file($path_from_1)) {
+                if (!$this->file_copy($path_from_1, $dir_to)) {
+                    return false;
+                }
+            }
+            if (is_dir($path_from_1)) {
+                if (!$this->dir_copy($path_from_1, $dir_to)) {
+                    return false;
                 }
             }
         }
+        closedir($handle);
+        return true;
     }
 
     /**
@@ -49,22 +75,25 @@ class dir_handle extends factory
      *
      * @return bool
      */
-    public function del_dir($path)
+    public function del_dir($path): bool
     {
         $last = substr($path, -1);
         if ($last !== '/') {
             $path .= '/';
         }
         if (is_dir($path)) {
-            $p = scandir($path);
-            foreach ($p as $val) {
-                if ($val != "." && $val != "..") {
-                    if (is_dir($path . $val)) {
-                        $this->del_dir($path . $val . '/');
-                    } else {
-                        chmod($path . $val, 0777);
-                        unlink($path . $val);
+            $paths = scandir($path);
+            foreach ($paths as $val) {
+                if ($val == '.' || $val == '..') {
+                    continue;
+                }
+                if (is_dir($path . $val)) {
+                    if (!$this->del_dir($path . $val . '/')) {
+                        return false;
                     }
+                } else {
+                    chmod($path . $val, 0777);
+                    unlink($path . $val);
                 }
             }
         }

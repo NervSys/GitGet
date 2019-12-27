@@ -5,7 +5,6 @@ namespace app\library;
 use app\model\project;
 use ext\conf;
 use ext\factory;
-use ext\file;
 use ext\redis;
 
 class git extends factory
@@ -156,17 +155,16 @@ class git extends factory
             return;
         }
         foreach ($this->copy_files as $item) {
-            $path_from  = $this->local_path . DIRECTORY_SEPARATOR . trim($item, " /\\\t\n\r\0\x0B");
-            $path_temp  = self::TEMP_PATH . DIRECTORY_SEPARATOR . $this->proj_id;
-            $path_local = $path_temp . DIRECTORY_SEPARATOR . $item;
-            $path_to    = $this->local_path . DIRECTORY_SEPARATOR . file::get_path($path_local, $this->local_path);
-            dir_handle::new()->copy_file($path_from, $path_to);
+            $path_from = $this->local_path . DIRECTORY_SEPARATOR . $item;
+            $path      = self::TEMP_PATH . DIRECTORY_SEPARATOR . $this->proj_id;
+            $path_to   = $this->local_path . DIRECTORY_SEPARATOR . $path;
+            dir_handle::new()->copy_to($path_from, $path_to);
 
             $this->stash_files[]             = [
                 'source' => $path_from,
                 'dest'   => $path_to
             ];
-            $this->path_temp[$this->proj_id] = $this->local_path . DIRECTORY_SEPARATOR . $path_temp;
+            $this->path_temp[$this->proj_id] = $this->local_path . DIRECTORY_SEPARATOR . $path;
         }
     }
 
@@ -177,10 +175,10 @@ class git extends factory
         }
         //copy files
         foreach ($this->stash_files as $item) {
-            dir_handle::new()->copy_file($item['dest'], $item['source']);
+            dir_handle::new()->copy_to($item['dest'], $item['source']);
         }
         $path_temp = $this->path_temp[$this->proj_id] ?? '';
-        if (!empty($path_temp)){
+        if (!empty($path_temp)) {
             dir_handle::new()->del_dir($path_temp);
         }
     }
