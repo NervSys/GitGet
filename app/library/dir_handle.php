@@ -17,18 +17,26 @@ class dir_handle extends factory
 {
     public function copy_to(string $path_from, string $path_to): bool
     {
+        $data = ['copy_to', $path_from, $path_to];
         if (is_dir($path_from)) {
-            return $this->dir_copy($path_from, $path_to);
+            $res    = $this->dir_copy($path_from, $path_to);
+            $data[] = 'dir';
+            $data[] = $res;
+            log::new()->add($data)->save();
+            return $res;
         }
         if (is_file($path_from)) {
-            return $this->file_copy($path_from, $path_to);
+            $data[] = 'file';
+            $res    = $this->file_copy($path_from, $path_to);
+            $data[] = $res;
+            log::new()->add($data)->save();
+            return $res;
         }
         return false;
     }
 
     public function file_copy(string $file_from, string $file_to): bool
     {
-        log::new()->add(['file', $file_from, $file_to])->save();
         if (!file_exists($file_from)) {
             return false;
         }
@@ -45,7 +53,6 @@ class dir_handle extends factory
 
     public function dir_copy(string $dir_from, string $dir_to): bool
     {
-        log::new()->add(['dir', $dir_from, $dir_to])->save();
         if (!file_exists($dir_from)) {
             return false;
         }
