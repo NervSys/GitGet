@@ -53,7 +53,7 @@ class git extends factory
      *
      * @return array
      */
-    public function reset(string $commit): array
+    public function reset(string $commit)
     {
         $this->stash_file();
         $this->clean();
@@ -81,12 +81,22 @@ class git extends factory
         return $output;
     }
 
+    public function check(string $branch)
+    {
+        $this->stash_file();
+        $this->clean();
+        $this->checkout('.');
+        $output = $this->checkout($branch);
+        $this->apply_file();
+        return $output;
+    }
+
     /**
      * @param string $branch
      *
      * @return array
      */
-    public function checkout(string $branch): array
+    public function checkout(string $branch)
     {
         $this->execute($this->build_cmd('git checkout --force %s', $branch), $output);
         return $output;
