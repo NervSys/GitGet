@@ -11,6 +11,7 @@ namespace app\library;
 
 
 use ext\factory;
+use ext\log;
 
 class dir_handle extends factory
 {
@@ -27,6 +28,7 @@ class dir_handle extends factory
 
     public function file_copy(string $file_from, string $file_to): bool
     {
+        log::new()->add(['file', $file_from, $file_to])->save();
         if (!file_exists($file_from)) {
             return false;
         }
@@ -43,6 +45,7 @@ class dir_handle extends factory
 
     public function dir_copy(string $dir_from, string $dir_to): bool
     {
+        log::new()->add(['dir', $dir_from, $dir_to])->save();
         if (!file_exists($dir_from)) {
             return false;
         }
@@ -83,6 +86,7 @@ class dir_handle extends factory
      */
     public function del_dir($path): bool
     {
+        log::new()->add(['del', $path])->save();
         $last = substr($path, -1);
         if ($last !== '/') {
             $path .= '/';
