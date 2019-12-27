@@ -34,7 +34,7 @@ class dir_handle extends factory
         if (is_dir($file_to)) {
             $file_to .= DIRECTORY_SEPARATOR . $file_name;
             if (!file_exists($file_to)) {
-                mkdir($file_to);
+                mkdir($file_to, 0777, true);
             }
         }
         return copy($file_from, $file_to);
