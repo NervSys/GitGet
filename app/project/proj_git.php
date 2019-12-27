@@ -239,7 +239,7 @@ class proj_git extends base
      */
     public function checkout_cli(int $proj_id, string $branch_name)
     {
-        git::new($proj_id)->checkout($branch_name);
+        git::new($proj_id)->check($branch_name);
         $this->update_branch($proj_id);
         $this->add_log($proj_id, self::GIT_CMD_TYPE_CHECKOUT);
         $this->unlock($proj_id);
