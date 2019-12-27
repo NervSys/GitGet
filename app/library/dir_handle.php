@@ -32,15 +32,12 @@ class dir_handle extends factory
         if (!file_exists($file_from)) {
             return false;
         }
-        if (!is_file($file_to)) {
-            $file_to .= DIRECTORY_SEPARATOR . basename($file_from);
-        }
-
-        $file = substr($file_to, 0, strpos($file_to, basename($file_to)));
-        log::new()->add(['file', $file])->save();
+        $file_name = basename($file_from);
+        $file      = substr($file_to, 0, strpos($file_to, $file_name));
         if (!file_exists($file)) {
             mkdir($file, 0777, true);
         }
+        $file_to = $file . $file_name;
         return copy($file_from, $file_to);
     }
 
@@ -77,7 +74,6 @@ class dir_handle extends factory
      */
     public function del_dir($path): bool
     {
-        return true;
         $last = substr($path, -1);
         if ($last !== '/') {
             $path .= '/';
