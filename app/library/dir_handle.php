@@ -11,7 +11,6 @@ namespace app\library;
 
 
 use ext\factory;
-use ext\log;
 
 class dir_handle extends factory
 {
@@ -52,7 +51,7 @@ class dir_handle extends factory
         }
         $dir_name = basename($dir_from);
         if (strpos($dir_to, $dir_name) === false) {
-            $dir_to = trim($dir_to, " /\\\t\n\r\0\x0B") . DIRECTORY_SEPARATOR . $dir_name;
+            $dir_to = rtrim($dir_to, " /\\\t\n\r\0\x0B") . DIRECTORY_SEPARATOR . $dir_name;
         }
         if (!file_exists($dir_to)) {
             mkdir($dir_to, 0777, true);
@@ -79,7 +78,6 @@ class dir_handle extends factory
      */
     public function del_dir($path): bool
     {
-        return true;
         $last = substr($path, -1);
         if ($last !== '/') {
             $path .= '/';
