@@ -171,7 +171,7 @@ class git extends factory
         $path_temp = $this->stash_files['path_temp'] ?? '';
         $this->del_dir($path_temp);
         if (is_dir($path_temp)) {
-            @rmdir($local_path);
+            @rmdir($path_temp);
         }
     }
 
