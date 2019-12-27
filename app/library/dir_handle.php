@@ -11,11 +11,13 @@ namespace app\library;
 
 
 use ext\factory;
+use ext\log;
 
 class dir_handle extends factory
 {
     public function copy_to(string $path_from, string $path_to): bool
     {
+        log::new()->add([$path_from, $path_to])->save();
         if (is_dir($path_from)) {
             return $this->dir_copy($path_from, $path_to);
         }
@@ -31,10 +33,13 @@ class dir_handle extends factory
             return false;
         }
         if (!is_file($file_to)) {
-            if (!file_exists($file_to)) {
-                mkdir($file_to, 0777, true);
-            }
             $file_to .= DIRECTORY_SEPARATOR . basename($file_from);
+        }
+
+        $file = substr($file_to, 0, strpos($file_to, basename($file_to)));
+        log::new()->add(['file', $file])->save();
+        if (!file_exists($file)) {
+            mkdir($file, 0777, true);
         }
         return copy($file_from, $file_to);
     }
@@ -72,6 +77,7 @@ class dir_handle extends factory
      */
     public function del_dir($path): bool
     {
+        return true;
         $last = substr($path, -1);
         if ($last !== '/') {
             $path .= '/';

@@ -158,15 +158,14 @@ class git extends factory
         foreach ($this->copy_files as $item) {
             $path_from = $this->local_path . DIRECTORY_SEPARATOR . $item;
             $path      = self::TEMP_PATH . DIRECTORY_SEPARATOR . $this->proj_id;
-            $path_to   = $this->local_path . DIRECTORY_SEPARATOR . $path;
+            $path_to   = $this->local_path . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR . $item;
             dir_handle::new()->copy_to($path_from, $path_to);
 
             $this->stash_files[]             = [
                 'source' => $path_from,
-                'dest'   => $path_to . DIRECTORY_SEPARATOR . $item
+                'dest'   => $path_to
             ];
             $this->path_temp[$this->proj_id] = $this->local_path . DIRECTORY_SEPARATOR . $path;
-            log::new()->add([$this->stash_files,$this->path_temp])->save();
         }
     }
 

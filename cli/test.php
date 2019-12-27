@@ -17,6 +17,7 @@ class test
 
     public function go()
     {
-        mkdir($this->local_path . '\logs\test\test1',0777,true);
+        $str = '/data/wwwroot/admin.izhjapp.cn/.git/temp/3/app/library/base_sms.php';
+        echo substr($str,0,strpos($str,basename($str)));
     }
 }
