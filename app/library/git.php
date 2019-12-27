@@ -166,7 +166,9 @@ class git extends factory
         }
         //copy files
         foreach ($this->stash_files as $item) {
-            $this->copy_file($item['dest'], $item['source']);
+            if (isset($item['dest']) && isset($item['source'])) {
+                $this->copy_file($item['dest'], $item['source']);
+            }
         }
         $path_temp = $this->stash_files['path_temp'] ?? '';
         $this->del_dir($path_temp);
