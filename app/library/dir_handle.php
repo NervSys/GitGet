@@ -62,7 +62,9 @@ class dir_handle extends factory
                     }
                 }
             }
-            @rmdir($path);
+            if (is_dir($path)){
+                @rmdir($path);
+            }
         }
     }
 }
