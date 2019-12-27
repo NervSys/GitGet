@@ -14,6 +14,7 @@ class git extends factory
     public $copy_files;
     public $local_path;
     public $stash_files;
+    public $path_temp;
     const TEMP_PATH = ".git" . DIRECTORY_SEPARATOR . 'temp';
 
     public function __construct(int $proj_id)
@@ -161,11 +162,11 @@ class git extends factory
             $path_to    = $this->local_path . DIRECTORY_SEPARATOR . file::get_path($path_local, $this->local_path);
             dir_handle::new()->copy_file($path_from, $path_to);
 
-            $this->stash_files[]            = [
+            $this->stash_files[]             = [
                 'source' => $path_from,
                 'dest'   => $path_to
             ];
-            $this->stash_files['path_temp'] = $this->local_path . DIRECTORY_SEPARATOR . $path_temp;
+            $this->path_temp[$this->proj_id] = $this->local_path . DIRECTORY_SEPARATOR . $path_temp;
         }
     }
 
@@ -176,14 +177,11 @@ class git extends factory
         }
         //copy files
         foreach ($this->stash_files as $item) {
-            if (isset($item['dest']) && isset($item['source'])) {
-                dir_handle::new()->copy_file($item['dest'], $item['source']);
-            }
+            dir_handle::new()->copy_file($item['dest'], $item['source']);
         }
-        $path_temp = $this->stash_files['path_temp'] ?? '';
-        dir_handle::new()->del_dir($path_temp);
-        if (is_dir($path_temp)) {
-            @rmdir($path_temp);
+        $path_temp = $this->path_temp[$this->proj_id] ?? '';
+        if (!empty($path_temp)){
+            dir_handle::new()->del_dir($path_temp);
         }
     }
 
