@@ -19,8 +19,8 @@ class test
 
     public function go()
     {
-        $path_from = $this->local_path . DIRECTORY_SEPARATOR . "conf/.env";
-        $path_to   = $this->local_path . DIRECTORY_SEPARATOR . "logs";
-        dir_handle::new()->copy_to($path_from,$path_to);
+        $path_from = $this->local_path . DIRECTORY_SEPARATOR . "conf/dev.ini";
+        $path_to   = $this->local_path . DIRECTORY_SEPARATOR . "logs/dev.ini";
+        copy($path_from,$path_to);
     }
 }

@@ -17,20 +17,11 @@ class dir_handle extends factory
 {
     public function copy_to(string $path_from, string $path_to): bool
     {
-        $data = ['copy_to', $path_from, $path_to];
         if (is_dir($path_from)) {
-            $res    = $this->dir_copy($path_from, $path_to);
-            $data[] = 'dir';
-            $data[] = $res;
-            log::new()->add($data)->save();
-            return $res;
+            return $this->dir_copy($path_from, $path_to);
         }
         if (is_file($path_from)) {
-            $data[] = 'file';
-            $res    = $this->file_copy($path_from, $path_to);
-            $data[] = $res;
-            log::new()->add($data)->save();
-            return $res;
+            return $this->file_copy($path_from, $path_to);
         }
         return false;
     }
@@ -58,6 +49,9 @@ class dir_handle extends factory
         }
         $dir_name = basename($dir_from);
         if (is_dir($dir_to)) {
+            if (!file_exists($dir_to)) {
+                mkdir($dir_to);
+            }
             $dir_to .= DIRECTORY_SEPARATOR . $dir_name;
             if (!file_exists($dir_to)) {
                 mkdir($dir_to);
@@ -69,16 +63,8 @@ class dir_handle extends factory
                 continue;
             }
             $path_from_1 = $dir_from . DIRECTORY_SEPARATOR . $item;
-            if (is_file($path_from_1)) {
-                if (!$this->file_copy($path_from_1, $dir_to)) {
-                    return false;
-                }
-            }
-            if (is_dir($path_from_1)) {
-                if (!$this->dir_copy($path_from_1, $dir_to)) {
-                    return false;
-                }
-            }
+            $path_to_1   = $dir_to . DIRECTORY_SEPARATOR . $item;
+            $this->copy_to($path_from_1, $path_to_1);
         }
         closedir($handle);
         return true;
@@ -93,7 +79,6 @@ class dir_handle extends factory
      */
     public function del_dir($path): bool
     {
-        log::new()->add(['del', $path])->save();
         $last = substr($path, -1);
         if ($last !== '/') {
             $path .= '/';
