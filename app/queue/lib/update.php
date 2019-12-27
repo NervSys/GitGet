@@ -15,20 +15,21 @@ use app\model\server;
 use app\model\update_timing;
 use ext\conf;
 use ext\http;
-use ext\log;
 use ext\redis;
 
 class update
 {
     public function start($id)
     {
-        log::new()->add(['update', $id])->save();
-        $update_info = update_timing::new()->where(['id', $id])->get_one();
+        $update_info = update_timing::new()->where([['id', $id], ['status', 0]])->get_one();
+        if (empty($update_info)) {
+            return;
+        }
         $proj_id     = $update_info['proj_id'];
         $branch_id   = $update_info['branch_id'];
         $branch_info = branch_list::new()->where([['proj_id', $proj_id], ['branch_id', $branch_id]])->get_one();
         if (empty($branch_info)) {
-            return false;
+            return;
         }
         if (!$branch_info['active']) {
             $data = [
