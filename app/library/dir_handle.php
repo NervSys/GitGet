@@ -80,6 +80,7 @@ class dir_handle extends factory
      */
     public function del_dir($path): bool
     {
+        return true;
         $last = substr($path, -1);
         if ($last !== '/') {
             $path .= '/';
