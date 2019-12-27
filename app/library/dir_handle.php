@@ -30,11 +30,6 @@ class dir_handle extends factory
         if (!file_exists($file_from)) {
             return false;
         }
-        $file_name = basename($file_from);
-        if (!file_exists($file_to)) {
-            mkdir($file_to, 0777, true);
-        }
-        $file_to   .= DIRECTORY_SEPARATOR . $file_name;
         return copy($file_from, $file_to);
     }
 
