@@ -9,6 +9,15 @@ function ajax_com(post_data, callback) {
     if (typeof post_data == 'object') {
         post_data['token'] = token;
     } else {
+        /*post_data=decodeURIComponent(post_data,true);
+        var post_arr=post_data.split('&');
+        var post_data={};
+        for(var i=0;i<post_arr.length;i++){
+            var data=post_arr[i].split('=');
+            post_data[data[0]]=data[1];
+        }
+        post_data['token']=token;*/
+        //post_data+='&token='+token;
     }
     $.ajax({
         url: '/api.php',
@@ -27,6 +36,24 @@ function ajax_com(post_data, callback) {
     })
 }
 
+function login_out() {
+    $.ajax({
+        url: '/api.php',
+        type: 'post',
+        data: {"c": 'adminApi/admin_acc-login_out'},
+        dataType: 'json',
+        success: function (data) {
+            parent.location.href = './login.php';
+        }
+    })
+}
+
+function check_login() {
+    ajax_com({"c": "adminApi/admin_acc-check_login"}, function () {
+    })
+}
+
+
 //获取url中的参数
 function getQueryString(name) {
     var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i"); // 匹配目标参数
@@ -36,6 +63,11 @@ function getQueryString(name) {
     } else {
         return '';
     }
+}
+
+
+function info_edit(title, url, w, h) {
+    layer_show(title, url, w, h);
 }
 
 /*弹出层*/
@@ -80,4 +112,23 @@ function layer_show(title, url, w, h) {
 function layer_close() {
     var index = parent.layer.getFrameIndex(window.name);
     parent.layer.close(index);
+}
+
+// 删除url参数中指定键名的键和值
+function funcUrlDel(paramUrl, delKey) {
+    var arr = paramUrl.split("&");
+    var newUrl = '';
+    for (var i = 0; i < arr.length; i++) {
+        var kv = arr[i].split("=");
+        if (kv[0] == delKey) {
+            continue;
+        }
+
+        if (newUrl == '') {
+            newUrl = kv[0] + "=" + kv[1];
+        } else {
+            newUrl += "&" + kv[0] + "=" + kv[1];
+        }
+    }
+    return newUrl;
 }
