@@ -19,7 +19,6 @@ class test
 
     public function go()
     {
-        $b = $this->local_path . DIRECTORY_SEPARATOR . "logs" . DIRECTORY_SEPARATOR . ".env";
-        var_dump(is_dir($b));
+        echo 'test';
     }
 }
