@@ -19,8 +19,7 @@ class test
 
     public function go()
     {
-        $a = $this->local_path . DIRECTORY_SEPARATOR . "conf";
-        $b = $this->local_path . DIRECTORY_SEPARATOR . "logs" . DIRECTORY_SEPARATOR . "logs";
-        dir_handle::new()->copy_to($a, $b);
+        $b = $this->local_path . DIRECTORY_SEPARATOR . "logs" . DIRECTORY_SEPARATOR . ".env";
+        var_dump(is_dir($b));
     }
 }

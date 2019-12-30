@@ -32,14 +32,13 @@ class dir_handle extends factory
         }
         $file_name = basename($file_from);
         if (strpos($file_to, $file_name) !== false) {
-            $file = rtrim(substr($file_to, 0, strpos($file_to, $file_name)), " /\\\t\n\r\0\x0B");
-        } else {
-            $file = $file_to;
+            $file_to = substr($file_to, 0, strpos($file_to, $file_name));
         }
-        if (!file_exists($file)) {
-            mkdir($file, 0777, true);
+        $file_to = rtrim($file_to, " /\\\t\n\r\0\x0B");
+        if (!file_exists($file_to)) {
+            mkdir($file_to, 0777, true);
         }
-        $file_to = $file . DIRECTORY_SEPARATOR . $file_name;
+        $file_to .= DIRECTORY_SEPARATOR . $file_name;
         return copy($file_from, $file_to);
     }
 
