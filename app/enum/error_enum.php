@@ -28,7 +28,7 @@ class error_enum
     ] + [
         self::PW_ERROR         => '密码错误',
         self::TOKEN_MUST_EXIST => 'token必须存在',
-        self::TOKEN_ERROR      => 'token错误',
+        self::TOKEN_ERROR      => 'token错误,请重新登录！',
         self::BRANCH_NO_CHECK  => '已在当前分支',
         self::BRANCH_NOT_EXIST => '该分支已经不存在',
         self::SETTING_PATH     => '请先设置项目根目录',

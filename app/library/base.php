@@ -48,7 +48,7 @@ class base extends factory
         }
 
         $token = $this->crypt->sign(json_encode($data));
-        $this->redis->set('gg_tk:' . $data['user_id'], hash('md5', $token), 86400 * 7);
+        //$this->redis->set('gg_tk:' . $data['user_id'], hash('md5', $token), 86400 * 7);
         return $token;
     }
 
@@ -68,22 +68,22 @@ class base extends factory
                 'data' => []
             ];
         }
-        $token_key  = 'gg_tk:' . $data['user_id'];
-        $token_hash = $this->redis->get($token_key);
-        if (false === $token_hash) {
-            return [
-                'sso'  => -2,
-                'data' => []
-            ];
-        }
-        if ($token_hash !== hash('md5', $token)) {
-            return [
-                'sso'  => -3,
-                'data' => []
-            ];
-        }
+        //$token_key  = 'gg_tk:' . $data['user_id'];
+        //$token_hash = $this->redis->get($token_key);
+        //if (false === $token_hash) {
+        //    return [
+        //        'sso'  => -2,
+        //        'data' => []
+        //    ];
+        //}
+        //if ($token_hash !== hash('md5', $token)) {
+        //    return [
+        //        'sso'  => -3,
+        //        'data' => []
+        //    ];
+        //}
+        //$this->redis->expire($token_key, 86400 * 7);
         $this->user_id = (int)$data['user_id'];
-        $this->redis->expire($token_key, 86400 * 7);
         return [
             'sso'  => 0,
             'data' => &$data

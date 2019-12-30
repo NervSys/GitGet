@@ -20,13 +20,6 @@
                 </div>
                 <div class="m-b"></div>
                 <h4>欢迎使用 <strong>GitGet 后台管理系统</strong></h4>
-                <ul class="m-b">
-                    <!--                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 优势一：专注定制开发</li>-->
-                    <!--                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 优势二：自己的核心架构</li>-->
-                    <!--                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 优势三：优质的售后服务</li>-->
-                    <!--                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 优势四：</li>-->
-                    <!--                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 优势五：</li>-->
-                </ul>
             </div>
         </div>
         <div class="col-sm-5">

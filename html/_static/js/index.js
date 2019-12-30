@@ -42,7 +42,5 @@ function asyncLoad(src) {
 }
 
 function login_out() {
-    ajax_com({"c": 'adminApi/admin_acc-login_out'}, function (data) {
-        window.location.href = "./login.php";
-    })
+    window.location.href = "./login.php";
 }

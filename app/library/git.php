@@ -5,7 +5,6 @@ namespace app\library;
 use app\model\project;
 use ext\conf;
 use ext\factory;
-use ext\log;
 use ext\redis;
 
 class git extends factory
@@ -157,15 +156,13 @@ class git extends factory
         }
         foreach ($this->copy_files as $item) {
             $path_from = $this->local_path . DIRECTORY_SEPARATOR . $item;
-            $path      = self::TEMP_PATH . DIRECTORY_SEPARATOR . $this->proj_id;
-            $path_to   = $this->local_path . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR . $item;
+            $path_to   = $this->local_path . DIRECTORY_SEPARATOR . self::TEMP_PATH . DIRECTORY_SEPARATOR . $item;
             dir_handle::new()->copy_to($path_from, $path_to);
 
-            $this->stash_files[]             = [
+            $this->stash_files[] = [
                 'source' => $path_from,
                 'dest'   => $path_to
             ];
-            $this->path_temp[$this->proj_id] = $this->local_path . DIRECTORY_SEPARATOR . $path;
         }
     }
 
@@ -178,10 +175,7 @@ class git extends factory
         foreach ($this->stash_files as $item) {
             dir_handle::new()->copy_to($item['dest'], $item['source']);
         }
-        $path_temp = $this->path_temp[$this->proj_id] ?? '';
-        if (!empty($path_temp)) {
-            dir_handle::new()->del_dir($path_temp);
-        }
+        dir_handle::new()->del_dir($this->local_path . DIRECTORY_SEPARATOR . self::TEMP_PATH);
     }
 
     /**
