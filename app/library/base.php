@@ -45,7 +45,7 @@ class base extends factory
         is_null($this->mysql) && $this->mysql = mysql::new(pdo::create(conf::get('mysql'))->connect());
         is_null($this->redis) && $this->redis = redis::create(conf::get('redis'))->connect();
         is_null($this->crypt) && $this->crypt = crypt::new();
-        is_null($this->queue) && $this->queue = queue::new($this->redis)->set_name('gitget');
+        is_null($this->queue) && $this->queue = queue::new($this->redis)->set_name('gitRemoteDeploy');
         if ($this->check_token) {
             if (empty($_COOKIE['gg_token'])) {
                 return $this->response(error_enum::TOKEN_MUST_EXIST);

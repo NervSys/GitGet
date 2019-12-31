@@ -16,7 +16,7 @@
         <div class="col-sm-7">
             <div class="signin-info">
                 <div class="logopanel m-b">
-                    <h1>[ GitGet ]</h1>
+                    <h1>[ GitRemoteDeploy ]</h1>
                 </div>
                 <div class="m-b"></div>
                 <h4>欢迎使用 <strong>GitRemoteDeploy 后台管理系统</strong></h4>
