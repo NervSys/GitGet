@@ -19,6 +19,6 @@ class test
 
     public function go()
     {
-        echo 'test123';
+        echo 'test1234';
     }
 }
