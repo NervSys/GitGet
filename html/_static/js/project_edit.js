@@ -14,8 +14,6 @@ $(function () {
             $("input[name='git_url']").val(data.proj_git_url);
             $("input[name='local_path']").val(data.proj_local_path);
             if (proj_id != 0) {
-                $("input[name='git_url']").attr('readonly', 'readonly');
-                $("input[name='local_path']").attr('readonly', 'readonly');
                 $("#operate").append('<button class="btn btn-danger" type="button" onclick="project_del(this,' + proj_id + ')">删除</button>')
             }
             $(".i-checks").iCheck({checkboxClass: "icheckbox_square-green", radioClass: "iradio_square-green",})
