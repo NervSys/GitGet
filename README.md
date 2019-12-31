@@ -29,7 +29,7 @@
 
 2、git设置（可以在项目启动后，通过 初始配置>系统设置 来挨个填写）
 
-3、切换到操作用户（如www）clone,请记得带子模块，（git clone --recursive https://github.com/NervSys/GitGet.git gitRemoteDeploy）
+3、切换到操作用户（如www）clone,请记得带子模块，（git clone --recursive https://github.com/NervSys/GitRemoteDeploy.git GitRemoteDeploy）
 
 4、nginx配置  
     * 配置可接收到消息的ip和端口 （多服务器请注意内外网IP区别和防火墙）
