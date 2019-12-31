@@ -13,7 +13,7 @@
 <div class="wrapper wrapper-content">
     <div class="row">
         <div class="col-sm-12">
-            <p class="f-20 text-success">欢迎使用GitGet后台系统</p>
+            <p class="f-20 text-success">欢迎使用gitRemoteDeploy后台系统</p>
             <p>特别提示：</p>
             <p>1、为了保障您的个人账户安全，请不要在网吧及公共场合登陆系统。 </p>
             <p>2、请您在没有在电脑旁时，点击退出系统，已防止他人进入系统恶意操作。 </p>
