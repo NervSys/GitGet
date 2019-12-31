@@ -2,7 +2,7 @@
 <html>
 <head>
     <?php require "./header.php" ?>
-    <title>GitGet</title>
+    <title>Git Remote Deploy</title>
     <!-- Morris -->
     <link href="./_static/css/plugins/morris/morris-0.4.3.min.css" rel="stylesheet">
     <!-- Gritter -->

@@ -19,7 +19,7 @@
                     <h1>[ GitGet ]</h1>
                 </div>
                 <div class="m-b"></div>
-                <h4>欢迎使用 <strong>GitGet 后台管理系统</strong></h4>
+                <h4>欢迎使用 <strong>GitRemoteDeploy 后台管理系统</strong></h4>
             </div>
         </div>
         <div class="col-sm-5">
