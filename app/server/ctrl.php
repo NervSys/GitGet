@@ -88,7 +88,7 @@ class ctrl extends base
         }
         $servers = server::new()->get();
         $data    = [
-            'cmd'   => 'project/proj_git-setting_receive',
+            'c'     => 'project/proj_git-setting_receive',
             'key'   => $key,
             'value' => $value
         ];
