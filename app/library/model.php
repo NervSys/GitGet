@@ -27,11 +27,10 @@ use ext\pdo_mysql;
 
 class model extends mysql
 {
-    public $prefix = 'git_';
 
     public function __construct()
     {
-        parent::__construct(pdo::create(conf::get('mysql'))->connect());
+		$this->set_prefix('git_')->use_pdo(base::new()->mysql->pdo);
     }
 
     public function alias(string $table_name)

@@ -42,10 +42,12 @@ class base extends factory
 
     public function __construct()
     {
-        is_null($this->mysql) && $this->mysql = mysql::new(pdo::create(conf::get('mysql'))->connect());
-        is_null($this->redis) && $this->redis = redis::create(conf::get('redis'))->connect();
+		$this->mysql = mysql::new()->use_pdo(pdo::create(conf::get('mysql'))->connect());
+        $this->redis = redis::create(conf::get('redis'))->connect();
+        $this->lock  = lock::new()->use_redis($this->redis);
+        $this->cache = cache::new()->use_redis($this->redis);
+        $this->queue = queue::new()->use_redis($this->redis)->set_name('gitRemoteDeploy');
         is_null($this->crypt) && $this->crypt = crypt::new();
-        is_null($this->queue) && $this->queue = queue::new($this->redis)->set_name('gitRemoteDeploy');
         if ($this->check_token) {
             if (empty($_COOKIE['gg_token'])) {
                 return $this->response(error_enum::TOKEN_MUST_EXIST);
