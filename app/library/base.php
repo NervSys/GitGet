@@ -44,8 +44,6 @@ class base extends factory
     {
 		$this->mysql = mysql::new()->use_pdo(pdo::create(conf::get('mysql'))->connect());
         $this->redis = redis::create(conf::get('redis'))->connect();
-        $this->lock  = lock::new()->use_redis($this->redis);
-        $this->cache = cache::new()->use_redis($this->redis);
         $this->queue = queue::new()->use_redis($this->redis)->set_name('gitRemoteDeploy');
         is_null($this->crypt) && $this->crypt = crypt::new();
         if ($this->check_token) {
