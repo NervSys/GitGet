@@ -37,4 +37,4 @@ fi
 chmod 777 -R "$local_path"
 chown $user:$user -R "$local_path/.."
 
-php html/api.php -c"project/setting-set_home_path" -d"home_path=$local_path"
+php home/api.php -c"project/setting-set_home_path" -d"home_path=$local_path"
