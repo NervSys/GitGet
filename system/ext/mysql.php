@@ -910,7 +910,7 @@ class mysql extends factory
                     if (!is_string($item)) {
                         $this->runtime['cond'][] = $item;
                     } elseif (!is_numeric($item)) {
-                        $this->runtime['cond'][] = '"' . $item . '"';
+                        $this->runtime['cond'][] = $item;
                     } elseif (false === strpos($item, '.')) {
                         $this->runtime['cond'][] = (int)$item;
                     } else {

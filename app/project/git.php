@@ -11,7 +11,6 @@ namespace app\project;
 
 
 use app\lib\api;
-use app\lib\enum\enum_err;
 use app\lib\model\branch_list;
 use app\lib\model\project_log;
 use app\project\service\service_git;

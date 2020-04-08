@@ -22,7 +22,7 @@ namespace app\lib\model;
 
 use app\lib\model;
 
-class server extends model
+class svr extends model
 {
 
 }

@@ -14,7 +14,7 @@ use app\lib\base;
 use app\lib\model\branch_list;
 use app\lib\model\project;
 use app\lib\model\project_log;
-use app\lib\model\server;
+use app\lib\model\svr;
 use app\library\dir;
 use app\library\git;
 use ext\http;
@@ -24,7 +24,7 @@ class service_git extends base
     public $copy_files;
     public $local_path;
     public $stash_files;
-    const TEMP_PATH = ".git" . DIRECTORY_SEPARATOR . 'temp';
+    const TEMP_PATH             = ".git" . DIRECTORY_SEPARATOR . 'temp';
     const GIT_CMD_TYPE_PULL     = 1;
     const GIT_CMD_TYPE_CHECKOUT = 2;
     const GIT_CMD_TYPE_RESET    = 3;
@@ -192,6 +192,7 @@ class service_git extends base
             ];
         }
     }
+
     /**
      * 恢复文件
      */
@@ -240,7 +241,7 @@ class service_git extends base
         }
         $this->redis->incrBy($key, $count);
         $this->redis->expire($key, 60);
-        $servers = server::new()->where([['srv_id', 'IN', $srv_list]])->get();
+        $servers = svr::new()->where([['svr_id', 'IN', $srv_list]])->get();
         foreach ($servers as $server) {
             $url = $server['url'] . "/api.php";
             $res = http::new()->add(['url' => $url, 'data' => $data, 'with_header' => true])->fetch();
