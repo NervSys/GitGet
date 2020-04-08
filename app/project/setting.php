@@ -26,9 +26,9 @@ class setting extends api
     public function set_home_path($home_path)
     {
         if (system_setting::new()->where(['key', 'home_path'])->exist()) {
-            return system_setting::new()->value(['value', $home_path])->where(['key', 'home_path'])->save();
+            return system_setting::new()->value(['value' => $home_path])->where(['key', 'home_path'])->save();
         } else {
-            return system_setting::new()->value(['value', $home_path])->add();
+            return system_setting::new()->value(['value' => $home_path])->add();
         }
     }
 
