@@ -22,6 +22,6 @@ namespace app\lib\model;
 
 use app\lib\model;
 
-class project_srv extends model
+class proj extends model
 {
 }

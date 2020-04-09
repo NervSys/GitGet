@@ -31,32 +31,32 @@ class svr extends api
     /**
      * 信息
      *
-     * @param int $svr_id
+     * @param int $id
      *
      * @return array
      */
-    public function info(int $svr_id)
+    public function info(int $id)
     {
-        return model_svr::new()->where([['svr_id', $svr_id], ['status', 1]])->get_one();
+        return model_svr::new()->where([['id', $id], ['status', 1]])->get_one();
     }
 
     /**
      * 编辑或新增
      *
      * @param string $url
-     * @param string $svr_name
-     * @param int    $svr_id
+     * @param string $name
+     * @param int    $id
      *
      * @return bool
      */
-    public function edit(string $url, string $svr_name = '', int $svr_id = 0)
+    public function edit(string $url, string $name = '', int $id = 0)
     {
         $value = [
-            'url'      => $url,
-            'svr_name' => $svr_name,
+            'url'  => $url,
+            'name' => $name,
         ];
-        if ($svr_id) {
-            return model_svr::new()->value($value)->where(['svr_id', $svr_id])->save();
+        if ($id) {
+            return model_svr::new()->value($value)->where(['id', $id])->save();
         } else {
             return model_svr::new()->value($value)->add();
         }
@@ -71,6 +71,6 @@ class svr extends api
      */
     public function del(int $svr_id)
     {
-        return model_svr::new()->where(['svr_id', $svr_id])->value(['status' => 2])->save();
+        return model_svr::new()->where(['id', $svr_id])->value(['status' => 2])->save();
     }
 }

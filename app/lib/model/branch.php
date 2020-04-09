@@ -22,6 +22,6 @@ namespace app\lib\model;
 
 use app\lib\model;
 
-class system_setting extends model
+class branch extends model
 {
 }

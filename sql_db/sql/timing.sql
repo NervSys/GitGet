@@ -1,4 +1,4 @@
-CREATE TABLE `git_update_timing` (
+CREATE TABLE `git_timing` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `proj_id` int(10) unsigned NOT NULL COMMENT '项目id',
   `time` int(10) unsigned NOT NULL COMMENT '更新时间戳',
@@ -10,4 +10,4 @@ CREATE TABLE `git_update_timing` (
   KEY `proj_id` (`proj_id`),
   KEY `branch_id` (`branch_id`),
   KEY `status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='定时更新';
+) COMMENT='定时处理';

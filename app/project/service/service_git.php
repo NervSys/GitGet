@@ -11,9 +11,9 @@ namespace app\project\service;
 
 
 use app\lib\base;
-use app\lib\model\branch_list;
-use app\lib\model\project;
-use app\lib\model\project_log;
+use app\lib\model\branch;
+use app\lib\model\proj;
+use app\lib\model\proj_log;
 use app\lib\model\svr;
 use app\library\dir;
 use app\library\git;
@@ -94,7 +94,7 @@ class service_git extends base
             $branch_names = ['master'];
         }
         //获取本地分支
-        $local_branch = branch_list::new()->where(['proj_id', $proj_id])->fields('branch_name')->get(\PDO::FETCH_COLUMN);
+        $local_branch = branch::new()->where(['proj_id', $proj_id])->fields('name')->get(\PDO::FETCH_COLUMN);
         $remove       = [];
         foreach ($local_branch as $branch) {
             if (!in_array($branch, $branch_names)) {
@@ -103,15 +103,15 @@ class service_git extends base
         }
         //更新数据库分支列表
         if (!empty($remove)) {
-            branch_list::new()->where([['branch_name', $remove]])->del();
+            branch::new()->where([['name', $remove]])->del();
         }
         foreach ($branch_names as $branch_name) {
             if (!in_array($branch_name, $local_branch)) {
                 $add = [
-                    'branch_name' => $branch_name,
-                    'proj_id'     => $proj_id
+                    'name'    => $branch_name,
+                    'proj_id' => $proj_id
                 ];
-                branch_list::new()->value($add)->insert_data();
+                branch::new()->value($add)->add();
             }
         }
 
@@ -119,8 +119,8 @@ class service_git extends base
         if (empty($curr_branch)) {
             $curr_branch = ['master'];
         }
-        branch_list::new()->where(['proj_id', $proj_id])->value(['active' => 0])->update_data();
-        branch_list::new()->where([['proj_id', $proj_id], ['branch_name', $curr_branch[0]]])->value(['active' => 1])->update_data();
+        branch::new()->where(['proj_id', $proj_id])->value(['active' => 0])->save();
+        branch::new()->where([['proj_id', $proj_id], ['name', $curr_branch[0]]])->value(['active' => 1])->save();
         return true;
     }
 
@@ -135,16 +135,16 @@ class service_git extends base
         $data              = [];
         $curr_branch       = git::new()->curr_branch();
         $data['proj_id']   = $proj_id;
-        $data['proj_log']  = trim($curr_branch[1] ?? '');
+        $data['log']       = trim($curr_branch[1] ?? '');
         $data['log_type']  = $log_type;
         $data['commit_id'] = git::new()->curr_commit_id();;
-        $data['branch_id'] = branch_list::new()->where([['proj_id', $proj_id], ['active', 1]])->fields('branch_id')->get_value();
+        $data['branch_id'] = branch::new()->where([['proj_id', $proj_id], ['active', 1]])->fields('id')->get_value();
         $data['active']    = 1;
-        project_log::new()->where(['proj_id', $proj_id])->value(['active' => 0])->update_data();
-        if (!project_log::new()->where([['proj_id', $proj_id], ['branch_id', $data['branch_id']], ['commit_id', $data['commit_id']]])->exist()) {
-            project_log::new()->value($data)->insert_data();
+        proj_log::new()->where(['proj_id', $proj_id])->value(['active' => 0])->save();
+        if (!proj_log::new()->where([['proj_id', $proj_id], ['branch_id', $data['branch_id']], ['commit_id', $data['commit_id']]])->exist()) {
+            proj_log::new()->value($data)->add();
         }
-        project_log::new()->where([['proj_id', $proj_id], ['commit_id', $data['commit_id']]])->value(['active' => 1])->update_data();
+        proj_log::new()->where([['proj_id', $proj_id], ['commit_id', $data['commit_id']]])->value(['active' => 1])->save();
     }
 
 
@@ -155,11 +155,11 @@ class service_git extends base
      */
     private function pre_option(int $proj_id)
     {
-        $conf             = project::new()->where(['proj_id', $proj_id])->get_one();
-        $git_url          = $conf['proj_git_url'];
-        $local_path       = $conf['proj_local_path'];
+        $conf             = proj::new()->where(['id', $proj_id])->get_one();
+        $git_url          = $conf['git_url'];
+        $local_path       = $conf['local_path'];
         $this->local_path = $local_path;
-        $this->copy_files = json_decode($conf['proj_backup_files'], true);
+        $this->copy_files = json_decode($conf['backup_files'], true);
         if (!is_dir($local_path)) {
             mkdir($local_path, 0777, true);
             chmod($local_path, 0777);
@@ -229,9 +229,9 @@ class service_git extends base
      */
     public function request(int $proj_id, array $data)
     {
-        $srv_list = project::new()->fields('srv_list')->where(['proj_id', $proj_id])->get_val();
-        $srv_list = json_decode($srv_list, true);
-        $count    = count($srv_list);
+        $svr_list = proj::new()->fields('svr_list')->where(['id', $proj_id])->get_val();
+        $svr_list = json_decode($svr_list, true);
+        $count    = count($svr_list);
         if ($count <= 0) {
             return false;
         }
@@ -241,7 +241,7 @@ class service_git extends base
         }
         $this->redis->incrBy($key, $count);
         $this->redis->expire($key, 60);
-        $servers = svr::new()->where([['svr_id', 'IN', $srv_list]])->get();
+        $servers = svr::new()->where([['id', 'IN', $svr_list]])->get();
         foreach ($servers as $server) {
             $url = $server['url'] . "/api.php";
             $res = http::new()->add(['url' => $url, 'data' => $data, 'with_header' => true])->fetch();

@@ -22,6 +22,6 @@ namespace app\lib\model;
 
 use app\lib\model;
 
-class update_timing extends model
+class setting extends model
 {
 }

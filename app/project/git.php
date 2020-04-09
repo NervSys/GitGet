@@ -11,8 +11,8 @@ namespace app\project;
 
 
 use app\lib\api;
-use app\lib\model\branch_list;
-use app\lib\model\project_log;
+use app\lib\model\branch;
+use app\lib\model\proj_log;
 use app\project\service\service_git;
 use ext\mpc;
 
@@ -52,11 +52,11 @@ class git extends api
      */
     public function checkout(int $proj_id, int $branch_id)
     {
-        $branch_info = branch_list::new()->where([['proj_id', $proj_id], ['branch_id', $branch_id]])->get_one();
+        $branch_info = branch::new()->where([['proj_id', $proj_id], ['id', $branch_id]])->get_one();
         $data        = [
             'c'     => 'project/git-local_receive',
             'cli_c' => 'project/git-checkout_cli',
-            'data'  => ['proj_id' => $proj_id, 'branch_name' => $branch_info['branch_name']]
+            'data'  => ['proj_id' => $proj_id, 'branch_name' => $branch_info['name']]
         ];
         return service_git::new()->request($proj_id, $data);
     }
@@ -77,7 +77,7 @@ class git extends api
      */
     public function reset(int $proj_id, int $log_id)
     {
-        $commit_id = project_log::new()->where(['log_id', $log_id])->fields('commit_id')->get_val();
+        $commit_id = proj_log::new()->where(['id', $log_id])->fields('commit_id')->get_val();
         $data      = [
             'c'     => 'project/git-local_receive',
             'cli_c' => 'project/git-reset_cli',

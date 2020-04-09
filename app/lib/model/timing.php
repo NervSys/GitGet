@@ -20,8 +20,9 @@
 namespace app\lib\model;
 
 
+
 use app\lib\model;
 
-class project extends model
+class timing extends model
 {
 }
