@@ -52,11 +52,11 @@ class git extends api
      */
     public function checkout(int $proj_id, int $branch_id)
     {
-        $branch_info = branch::new()->where([['proj_id', $proj_id], ['id', $branch_id]])->get_one();
+        $branch_name = branch::new()->where([['proj_id', $proj_id], ['id', $branch_id]])->fields('name')->get_val();
         $data        = [
             'c'     => 'project/git-local_receive',
             'cli_c' => 'project/git-checkout_cli',
-            'data'  => ['proj_id' => $proj_id, 'branch_name' => $branch_info['name']]
+            'data'  => ['proj_id' => $proj_id, 'branch_name' => $branch_name]
         ];
         return service_git::new()->request($proj_id, $data);
     }
@@ -107,6 +107,18 @@ class git extends api
             'd' => $data
         ])->go(false);
         return true;
+    }
+
+    /**
+     * 分支列表
+     *
+     * @param int $proj_id
+     *
+     * @return array
+     */
+    public function branch_list(int $proj_id)
+    {
+        return branch::new()->where(['proj_id', $proj_id])->get();
     }
 
 }

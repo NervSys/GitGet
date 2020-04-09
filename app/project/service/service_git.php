@@ -25,9 +25,9 @@ class service_git extends base
     public $local_path;
     public $stash_files;
     const TEMP_PATH             = ".git" . DIRECTORY_SEPARATOR . 'temp';
-    const GIT_CMD_TYPE_PULL     = 1;
-    const GIT_CMD_TYPE_CHECKOUT = 2;
-    const GIT_CMD_TYPE_RESET    = 3;
+    const GIT_CMD_TYPE_PULL     = 1;    //更新
+    const GIT_CMD_TYPE_CHECKOUT = 2;    //切换分支
+    const GIT_CMD_TYPE_RESET    = 3;    //回滚
 
     public function update(int $proj_id)
     {
@@ -76,7 +76,7 @@ class service_git extends base
      *
      * @param int $proj_id
      *
-     * @return array
+     * @return bool
      */
     public function update_branch(int $proj_id)
     {
@@ -138,7 +138,7 @@ class service_git extends base
         $data['log']       = trim($curr_branch[1] ?? '');
         $data['log_type']  = $log_type;
         $data['commit_id'] = git::new()->curr_commit_id();;
-        $data['branch_id'] = branch::new()->where([['proj_id', $proj_id], ['active', 1]])->fields('id')->get_value();
+        $data['branch_id'] = branch::new()->where([['proj_id', $proj_id], ['active', 1]])->fields('id')->get_val();
         $data['active']    = 1;
         proj_log::new()->where(['proj_id', $proj_id])->value(['active' => 0])->save();
         if (!proj_log::new()->where([['proj_id', $proj_id], ['branch_id', $data['branch_id']], ['commit_id', $data['commit_id']]])->exist()) {
