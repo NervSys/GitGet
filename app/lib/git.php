@@ -27,9 +27,9 @@ class git extends factory
 
     /**
      * 清除未添加文件
-     * @return array
+     * @return bool
      */
-    public function clean(): array
+    public function clean(): bool
     {
         return $this->execute($this->build_cmd('git clean -df'), $this->output);
     }

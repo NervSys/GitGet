@@ -121,4 +121,17 @@ class git extends api
         return branch::new()->where(['proj_id', $proj_id])->get();
     }
 
+    /**
+     *
+     * @param int $proj_id
+     * @param int $page
+     * @param int $page_size
+     *
+     * @return array
+     */
+    public function log_list(int $proj_id, int $page, int $page_size)
+    {
+        $branch_id = branch::new()->where([['proj_id', $proj_id], ['active', 1]])->fields('id')->get_val();
+        return proj_log::new()->where([['proj_id', $proj_id], ['branch_id', $branch_id]])->order(['id' => 'desc'])->get_page($page, $page_size);
+    }
 }
