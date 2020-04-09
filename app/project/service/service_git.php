@@ -15,8 +15,8 @@ use app\lib\model\branch;
 use app\lib\model\proj;
 use app\lib\model\proj_log;
 use app\lib\model\svr;
-use app\library\dir;
-use app\library\git;
+use app\lib\dir;
+use app\lib\git;
 use ext\http;
 
 class service_git extends base

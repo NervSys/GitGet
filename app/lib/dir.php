@@ -18,7 +18,7 @@
  */
 
 
-namespace app\library;
+namespace app\lib;
 
 
 use ext\factory;
