@@ -1,6 +1,6 @@
 <?php
 /**
- * Git Remote Deploy
+ * Git Get
  *
  * Copyright 2019-2020 leo <2579186091@qq.com>
  *

@@ -1,9 +1,9 @@
 <?php
 
 /**
- * API Entry script example
+ * Git Get
  *
- * Copyright 2016-2019 Jerry Shaw <jerry-shaw@live.com>
+ * Copyright 2019-2020 leo <2579186091@qq.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 //Set error_reporting level
 error_reporting(E_ALL);
 
