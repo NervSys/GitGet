@@ -100,7 +100,6 @@ class setting extends api
         $path = $home_path . "/.ssh/id_rsa.pub";
         file_put_contents($path, $pub_key);
         chmod($path, 0600);
-        exec("ssh -T git@gitee.com");
         if (mod_set::new()->where(['key', 'pub_key'])->exist()) {
             mod_set::new()->value(['value' => $pub_key])->where(['key', 'pub_key'])->save();
         } else {
