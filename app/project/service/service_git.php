@@ -44,7 +44,7 @@ class service_git extends base
         $this->pre_option($proj_id);
         $this->stash_file();
         $lib_git = git::new();
-        if (!$lib_git->clean() || !$lib_git->checkout('.') || !$lib_git->pull()) {
+        if (!$lib_git->clean() || !$lib_git->clear() || !$lib_git->pull()) {
             $this->gg_error($proj_id, $lib_git->output);
         }
         $this->apply_file();
@@ -58,7 +58,7 @@ class service_git extends base
         $this->pre_option($proj_id);
         $this->stash_file();
         $lib_git = git::new();
-        if (!$lib_git->clean() || !$lib_git->checkout('.') || !$lib_git->checkout($branch_name)) {
+        if (!$lib_git->clean() || !$lib_git->clear() || !$lib_git->checkout($branch_name)) {
             $this->gg_error($proj_id, $lib_git->output);
         }
         $this->apply_file();
@@ -72,7 +72,7 @@ class service_git extends base
         $this->pre_option($proj_id);
         $this->stash_file();
         $lib_git = git::new();
-        if (!$lib_git->clean() || !$lib_git->checkout('.') || !$lib_git->reset($commit)) {
+        if (!$lib_git->clean() || !$lib_git->clear() || !$lib_git->reset($commit)) {
             $this->gg_error($proj_id, $lib_git->output);
         }
         $this->apply_file();

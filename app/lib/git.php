@@ -27,6 +27,7 @@ class git extends factory
 
     /**
      * 清除未添加文件
+     *
      * @return bool
      */
     public function clean(): bool
@@ -35,7 +36,18 @@ class git extends factory
     }
 
     /**
+     * 清理
+     *
+     * @return bool
+     */
+    public function clear(): bool
+    {
+        return $this->execute($this->build_cmd('git checkout --force .'), $this->output);
+    }
+
+    /**
      * 克隆
+     *
      * @param string $url
      * @param string $path
      *
@@ -48,6 +60,7 @@ class git extends factory
 
     /**
      * 更新
+     *
      * @return bool
      */
     public function pull(): bool
@@ -57,6 +70,7 @@ class git extends factory
 
     /**
      * 切换分支
+     *
      * @param string $branch
      *
      * @return bool
@@ -68,6 +82,7 @@ class git extends factory
 
     /**
      * 分支列表
+     *
      * @return array
      */
     public function branch_list()
@@ -79,6 +94,7 @@ class git extends factory
 
     /**
      * 当前节点
+     *
      * @return mixed|string
      */
     public function curr_commit_id()
@@ -89,6 +105,7 @@ class git extends factory
 
     /**
      * 当前分支
+     *
      * @return array
      */
     public function curr_branch()
@@ -109,6 +126,7 @@ class git extends factory
 
     /**
      * 回滚
+     *
      * @param string $commit
      *
      * @return bool
@@ -120,6 +138,7 @@ class git extends factory
 
     /**
      * 执行
+     *
      * @param $cmd
      * @param $output
      *
@@ -137,6 +156,7 @@ class git extends factory
 
     /**
      * build
+     *
      * @param string $cmd
      * @param string ...$params
      *
