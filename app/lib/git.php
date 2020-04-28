@@ -71,21 +71,13 @@ class git extends factory
     /**
      * @param string $branch
      *
+     * @return bool
      */
-    public function fetch(string $branch)
+    public function checkout(string $branch): bool
     {
-        $this->execute($this->build_cmd('git fetch origin %s', $branch), $this->output);
-    }
-
-    /**
-     * 切换分支
-     *
-     * @param string $branch
-     *
-     */
-    public function checkout(string $branch)
-    {
-        $this->execute($this->build_cmd('git checkout --force %s', $branch), $this->output);
+        if (!$this->execute($this->build_cmd('git checkout -b %s', $branch), $this->output)) {
+            return $this->execute($this->build_cmd('git checkout --force %s', $branch), $this->output);
+        }
     }
 
     /**
