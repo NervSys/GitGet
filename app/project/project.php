@@ -16,6 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace app\project;
 
 
@@ -37,11 +38,13 @@ class project extends api
      */
     public function list(int $page, int $page_size)
     {
-        $res = proj::new()->fields('id', 'name', 'status', 'is_lock')->where([['status', '<>', 2]])->get_page($page, $page_size);
+        $res = proj::new()->fields('id', 'name', 'status')->where([['status', '<>', 2]])->get_page($page, $page_size);
         foreach ($res['list'] as &$item) {
-            $branch         = branch::new()->where([['proj_id', $item['id']], ['active', 1]])->fields('id', 'name')->get_one();
-            $item['branch'] = $branch['name'];
-            $item['commit'] = proj_log::new()->where([['proj_id', $item['id']], ['branch_id', $branch['id']], ['active', 1]])->fields('log')->get_val();
+            $branch          = branch::new()->where([['proj_id', $item['id']], ['active', 1]])->fields('id', 'name')->get_one();
+            $item['branch']  = $branch['name'];
+            $item['commit']  = proj_log::new()->where([['proj_id', $item['id']], ['branch_id', $branch['id']], ['active', 1]])->fields('log')->get_val();
+            $key             = "proj_lock:" . $item['id'];
+            $item['is_lock'] = $this->redis->exists($key);
         }
         return $res;
     }
@@ -112,9 +115,9 @@ class project extends api
      *
      * @param int $proj_id
      *
-     * @return array
+     * @return bool
      */
-    public function del(int $proj_id): array
+    public function del(int $proj_id): bool
     {
         return proj::new()->value(['status' => 2])->where(['id', $proj_id])->save();
     }
