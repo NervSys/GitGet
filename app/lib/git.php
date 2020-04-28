@@ -63,7 +63,7 @@ class git extends factory
      */
     public function checkout(string $branch): bool
     {
-        return $this->execute($this->build_cmd('git checkout --force %s', $branch), $this->output);
+        return $this->execute($this->build_cmd('git checkout --b %s', $branch), $this->output);
     }
 
     /**
