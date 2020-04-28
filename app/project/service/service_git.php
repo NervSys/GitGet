@@ -58,9 +58,11 @@ class service_git extends base
         $this->pre_option($proj_id);
         $this->stash_file();
         $lib_git = git::new();
-        if (!$lib_git->clean() || !$lib_git->clear() || !$lib_git->checkout($branch_name)) {
+        if (!$lib_git->clean() || !$lib_git->clear()) {
             $this->gg_error($proj_id, $lib_git->output);
         }
+        $lib_git->fetch($branch_name);
+        $lib_git->checkout($branch_name);
         $this->apply_file();
         $this->update_branch($proj_id);
         $this->add_log($proj_id, self::GIT_CMD_TYPE_CHECKOUT);
