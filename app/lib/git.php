@@ -20,6 +20,7 @@
 namespace app\lib;
 
 use ext\factory;
+use ext\log;
 
 class git extends factory
 {
@@ -147,6 +148,7 @@ class git extends factory
     private function execute($cmd, &$output)
     {
         exec($cmd . " 2>&1", $output, $res);
+        log::new("exec")->add([$cmd, $output, $res])->save();
         if ($res != 0) {
             $output = is_array($output) ? json_encode($output) : $output;
             return false;
