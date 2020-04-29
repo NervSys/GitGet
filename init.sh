@@ -19,9 +19,8 @@ done
 #sed -i '/'"2000"'/d' /etc/group
 #sed -i '/'"www"'/d' /etc/group
 #echo $user:x:2000: >> /etc/group
-sed -i '/'"1000"'/d' /etc/passwd
-sed -i '/'"www"'/d' /etc/passwd
-echo $user:x:1000:1000:root:$local_path:/bin/bash >> /etc/passwd
+#sed -i '/'"www"'/d' /etc/passwd
+#echo $user:x:1000:1000:root:$local_path:/bin/bash >> /etc/passwd
 
 #设置ssh配置
 sed -i '/'"StrictHostKeyChecking no"'/d' /etc/ssh/ssh_config
