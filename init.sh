@@ -33,7 +33,7 @@ if [ ! -d $local_path/.ssh ]; then
 mkdir $local_path/.ssh -p
 fi
 
-chmod 777 -R "$local_path"
-chown $user:$user -R "$local_path/.."
+#chmod 777 -R "$local_path"
+#chown $user:$user -R "$local_path/.."
 
 php home/api.php -c"project/setting-set_home_path" -d"home_path=$local_path"
