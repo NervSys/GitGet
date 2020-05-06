@@ -76,10 +76,11 @@ class git extends factory
      */
     public function checkout(string $branch): bool
     {
-        if (!$this->execute($this->build_cmd('git checkout -b %s', $branch), $this->output)) {
-            return $this->execute($this->build_cmd('git checkout --force %s', $branch), $this->output);
-        }
-        return true;
+        return $this->execute($this->build_cmd('git checkout --force %s', $branch), $this->output);
+        //if (!$this->execute($this->build_cmd('git checkout -b %s', $branch), $this->output)) {
+        //    return $this->execute($this->build_cmd('git checkout --force %s', $branch), $this->output);
+        //}
+        //return true;
     }
 
     /**
