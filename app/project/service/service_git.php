@@ -28,6 +28,7 @@ use app\lib\model\svr;
 use app\lib\dir;
 use app\lib\git;
 use ext\http;
+use ext\log;
 
 class service_git extends base
 {
@@ -255,6 +256,7 @@ class service_git extends base
         foreach ($servers as $server) {
             $url = $server['url'] . "/api.php";
             $res = http::new()->add(['url' => $url, 'data' => $data, 'with_header' => true])->fetch();
+            log::new()->add(['url' => $url, 'data' => $data, 'with_header' => true,'res'=>$res])->save();
             if (!$res) {
                 $this->gg_error($proj_id, '服务器请求出错');
             }
