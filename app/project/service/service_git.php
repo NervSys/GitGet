@@ -258,7 +258,6 @@ class service_git extends base
             $url                       = $server['url'] . "/api.php";
             $data['data']['home_path'] = $server['home_path'];
             $res                       = http::new()->add(['url' => $url, 'data' => $data, 'with_header' => true])->fetch();
-            log::new()->add(['url' => $url, 'data' => $data, 'with_header' => true, 'res' => $res])->save();
             if (!$res) {
                 $this->gg_error($proj_id, '服务器请求出错');
             }
