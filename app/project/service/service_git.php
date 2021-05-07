@@ -169,8 +169,8 @@ class service_git extends base
     {
         $conf             = proj::new()->where(['id', $proj_id])->get_one();
         $git_url          = $conf['git_url'];
-        $local_path       = $conf['local_path'];
-        $this->local_path = $home_path . $local_path;
+        $local_path       = $home_path.$conf['local_path'];
+        $this->local_path = $local_path;
         $this->copy_files = json_decode($conf['backup_files'], true);
         if (!is_dir($local_path)) {
             mkdir($local_path, 0777, true);
@@ -258,6 +258,7 @@ class service_git extends base
             $url                       = $server['url'] . "/api.php";
             $data['data']['home_path'] = $server['home_path'];
             $res                       = http::new()->add(['url' => $url, 'data' => $data, 'with_header' => true])->fetch();
+            log::new()->add(['url' => $url, 'data' => $data, 'with_header' => true, 'res' => $res])->save();
             if (!$res) {
                 $this->gg_error($proj_id, '服务器请求出错');
             }
