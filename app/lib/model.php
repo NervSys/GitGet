@@ -20,16 +20,16 @@
 namespace app\lib;
 
 
-use ext\mysql;
+use Ext\libMySQL;
 
-class model extends mysql
+class model extends libMySQL
 {
     /**
      * model constructor.
      */
     public function __construct()
     {
-        $this->set_prefix('git_')->use_pdo(base::new()->mysql->pdo);
+        $this->setTablePrefix('git_')->bindPdo(base::new()->mysql->pdo);
     }
 
     /**
@@ -39,11 +39,9 @@ class model extends mysql
      *
      * @return $this
      */
-    public function alias($alias)
+    public function alias($alias): self
     {
-        $table_path  = get_called_class();
-        $table       = explode('\\', $table_path);
-        $this->table = $this->escape($this->prefix . end($table) . " AS " . $alias);
+        $this->table_name = get_called_class() . " AS " . $alias;
         return $this;
     }
 
@@ -56,7 +54,7 @@ class model extends mysql
      */
     public function get(int $fetch_style = \PDO::FETCH_ASSOC): array
     {
-        return $this->select()->fetch_all($fetch_style);
+        return $this->select()->getAll($fetch_style);
     }
 
     /**
@@ -68,18 +66,18 @@ class model extends mysql
      */
     public function get_one(int $fetch_style = \PDO::FETCH_ASSOC): array
     {
-        return $this->select()->fetch_row($fetch_style);
+        return $this->select()->getRow($fetch_style);
     }
 
     /**
      * 读取值，与where连用
      *
-     * @return array
+     * @return string
      */
-    public function get_val()
+    public function get_val(): string
     {
-        $data = $this->select()->fetch_row(\PDO::FETCH_COLUMN);
-        return $data[0] ?? '';
+        $data = $this->getRow(\PDO::FETCH_COLUMN);
+        return (string)$data[0] ?? '';
     }
 
     /**
@@ -90,20 +88,19 @@ class model extends mysql
      */
     public function get_page(int $page, int $page_size): array
     {
-        $data      = [
+        $data             = [
             'curr_page' => $page,
             'cnt_data'  => 0,
             'cnt_page'  => 0,
             'list'      => []
         ];
-        $count_obj = clone $this;
-        unset($count_obj->runtime['field']);
-        $data['cnt_data'] = $count_obj->select()->fields('COUNT(*) AS C')->fetch_row(\PDO::FETCH_COLUMN)[0];
+        $count_obj        = clone $this;
+        $data['cnt_data'] = $count_obj->select('COUNT(*) AS C')->getRow(\PDO::FETCH_COLUMN)[0];
         $data['cnt_page'] = ceil($data['cnt_data'] / $page_size);
 
         $page         = $page < 1 ? 1 : $page;
         $page_size    = $page_size < 1 ? 1 : $page_size;
-        $data['list'] = $this->limit(($page - 1) * $page_size, $page_size)->select()->fetch_all();
+        $data['list'] = $this->limit(($page - 1) * $page_size, $page_size)->select()->getAll();
         return $data;
     }
 
@@ -114,7 +111,7 @@ class model extends mysql
      */
     public function exist(): bool
     {
-        return !empty($this->select()->limit(1)->fetch_row());
+        return !empty($this->select()->limit(1)->getRow());
     }
 
     /**
@@ -124,7 +121,7 @@ class model extends mysql
      */
     public function cnt()
     {
-        return current($this->select()->fields('COUNT(*) AS C')->fetch_row(\PDO::FETCH_COLUMN));
+        return current($this->select('COUNT(*) AS C')->getRow(\PDO::FETCH_COLUMN));
     }
 
     /**
@@ -134,23 +131,32 @@ class model extends mysql
      */
     public function sum()
     {
-        $field = $this->runtime['field'][0];
-        unset($this->runtime['field']);
-        $res = $this->select()->fields("sum(" . $field . ")")->fetch_row(\PDO::FETCH_COLUMN);
+        $field = $this->runtime_data['cols'][0];
+        unset($this->runtime_data['cols']);
+
+        $res = $this->select("sum(" . $field . ")")->getRow(\PDO::FETCH_COLUMN);
         return $res[0] ?? 0;
     }
 
-    public function save()
+    /**
+     * @return bool
+     * @deprecated
+     */
+    public function save(): bool
     {
         return $this->update()->execute();
     }
 
-    public function add()
+    /**
+     * @return bool
+     * @deprecated
+     */
+    public function add(): bool
     {
         return $this->insert()->execute();
     }
 
-    public function del()
+    public function del(): bool
     {
         return $this->delete()->execute();
     }

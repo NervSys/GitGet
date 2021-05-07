@@ -20,63 +20,83 @@
 namespace app\lib;
 
 use app\lib\enum\enum_err;
-use app\lib\enum\error_code;
-use ext\conf;
-use ext\core;
-use ext\errno;
-use ext\factory;
-use ext\mysql;
-use ext\pdo;
-use ext\redis;
+use Core\Factory;
+use Core\Lib\App;
+use Core\Lib\IOUnit;
+use Ext\libConfGet;
+use Ext\libErrno;
+use Ext\libMySQL;
+use Ext\libPDO;
+use Ext\libRedis;
 
 /**
  * Class base
  *
  * @package app
  */
-class base extends factory
+class base extends Factory
 {
-    /** @var \ext\mysql $mysql */
-    public $mysql;
+    /** @var App $app */
+    public App $app;
+
+    /** @var libErrno $errno */
+    public libErrno $errno;
+
+    /** @var libConfGet $conf_get */
+    public libConfGet $conf_get;
+
+    /** @var libMySQL $mysql */
+    public libMySQL $mysql;
 
     /** @var \Redis $redis */
-    public $redis;
+    public \Redis $redis;
 
     /** @var string $env */
-    public $env = 'prod';
+    public string $env = 'prod';
 
     /**
      * base constructor.
+     *
+     * @throws \Exception
      */
     public function __construct()
     {
+        $this->app      = App::new();
+        $this->errno    = libErrno::new();
+        $this->conf_get = libConfGet::new();
+
+        $conf_file = $this->app->root_path . '/conf/prod.ini';
+
         //判断环境设置
-        if (is_file($env_file = realpath(ROOT . '/conf/.env'))) {
+        if (is_file($env_file = realpath($this->app->root_path . '/conf/.env'))) {
             $env = trim(file_get_contents($env_file));
 
-            if (is_file($conf_file = realpath(ROOT . '/conf/' . $env . '.ini'))) {
+            if (is_file($conf_file = realpath($this->app->root_path . '/conf/' . $env . '.ini'))) {
                 $this->env = &$env;
             }
         }
 
         //加载配置
-        conf::load('conf', $this->env);
+        $this->conf_get->load($conf_file);
 
         //初始化配置
         self::init();
 
         //默认操作成功，具体状态码在业务中修改
         $code = enum_err::get_code(enum_err::SUCCESS);
-        errno::set($code['code'], 0, $code['msg']);
+
+        $this->errno->set($code['code'], 0, $code['msg']);
     }
 
     /**
      * 初始化配置
+     *
+     * @throws \RedisException
      */
     public function init(): void
     {
-        $this->mysql = mysql::new()->use_pdo(pdo::create(conf::get('mysql'))->connect());
-        $this->redis = redis::create(conf::get('redis'))->connect();
+        $this->mysql = libMySQL::new()->bindPdo(libPDO::new($this->conf_get->use('mysql'))->connect());
+        $this->redis = libRedis::new($this->conf_get->use('redis'))->connect();
     }
 
     /**
@@ -89,7 +109,10 @@ class base extends factory
     {
         $code_arr = enum_err::get_code($code);
         $msg      = empty($msg) ? $code_arr['msg'] : $msg;
-        errno::set($code_arr['code'], 1, $msg);
-        core::stop();
+
+        $this->errno->set($code_arr['code'], 1, $msg);
+
+        IOUnit::new()->output();
+        exit;
     }
 }

@@ -20,18 +20,21 @@
 namespace sql_db;
 
 use app\lib\base;
-use ext\file;
+use Ext\libFile;
 
+/**
+ * Class install
+ *
+ * @package sql_db
+ */
 class install extends base
 {
-    public $tz = 'db';
-
     /**
      * 建表
      */
     public function db(): void
     {
-        $sql_files = file::get_list(__DIR__ . '/sql', '*.sql');
+        $sql_files = libFile::new()->getList(__DIR__ . '/sql', '*.sql');
 
         foreach ($sql_files as $file) {
             $sql = trim(file_get_contents($file));

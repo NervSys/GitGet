@@ -1,28 +1,35 @@
 # GitGet - Automated deployment tools
-          
-## version：3.0
+
+## version：4.0
 
 ## Introduction
 
-**GitGet is an easy tool for multi project and multi server automatic deployment. developer can complete project branch switch, code update, version rollback and view historical submitted version through interface buttons,  without writing a large number of commands, and easy one click operation**
+**GitGet is an easy tool for multi project and multi server automatic deployment. developer can complete project branch
+switch, code update, version rollback and view historical submitted version through interface buttons, without writing a
+large number of commands, and easy one click operation**
 
 ## Function List
+
 * Server Manager
 * Project Manager
 
 ## Dependency
+
 * windows/linux
 
-* PHP v7.2+
+* Nervsys 8.0.0+
+
+* PHP v7.4+
 
 * MYSQL v5.6+
 
 * GIT v1.8+
 
 ## Init
+
 1. php.ini must support these functions: exec, shell_exec, proc_open, proc_get_status.
 
-2. edit conf/prod.ini, connect mysql and redis. 
+2. edit conf/prod.ini, connect mysql and redis.
 
 3. edit app/app.ini, modify php path
 

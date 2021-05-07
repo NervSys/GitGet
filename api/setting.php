@@ -17,14 +17,15 @@
  * limitations under the License.
  */
 
-namespace app\project;
+namespace api;
 
 
 use app\lib\api;
+use app\lib\base;
 use app\lib\enum\enum_err;
 use app\lib\model\setting as mod_set;
 
-class setting extends api
+class setting extends base
 {
     /**
      * 保存home目录地址
@@ -33,12 +34,12 @@ class setting extends api
      *
      * @return bool
      */
-    public function set_home_path($home_path)
+    public function set_home_path($home_path): bool
     {
         if (mod_set::new()->where(['key', 'home_path'])->exist()) {
-            return mod_set::new()->value(['value' => $home_path])->where(['key', 'home_path'])->save();
+            return mod_set::new()->update(['value' => $home_path])->where(['key', 'home_path'])->execute();
         } else {
-            return mod_set::new()->value(['key' => 'home_path', 'value' => $home_path])->add();
+            return mod_set::new()->insert(['key' => 'home_path', 'value' => $home_path])->execute();
         }
     }
 
@@ -47,7 +48,7 @@ class setting extends api
      *
      * @return array
      */
-    public function info()
+    public function info(): array
     {
         $keys = [
             "user_name",
@@ -55,7 +56,7 @@ class setting extends api
             "pri_key",
             "pub_key"
         ];
-        return mod_set::new()->where([['key', $keys]])->fields('key', 'value')->get(\PDO::FETCH_COLUMN | \PDO::FETCH_UNIQUE);
+        return mod_set::new()->where([['key', $keys]])->select('key', 'value')->getAll(\PDO::FETCH_COLUMN | \PDO::FETCH_UNIQUE);
     }
 
     /**
@@ -68,32 +69,32 @@ class setting extends api
      */
     public function initial(string $user_name, string $user_email, string $pri_key, string $pub_key)
     {
-        $home_path = mod_set::new()->where(['key', 'home_path'])->fields('value')->get_val();
+        $home_path = mod_set::new()->where(['key', 'home_path'])->select('value')->get_val();
         if (empty($home_path)) {
             $this->fail(enum_err::PRE_INIT);
         }
 
         exec(escapeshellcmd('git config --global user.name "' . $user_name . '"'), $output);
         if (mod_set::new()->where(['key', 'user_name'])->exist()) {
-            mod_set::new()->value(['value' => $user_name])->where(['key', 'user_name'])->save();
+            mod_set::new()->update(['value' => $user_name])->where(['key', 'user_name'])->execute();
         } else {
-            mod_set::new()->value(['key' => 'user_name', 'value' => $user_name])->add();
+            mod_set::new()->insert(['key' => 'user_name', 'value' => $user_name])->execute();
         }
 
         exec(escapeshellcmd('git config --global user.email "' . $user_email . '"'), $output);
         if (mod_set::new()->where(['key', 'user_email'])->exist()) {
-            mod_set::new()->value(['value' => $user_email])->where(['key', 'user_email'])->save();
+            mod_set::new()->update(['value' => $user_email])->where(['key', 'user_email'])->execute();
         } else {
-            mod_set::new()->value(['key' => 'user_email', 'value' => $user_email])->add();
+            mod_set::new()->insert(['key' => 'user_email', 'value' => $user_email])->execute();
         }
 
         $path = $home_path . "/.ssh/id_rsa";
         file_put_contents($path, $pri_key);
         chmod($path, 0600);
         if (mod_set::new()->where(['key', 'pri_key'])->exist()) {
-            mod_set::new()->value(['value' => $pri_key])->where(['key', 'pri_key'])->save();
+            mod_set::new()->update(['value' => $pri_key])->where(['key', 'pri_key'])->execute();
         } else {
-            mod_set::new()->value(['key' => 'pri_key', 'value' => $pri_key])->add();
+            mod_set::new()->insert(['key' => 'pri_key', 'value' => $pri_key])->execute();
         }
 
 
@@ -101,9 +102,9 @@ class setting extends api
         file_put_contents($path, $pub_key);
         chmod($path, 0600);
         if (mod_set::new()->where(['key', 'pub_key'])->exist()) {
-            mod_set::new()->value(['value' => $pub_key])->where(['key', 'pub_key'])->save();
+            mod_set::new()->update(['value' => $pub_key])->where(['key', 'pub_key'])->execute();
         } else {
-            mod_set::new()->value(['key' => 'pub_key', 'value' => $pub_key])->add();
+            mod_set::new()->insert(['key' => 'pub_key', 'value' => $pub_key])->execute();
         }
     }
 }

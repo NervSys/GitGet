@@ -20,11 +20,21 @@
 
 namespace app\lib;
 
+use Core\Factory;
 
-use ext\factory;
-
-class dir extends factory
+/**
+ * Class dir
+ *
+ * @package app\lib
+ */
+class dir extends Factory
 {
+    /**
+     * @param string $path_from
+     * @param string $path_to
+     *
+     * @return bool
+     */
     public function copy_to(string $path_from, string $path_to): bool
     {
         if (is_dir($path_from)) {
@@ -36,6 +46,12 @@ class dir extends factory
         return false;
     }
 
+    /**
+     * @param string $file_from
+     * @param string $file_to
+     *
+     * @return bool
+     */
     public function file_copy(string $file_from, string $file_to): bool
     {
         if (!file_exists($file_from)) {
@@ -53,7 +69,12 @@ class dir extends factory
         return copy($file_from, $file_to);
     }
 
-
+    /**
+     * @param string $dir_from
+     * @param string $dir_to
+     *
+     * @return bool
+     */
     public function dir_copy(string $dir_from, string $dir_to): bool
     {
         if (!file_exists($dir_from)) {

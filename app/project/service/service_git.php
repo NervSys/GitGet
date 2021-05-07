@@ -21,20 +21,25 @@ namespace app\project\service;
 
 
 use app\lib\base;
+use app\lib\dir;
+use app\lib\git;
 use app\lib\model\branch;
 use app\lib\model\proj;
 use app\lib\model\proj_log;
 use app\lib\model\svr;
-use app\lib\dir;
-use app\lib\git;
-use ext\http;
-use ext\log;
+use Ext\libHttp;
 
+/**
+ * Class service_git
+ *
+ * @package app\project\service
+ */
 class service_git extends base
 {
-    public $copy_files;
-    public $local_path;
-    public $stash_files;
+    public array  $copy_files;
+    public string $local_path;
+    public array  $stash_files;
+
     const TEMP_PATH             = ".git" . DIRECTORY_SEPARATOR . 'temp';
     const GIT_CMD_TYPE_PULL     = 1;    //更新
     const GIT_CMD_TYPE_CHECKOUT = 2;    //切换分支
@@ -89,7 +94,7 @@ class service_git extends base
      *
      * @return bool
      */
-    public function update_branch(int $proj_id)
+    public function update_branch(int $proj_id): bool
     {
         //获取远程分支
         $branch_list  = git::new()->branch_list();
@@ -122,7 +127,7 @@ class service_git extends base
                     'name'    => $branch_name,
                     'proj_id' => $proj_id
                 ];
-                branch::new()->value($add)->add();
+                branch::new()->insert($add)->execute();
             }
         }
 
@@ -130,8 +135,8 @@ class service_git extends base
         if (empty($curr_branch)) {
             $curr_branch = ['master'];
         }
-        branch::new()->where(['proj_id', $proj_id])->value(['active' => 0])->save();
-        branch::new()->where([['proj_id', $proj_id], ['name', $curr_branch[0]]])->value(['active' => 1])->save();
+        branch::new()->where(['proj_id', $proj_id])->update(['active' => 0])->execute();
+        branch::new()->where([['proj_id', $proj_id], ['name', $curr_branch[0]]])->update(['active' => 1])->execute();
         return true;
     }
 
@@ -149,13 +154,13 @@ class service_git extends base
         $data['log']       = trim($curr_branch[1] ?? '');
         $data['log_type']  = $log_type;
         $data['commit_id'] = git::new()->curr_commit_id();;
-        $data['branch_id'] = branch::new()->where([['proj_id', $proj_id], ['active', 1]])->fields('id')->get_val();
+        $data['branch_id'] = branch::new()->select('id')->where([['proj_id', $proj_id], ['active', 1]])->getRow(\PDO::FETCH_COLUMN)[0] ?? '';
         $data['active']    = 1;
-        proj_log::new()->where(['proj_id', $proj_id])->value(['active' => 0])->save();
+        proj_log::new()->where(['proj_id', $proj_id])->update(['active' => 0])->execute();
         if (!proj_log::new()->where([['proj_id', $proj_id], ['branch_id', $data['branch_id']], ['commit_id', $data['commit_id']]])->exist()) {
-            proj_log::new()->value($data)->add();
+            proj_log::new()->insert($data)->execute();
         }
-        proj_log::new()->where([['proj_id', $proj_id], ['commit_id', $data['commit_id']]])->value(['active' => 1])->save();
+        proj_log::new()->where([['proj_id', $proj_id], ['commit_id', $data['commit_id']]])->update(['active' => 1])->execute();
     }
 
 
@@ -169,7 +174,7 @@ class service_git extends base
     {
         $conf             = proj::new()->where(['id', $proj_id])->get_one();
         $git_url          = $conf['git_url'];
-        $local_path       = $home_path.$conf['local_path'];
+        $local_path       = $home_path . $conf['local_path'];
         $this->local_path = $local_path;
         $this->copy_files = json_decode($conf['backup_files'], true);
         if (!is_dir($local_path)) {
@@ -239,9 +244,9 @@ class service_git extends base
      * @return bool
      * @throws \Exception
      */
-    public function request(int $proj_id, array $data)
+    public function request(int $proj_id, array $data): bool
     {
-        $svr_list = proj::new()->fields('svr_list')->where(['id', $proj_id])->get_val();
+        $svr_list = proj::new()->select('svr_list')->where(['id', $proj_id])->getRow(\PDO::FETCH_COLUMN)[0] ?? '';
         $svr_list = json_decode($svr_list, true);
         $count    = count($svr_list);
         if ($count <= 0) {
@@ -257,8 +262,11 @@ class service_git extends base
         foreach ($servers as $server) {
             $url                       = $server['url'] . "/api.php";
             $data['data']['home_path'] = $server['home_path'];
-            $res                       = http::new()->add(['url' => $url, 'data' => $data, 'with_header' => true])->fetch();
-            if (!$res) {
+
+            $http = libHttp::new();
+            $http->addData($data)->fetch($url);
+
+            if (200 !== $http->getHttpCode()) {
                 $this->gg_error($proj_id, '服务器请求出错');
             }
         }
@@ -270,13 +278,13 @@ class service_git extends base
      *
      * @param int $proj_id
      *
-     * @return bool
+     * @return void
      */
-    private function unlock(int $proj_id)
+    private function unlock(int $proj_id): void
     {
         $key = "proj_lock:" . $proj_id;
         if (!$this->redis->exists($key)) {
-            return false;
+            return;
         }
         $res = $this->redis->decrBy($key, 1);
         if ($res <= 0) {

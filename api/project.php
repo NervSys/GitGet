@@ -17,16 +17,16 @@
  * limitations under the License.
  */
 
-namespace app\project;
+namespace api;
 
 
-use app\lib\api;
+use app\lib\base;
 use app\lib\model\branch;
 use app\lib\model\proj;
 use app\lib\model\proj_log;
 use app\lib\model\svr as mod_svr;
 
-class project extends api
+class project extends base
 {
     /**
      * 项目列表
@@ -36,13 +36,13 @@ class project extends api
      *
      * @return array
      */
-    public function list(int $page, int $page_size)
+    public function list(int $page, int $page_size): array
     {
-        $res = proj::new()->fields('id', 'name', 'status')->where([['status', '<>', 2]])->get_page($page, $page_size);
+        $res = proj::new()->select('id', 'name', 'status')->where([['status', '<>', 2]])->get_page($page, $page_size);
         foreach ($res['list'] as &$item) {
-            $branch          = branch::new()->where([['proj_id', $item['id']], ['active', 1]])->fields('id', 'name')->get_one();
+            $branch          = branch::new()->where([['proj_id', $item['id']], ['active', 1]])->select('id', 'name')->getRow();
             $item['branch']  = $branch['name'];
-            $item['commit']  = proj_log::new()->where([['proj_id', $item['id']], ['branch_id', $branch['id']], ['active', 1]])->fields('log')->get_val();
+            $item['commit']  = proj_log::new()->where([['proj_id', $item['id']], ['branch_id', $branch['id']], ['active', 1]])->select('log')->get_val();
             $key             = "proj_lock:" . $item['id'];
             $item['is_lock'] = $this->redis->exists($key);
         }
@@ -96,16 +96,17 @@ class project extends api
             'backup_files' => json_encode($backup_files),
         ];
         if ($id == 0) {
-            proj::new()->value($data)->add();
-            $proj_id = proj::new()->get_last_insert_id();
+            $proj_model = proj::new();
+            $proj_model->insert($data)->execute();
+            $proj_id = $proj_model->getLastInsertId();
             $data    = [
                 'name'    => 'master',
                 'proj_id' => (int)$proj_id,
                 'active'  => 1,
             ];
-            branch::new()->value($data)->add();
+            branch::new()->insert($data)->execute();
         } else {
-            proj::new()->value($data)->where(['id', $id])->save();
+            proj::new()->update($data)->where(['id', $id])->execute();
         }
         return true;
     }
@@ -119,7 +120,7 @@ class project extends api
      */
     public function del(int $proj_id): bool
     {
-        return proj::new()->value(['status' => 2])->where(['id', $proj_id])->save();
+        return proj::new()->update(['status' => 2])->where(['id', $proj_id])->execute();
     }
 
     /**

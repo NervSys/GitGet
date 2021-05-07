@@ -19,12 +19,13 @@
 
 namespace app\lib;
 
-use ext\factory;
-use ext\log;
 
-class git extends factory
+use Core\Factory;
+use Ext\libLog;
+
+class git extends Factory
 {
-    public $output;
+    public string $output = '';
 
     /**
      * 清除未添加文件
@@ -88,7 +89,7 @@ class git extends factory
      *
      * @return array
      */
-    public function branch_list()
+    public function branch_list(): array
     {
         $res = [];
         $this->execute($this->build_cmd('git branch -r'), $res);
@@ -98,9 +99,9 @@ class git extends factory
     /**
      * 当前节点
      *
-     * @return mixed|string
+     * @return string
      */
-    public function curr_commit_id()
+    public function curr_commit_id(): string
     {
         $this->execute($this->build_cmd('git rev-parse --short HEAD'), $output);
         return $output[0] ?? '';
@@ -111,7 +112,7 @@ class git extends factory
      *
      * @return array
      */
-    public function curr_branch()
+    public function curr_branch(): array
     {
         $this->execute($this->build_cmd('git branch -vv'), $output);
         $result = [];
@@ -147,14 +148,17 @@ class git extends factory
      *
      * @return bool
      */
-    private function execute($cmd, &$output)
+    private function execute($cmd, &$output): bool
     {
         exec($cmd . " 2>&1", $output, $res);
-        log::new("exec")->add([$cmd, $output, $res])->save();
+
+        libLog::new("exec")->add($cmd, $output, $res)->save();
+
         if ($res != 0) {
-            $output = is_array($output) ? json_encode($output) : $output;
+            $output = is_array($output) ? json_encode($output, JSON_FORMAT) : $output;
             return false;
         }
+
         return true;
     }
 

@@ -17,13 +17,13 @@
  * limitations under the License.
  */
 
-namespace app\project;
+namespace api;
 
 
-use app\lib\api;
+use app\lib\base;
 use app\lib\model\svr as model_svr;
 
-class svr extends api
+class svr extends base
 {
     /**
      * 列表
@@ -33,7 +33,7 @@ class svr extends api
      *
      * @return array
      */
-    public function list(int $page, int $page_size)
+    public function list(int $page, int $page_size): array
     {
         return model_svr::new()->where(['status', 1])->get_page($page, $page_size);
     }
@@ -45,7 +45,7 @@ class svr extends api
      *
      * @return array
      */
-    public function info(int $id)
+    public function info(int $id): array
     {
         return model_svr::new()->where([['id', $id], ['status', 1]])->get_one();
     }
@@ -68,9 +68,9 @@ class svr extends api
             'home_path' => $home_path
         ];
         if ($id) {
-            return model_svr::new()->value($value)->where(['id', $id])->save();
+            return model_svr::new()->update($value)->where(['id', $id])->execute();
         } else {
-            return model_svr::new()->value($value)->add();
+            return model_svr::new()->insert($value)->execute();
         }
     }
 
@@ -81,8 +81,8 @@ class svr extends api
      *
      * @return bool
      */
-    public function del(int $svr_id)
+    public function del(int $svr_id): bool
     {
-        return model_svr::new()->where(['id', $svr_id])->value(['status' => 2])->save();
+        return model_svr::new()->where(['id', $svr_id])->update(['status' => 2])->execute();
     }
 }

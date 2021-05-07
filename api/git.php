@@ -17,16 +17,16 @@
  * limitations under the License.
  */
 
-namespace app\project;
+namespace api;
 
 
-use app\lib\api;
+use app\lib\base;
 use app\lib\model\branch;
 use app\lib\model\proj_log;
 use app\project\service\service_git;
-use ext\mpc;
+use Ext\libMPC;
 
-class git extends api
+class git extends base
 {
     /**
      * 更新操作
@@ -36,7 +36,7 @@ class git extends api
      * @return bool
      * @throws \Exception
      */
-    public function update(int $proj_id)
+    public function update(int $proj_id): bool
     {
         //test1
         $data = [
@@ -47,9 +47,9 @@ class git extends api
         return service_git::new()->request($proj_id, $data);
     }
 
-    public function update_cli(int $proj_id,string $home_path)
+    public function update_cli(int $proj_id, string $home_path)
     {
-        return service_git::new()->update($proj_id,$home_path);
+        service_git::new()->update($proj_id, $home_path);
     }
 
     /**
@@ -61,9 +61,9 @@ class git extends api
      * @return bool
      * @throws \Exception
      */
-    public function checkout(int $proj_id, int $branch_id)
+    public function checkout(int $proj_id, int $branch_id): bool
     {
-        $branch_name = branch::new()->where([['proj_id', $proj_id], ['id', $branch_id]])->fields('name')->get_val();
+        $branch_name = branch::new()->where([['proj_id', $proj_id], ['id', $branch_id]])->select('name')->get_val();
         $data        = [
             'c'     => 'project/git-local_receive',
             'cli_c' => 'project/git-checkout_cli',
@@ -72,9 +72,9 @@ class git extends api
         return service_git::new()->request($proj_id, $data);
     }
 
-    public function checkout_cli(int $proj_id, string $branch_name,string $home_path)
+    public function checkout_cli(int $proj_id, string $branch_name, string $home_path)
     {
-        return service_git::new()->checkout($proj_id, $branch_name,$home_path);
+        service_git::new()->checkout($proj_id, $branch_name, $home_path);
     }
 
     /**
@@ -86,9 +86,9 @@ class git extends api
      * @return bool
      * @throws \Exception
      */
-    public function reset(int $proj_id, int $log_id)
+    public function reset(int $proj_id, int $log_id): bool
     {
-        $commit_id = proj_log::new()->where(['id', $log_id])->fields('commit_id')->get_val();
+        $commit_id = proj_log::new()->where(['id', $log_id])->select('commit_id')->get_val();
         $data      = [
             'c'     => 'project/git-local_receive',
             'cli_c' => 'project/git-reset_cli',
@@ -97,9 +97,9 @@ class git extends api
         return service_git::new()->request($proj_id, $data);
     }
 
-    public function reset_cli(int $proj_id, string $commit,string $home_path)
+    public function reset_cli(int $proj_id, string $commit, string $home_path)
     {
-        return service_git::new()->reset($proj_id, $commit,$home_path);
+        service_git::new()->reset($proj_id, $commit, $home_path);
     }
 
     /**
@@ -111,12 +111,12 @@ class git extends api
      * @return bool
      * @throws \Exception
      */
-    public function local_receive(string $cli_c, array $data)
+    public function local_receive(string $cli_c, array $data): bool
     {
-        mpc::new()->add([
-            'c' => $cli_c,
-            'd' => $data
-        ])->go(false);
+        $mpc = libMPC::new();
+
+        $mpc->addJob($cli_c, $data + ['nohup' => true]);
+
         return true;
     }
 
@@ -127,7 +127,7 @@ class git extends api
      *
      * @return array
      */
-    public function branch_list(int $proj_id)
+    public function branch_list(int $proj_id): array
     {
         return branch::new()->where(['proj_id', $proj_id])->get();
     }
@@ -140,9 +140,9 @@ class git extends api
      *
      * @return array
      */
-    public function log_list(int $proj_id, int $page, int $page_size)
+    public function log_list(int $proj_id, int $page, int $page_size): array
     {
-        $branch_id = branch::new()->where([['proj_id', $proj_id], ['active', 1]])->fields('id')->get_val();
+        $branch_id = branch::new()->where([['proj_id', $proj_id], ['active', 1]])->select('id')->get_val();
         return proj_log::new()->where([['proj_id', $proj_id], ['branch_id', $branch_id]])->order(['id' => 'desc'])->get_page($page, $page_size);
     }
 }
