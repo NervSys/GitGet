@@ -40,9 +40,9 @@ class service_git extends base
     const GIT_CMD_TYPE_CHECKOUT = 2;    //切换分支
     const GIT_CMD_TYPE_RESET    = 3;    //回滚
 
-    public function update(int $proj_id)
+    public function update(int $proj_id, string $home_path)
     {
-        $this->pre_option($proj_id);
+        $this->pre_option($proj_id, $home_path);
         $this->stash_file();
         $lib_git = git::new();
         if (!$lib_git->clean() || !$lib_git->clear() || !$lib_git->pull()) {
@@ -54,9 +54,9 @@ class service_git extends base
         $this->unlock($proj_id);
     }
 
-    public function checkout(int $proj_id, string $branch_name)
+    public function checkout(int $proj_id, string $branch_name, string $home_path)
     {
-        $this->pre_option($proj_id);
+        $this->pre_option($proj_id, $home_path);
         $this->stash_file();
         $lib_git = git::new();
         if (!$lib_git->clean() || !$lib_git->clear() || !$lib_git->checkout($branch_name)) {
@@ -68,9 +68,9 @@ class service_git extends base
         $this->unlock($proj_id);
     }
 
-    public function reset(int $proj_id, string $commit)
+    public function reset(int $proj_id, string $commit, string $home_path)
     {
-        $this->pre_option($proj_id);
+        $this->pre_option($proj_id, $home_path);
         $this->stash_file();
         $lib_git = git::new();
         if (!$lib_git->clean() || !$lib_git->clear() || !$lib_git->reset($commit)) {
@@ -162,14 +162,15 @@ class service_git extends base
     /**
      * 操作前预处理
      *
-     * @param int $proj_id
+     * @param int    $proj_id
+     * @param string $home_path
      */
-    private function pre_option(int $proj_id)
+    private function pre_option(int $proj_id, string $home_path)
     {
         $conf             = proj::new()->where(['id', $proj_id])->get_one();
         $git_url          = $conf['git_url'];
         $local_path       = $conf['local_path'];
-        $this->local_path = $local_path;
+        $this->local_path = $home_path . $local_path;
         $this->copy_files = json_decode($conf['backup_files'], true);
         if (!is_dir($local_path)) {
             mkdir($local_path, 0777, true);
@@ -254,9 +255,10 @@ class service_git extends base
         $this->redis->expire($key, 60);
         $servers = svr::new()->where([['id', 'IN', $svr_list]])->get();
         foreach ($servers as $server) {
-            $url = $server['url'] . "/api.php";
-            $res = http::new()->add(['url' => $url, 'data' => $data, 'with_header' => true])->fetch();
-            log::new()->add(['url' => $url, 'data' => $data, 'with_header' => true,'res'=>$res])->save();
+            $url               = $server['url'] . "/api.php";
+            $data['home_path'] = $server['home_path'];
+            $res               = http::new()->add(['url' => $url, 'data' => $data, 'with_header' => true])->fetch();
+            log::new()->add(['url' => $url, 'data' => $data, 'with_header' => true, 'res' => $res])->save();
             if (!$res) {
                 $this->gg_error($proj_id, '服务器请求出错');
             }

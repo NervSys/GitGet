@@ -47,9 +47,9 @@ class git extends api
         return service_git::new()->request($proj_id, $data);
     }
 
-    public function update_cli(int $proj_id)
+    public function update_cli(int $proj_id,string $home_path)
     {
-        return service_git::new()->update($proj_id);
+        return service_git::new()->update($proj_id,$home_path);
     }
 
     /**
@@ -72,9 +72,9 @@ class git extends api
         return service_git::new()->request($proj_id, $data);
     }
 
-    public function checkout_cli(int $proj_id, string $branch_name)
+    public function checkout_cli(int $proj_id, string $branch_name,string $home_path)
     {
-        return service_git::new()->checkout($proj_id, $branch_name);
+        return service_git::new()->checkout($proj_id, $branch_name,$home_path);
     }
 
     /**
@@ -97,9 +97,9 @@ class git extends api
         return service_git::new()->request($proj_id, $data);
     }
 
-    public function reset_cli(int $proj_id, string $commit)
+    public function reset_cli(int $proj_id, string $commit,string $home_path)
     {
-        return service_git::new()->reset($proj_id, $commit);
+        return service_git::new()->reset($proj_id, $commit,$home_path);
     }
 
     /**

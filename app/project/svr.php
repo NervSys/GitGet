@@ -55,15 +55,17 @@ class svr extends api
      *
      * @param string $url
      * @param string $name
+     * @param string $home_path
      * @param int    $id
      *
      * @return bool
      */
-    public function edit(string $url, string $name = '', int $id = 0)
+    public function edit(string $url, string $name = '', string $home_path = '', int $id = 0): bool
     {
         $value = [
-            'url'  => $url,
-            'name' => $name,
+            'url'       => $url,
+            'name'      => $name,
+            'home_path' => $home_path
         ];
         if ($id) {
             return model_svr::new()->value($value)->where(['id', $id])->save();
