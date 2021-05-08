@@ -113,11 +113,7 @@ class git extends base
      */
     public function local_receive(string $cli_c, array $data): bool
     {
-        $mpc = libMPC::new();
-
-        $mpc->addJob($cli_c, $data + ['nohup' => true]);
-
-        return true;
+        return libMPC::new()->setPhpPath($this->conf_get->use('php')['path'])->callAsync($cli_c, $data);
     }
 
     /**
