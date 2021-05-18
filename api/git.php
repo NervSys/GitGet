@@ -113,7 +113,7 @@ class git extends base
      */
     public function local_receive(string $cli_c, array $data): bool
     {
-        return libMPC::new()->setPhpPath($this->conf_get->use('php')['path'])->callAsync($cli_c, $data);
+        return libMPC::new()->setPhpPath($this->conf_get->use('php')['path'])->execAsync($cli_c, $data);
     }
 
     /**
